@@ -15,19 +15,24 @@ class ReLUneuron():
 		self.alpha=(self.maxrate - 0.0)/(1.0 - self.xintercept)	#alpha=slope=(y2-y1)/(x2-x1)
 		self.rates=[]
 
-	def set_rates(self,J_array,noise):
+	def set_rates(self,J_array):
 		self.rates=[]
 		b=-self.xintercept*self.alpha	#y=mx+b  ==>  b=y-mx
 		for J in J_array:
-			if noise!=0:
-				rate=self.alpha*self.e*J+b + np.random.normal(0,noise*self.get_max_rate())
-			else:
-				rate=self.alpha*self.e*J+b
+			rate=self.alpha*self.e*J+b
 			self.rates.append(np.maximum(0,rate))
 		return self.rates
 
 	def get_rates(self):
 		return self.rates
+
+	def get_rates_noisy(self,noise):
+		if noise !=0:
+			rates=self.rates + np.random.normal(loc=0,scale=noise,size=(1,len(self.rates)))
+			return rates[0]
+		else:
+			return self.rates
+		return
 
 	def get_max_rate(self):
 		return self.maxrate
@@ -38,22 +43,22 @@ class ReLUneuron():
 	def alpha(self):
 		return self.alpha
 
-def ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise):
+def ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders):
 
 	neurons=[]
 	for i in range(n_neurons):
 		n=ReLUneuron(x_intercept_array[i],max_rate_array[i],encoders[i])
-		n.set_rates(x,noise)
+		n.set_rates(x)
 		neurons.append(n)
 	return neurons
 
-def ReLUresponses(neurons,x):
+def ReLUresponses(neurons,x,noise):
 
 	fig=plt.figure()
 	ax=fig.add_subplot(111)
 
 	for n in neurons:
-		y=n.get_rates()
+		y=n.get_rates_noisy(noise)
 		ax.plot(x,y)
 
 	ax.set_xlim(-1,1)
@@ -66,12 +71,12 @@ def get_optimal_decoders(neurons,x,S,noise):
 	# Use A=matrix of activities (the firing of each neuron for each x value)
 	A_T=[]
 	for n in neurons:
-		A_T.append(n.get_rates())
+		A_T.append(n.get_rates_noisy(noise))
 	A_T=np.matrix(A_T)
 	A=np.transpose(A_T)
 	x=np.transpose(np.matrix(x))
 	upsilon=A_T*x/S
-	gamma=A_T*A/S + np.identity(len(neurons))*(noise*np.max(A))**2
+	gamma=A_T*A/S
 	d=np.linalg.inv(gamma)*upsilon
 
 	# Brute force - doesn't work because gamma_ij=0 for some values of a_i*a_j,
@@ -91,13 +96,39 @@ def get_optimal_decoders(neurons,x,S,noise):
 
 	return d
 
-def get_state_estimate(neurons,x,d):
+def get_optimal_decoders_noisy(neurons,x,S,noise):
+
+	# Use A=matrix of activities (the firing of each neuron for each x value)
+	A_T=[]
+	for n in neurons:
+		A_T.append(n.get_rates_noisy(noise))
+	A_T=np.matrix(A_T)
+	A=np.transpose(A_T)
+	x=np.transpose(np.matrix(x))
+	upsilon=A_T*x/S
+	gamma=A_T*A/S + np.identity(len(neurons))*noise**2
+	d=np.linalg.inv(gamma)*upsilon
+	
+	return d
+
+def get_state_estimate(neurons,x,d,noise):
 
 	xhat=[]
 	for j in range(len(x)):
 		xhat_i=0
 		for i in range(len(neurons)):
-			xhat_i+=float(d[i])*neurons[i].get_rates()[j]
+			xhat_i+=float(d[i])*neurons[i].get_rates_noisy(noise)[j]
+		xhat.append(xhat_i)
+
+	return xhat
+
+def get_state_estimate_noisy(neurons,x,d,noise):
+
+	xhat=[]
+	for j in range(len(x)):
+		xhat_i=0
+		for i in range(len(neurons)):
+			xhat_i+=float(d[i])*neurons[i].get_rates_noisy(noise)[j]
 		xhat.append(xhat_i)
 
 	return xhat
@@ -121,6 +152,8 @@ def plot_error(x,xhat):
 	plt.show()
 	# print 'RMSE', np.sqrt(np.average((x-xhat)**2))
 
+
+
 def main():
 
 	#Q1 setup
@@ -133,34 +166,35 @@ def main():
 	noise=0
 	
 	#1.1a
-	neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise)
-	# ReLUresponses(neurons,x)
+	# neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders)
+	# ReLUresponses(neurons,x,noise)
 
 	#1.1b
 	# S=len(x)
 	# noise=0
-	# d=get_optimal_decoders(neurons,x,S,noise)
+	# d=get_optimal_decoders(neurons,x,S,noise)	#noiseless optimization with noiseless rates
 
 	#1.1c
-	# xhat=get_state_estimate(neurons,x,d)
+	# xhat=get_state_estimate(neurons,x,d,noise) 	#noiseless estimates with noiseless rates
 	# plot_error(x,xhat)
 
 	#1.1d
 	# S=len(x)
-	# noise=0.2
-	# neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise)
-	# d=get_optimal_decoders(neurons,x,S,0) #noiseless optimization
-	# xhat=get_state_estimate(neurons,x,d) 
+	# noise=0.2*np.max(max_rate_array)
+	# neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders)
+	# d=get_optimal_decoders(neurons,x,S,noise)	#noiseless optimization with noisy rates
+	# xhat=get_state_estimate(neurons,x,d,noise)	#noiseless estimation with noisy rates
 	# plot_error(x,xhat)
 
 	#1.1e
 	S=len(x)
-	noise=0.2
-	neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise)
-	d1=get_optimal_decoders(neurons,x,S,0) #noiseless optimization
-	d2=get_optimal_decoders(neurons,x,S,noise) #noisy optimization
-	xhat1=get_state_estimate(neurons,x,d1) 
-	xhat2=get_state_estimate(neurons,x,d2) 
+	noise=0.2*np.max(max_rate_array)
+	neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders)
+	ReLUresponses(neurons,x,noise)
+	d1=get_optimal_decoders(neurons,x,S,noise)		#noiseless optimization with noisy rates
+	d2=get_optimal_decoders_noisy(neurons,x,S,noise)	#noiseless estimation with noisy rates
+	xhat1=get_state_estimate(neurons,x,d1,noise)		#noisy optimization with noisy rates
+	xhat2=get_state_estimate_noisy(neurons,x,d2,noise)	#noisy estimation with noisy rates 
 	plot_error(x,xhat1)
 	plot_error(x,xhat2)
 
