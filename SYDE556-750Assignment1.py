@@ -120,23 +120,23 @@ def neuron_responses(neurons,x,noise):
 	ax.set_ylabel('$a$ (Hz)')
 	plt.show()
 
-def get_optimal_decoders(neurons,x,S,noise):
+def get_optimal_decoders(neurons,x,S):
 
 	# Use A=matrix of activities (the firing of each neuron for each x value)
 	# Noise is input in case the firing rates are noisy but optimization doesn't
 	# account for that, as in 1.1d. For zero noise, noise=0 is input to the function.
 	A_T=[]
 	for n in neurons:
-		if noise != 0:
-			A_T.append(n.get_rates_noisy()) #should noise be added here, or only in estimation?
-		else:
-			A_T.append(n.get_rates())
+		A_T.append(n.get_rates())
 	A_T=np.matrix(A_T)
 	A=np.transpose(A_T)
 	x=np.transpose(np.matrix(x))
 	upsilon=A_T*x/S
 	gamma=A_T*A/S
-	d=np.linalg.inv(gamma)*upsilon
+	d=np.linalg.pinv(gamma)*upsilon
+	# print 'A', A
+	# print 'gamma', gamma
+	# print 'upsilon', upsilon
 
 	# Brute force - doesn't work because gamma_ij=0 for some values of a_i*a_j,
 	# I'm missing something...
@@ -160,10 +160,7 @@ def get_optimal_decoders_noisy(neurons,x,S,noise):
 	# Use A=matrix of activities (the firing of each neuron for each x value)
 	A_T=[]
 	for n in neurons:
-		if noise != 0:
-			A_T.append(n.get_rates_noisy()) #should noise be added here, or only in estimation?
-		else:
-			A_T.append(n.get_rates())
+		A_T.append(n.get_rates())
 	A_T=np.matrix(A_T)
 	A=np.transpose(A_T)
 	x=np.transpose(np.matrix(x))
@@ -248,7 +245,8 @@ def one_pt_one_a_thru_c(): #1.1a-c
 	neuron_responses(neurons,x,noise)
 
 	S=len(x)
-	d=get_optimal_decoders(neurons,x,S,noise)	#noiseless optimization with noiseless rates
+	d=get_optimal_decoders(neurons,x,S)	#noiseless optimization with noiseless rates
+	print d
 	xhat=get_state_estimate(neurons,x,d,noise)	#noiseless rates
 	
 	fig=plt.figure()
@@ -284,7 +282,9 @@ def one_pt_one_d():	#1.1d
 
 	noise=0.2*np.max(max_rate_array)
 	neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise)
-	d=get_optimal_decoders(neurons,x,S,noise)	#noiseless optimization with noisy rates
+	neuron_responses(neurons,x,noise)
+	d=get_optimal_decoders(neurons,x,S)	#noiseless optimization with noisy rates
+	# print d
 	xhat=get_state_estimate(neurons,x,d,noise)	#noisy rates
 
 	fig=plt.figure()
@@ -321,7 +321,7 @@ def one_pt_one_e():	#1.1e
 	noise=0.2*np.max(max_rate_array)
 	neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise)
 	neuron_responses(neurons,x,noise)
-	d1=get_optimal_decoders(neurons,x,S,noise)		#noiseless optimization with noisy rates
+	d1=get_optimal_decoders(neurons,x,S)		#noiseless optimization with noisy rates
 	d2=get_optimal_decoders_noisy(neurons,x,S,noise)	#noisy optimization with noisy rates
 	xhat1=get_state_estimate(neurons,x,d1,noise)	#noisy rates
 	xhat2=get_state_estimate(neurons,x,d2,noise)	#noisy rates
@@ -354,6 +354,51 @@ def one_pt_one_e():	#1.1e
 	ax.set_ylabel('$x - \hat{x}$')
 	legend=ax.legend(['RMSE=%f' %np.sqrt(np.average((x-xhat2)**2))],loc='best') 
 	plt.show()
+
+def one_pt_one_f(): 	#1.1f
+
+	n_neurons=16
+	min_fire_rate=100
+	max_fire_rate=200
+	min_x=-1
+	max_x=1
+	max_rate_array=np.random.uniform(min_fire_rate,max_fire_rate,n_neurons)
+	x_intercept_array=np.random.uniform(min_x,max_x,n_neurons)
+	encoders=-1+2*np.random.randint(2,size=n_neurons)
+	dx=0.05
+	x=np.linspace(min_x,max_x,(max_x-min_x)/dx)
+	S=len(x)
+	#noisy activity is calculated when neurons are created, so I do that here, then call
+	#either get_rates() or get_rates_noisy as appropriate
+	noise=0.2*np.max(max_rate_array)
+	neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise)
+
+	#noiseless activity, noiseless decoding
+	d1=get_optimal_decoders(neurons,x,S)
+	xhat1=get_state_estimate(neurons,x,d1,0)
+	rmse1=np.sqrt(np.average((x-xhat1)**2))
+	#noiseless activity, noisy decoding
+	d2=get_optimal_decoders_noisy(neurons,x,S,noise)
+	xhat2=get_state_estimate(neurons,x,d2,0)
+	rmse2=np.sqrt(np.average((x-xhat2)**2))
+	#noisy activity, noiseless decoding
+	d3=get_optimal_decoders(neurons,x,S)
+	xhat3=get_state_estimate(neurons,x,d3,noise)
+	rmse3=np.sqrt(np.average((x-xhat3)**2))
+	#noisy activity, noisy decoding
+	d4=get_optimal_decoders_noisy(neurons,x,S,noise)
+	xhat4=get_state_estimate(neurons,x,d4,noise)
+	rmse4=np.sqrt(np.average((x-xhat4)**2))
+
+	rmse_table_code=np.matrix([
+		['clean a, clean d',
+		 'clean a, noisy d'],
+		['noisy a, clean d',
+		 'noisy a, noisy d']
+		])
+	rmse_table=np.matrix([[rmse1, rmse2], [rmse3, rmse4]])
+	print rmse_table_code
+	print rmse_table
 
 def one_pt_two(): #1.2a-b
 
@@ -419,7 +464,7 @@ def one_pt_three():	#1.3
 
 	noise=0.2*np.max(max_rate_array)
 	neurons=LIFneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,tau_ref,tau_rc,noise)
-	d1=get_optimal_decoders(neurons,x,S,noise)		#noiseless optimization with noisy rates
+	d1=get_optimal_decoders(neurons,x,S)		#noiseless optimization with noisy rates
 	d2=get_optimal_decoders_noisy(neurons,x,S,noise)	#noisy optimization with noisy rates
 	xhat1=get_state_estimate(neurons,x,d1,noise)	#noisy rates
 	xhat2=get_state_estimate(neurons,x,d2,noise)	#noisy rates
@@ -455,6 +500,10 @@ def one_pt_three():	#1.3
 
 def main():
 
-	one_pt_three()
+	# one_pt_one_a_thru_c()
+	# one_pt_one_d()
+	# one_pt_one_e()
+	one_pt_one_f()
+
 
 main()
