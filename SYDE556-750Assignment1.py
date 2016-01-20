@@ -184,7 +184,7 @@ def get_state_estimate(neurons,x,d,noise):
 
 	return xhat
 
-def error_vs_neurons(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc):
+def error_vs_neurons(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc,n_type):
 
 	E_dist=[]
 	E_noise=[]
@@ -410,11 +410,13 @@ def one_pt_two(): #1.2a-b
 	max_fire_rate=200
 	min_x=-0.95
 	max_x=0.95
+	tau_ref=0.002
+	tau_rc=0.02
 
 	noise_mag=0.1
-	E_dist1,E_noise1 = get_error_estimates(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc,'ReLU')
+	E_dist1,E_noise1 = error_vs_neurons(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc,'ReLU')
 	noise_mag=0.01
-	E_dist2,E_noise2 = get_error_estimates(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc,'ReLU')
+	E_dist2,E_noise2 = error_vs_neurons(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc,'ReLU')
 
 	fig=plt.figure()
 	ax=fig.add_subplot(411)
@@ -503,7 +505,8 @@ def main():
 	# one_pt_one_a_thru_c()
 	# one_pt_one_d()
 	# one_pt_one_e()
-	one_pt_one_f()
-
+	# one_pt_one_f()
+	# one_pt_two()
+	one_pt_three()
 
 main()
