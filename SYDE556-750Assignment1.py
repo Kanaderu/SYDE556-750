@@ -43,6 +43,16 @@ class ReLUneuron():
 	def get_rates_noisy(self):
 		return self.rates_noisy
 
+	def get_specific_rates(self,x_vals,noise):
+		specific_rates=[]
+		for x in x_vals:
+			eta=0
+			J=np.maximum(0,self.alpha*np.dot(x,self.e)+self.Jbias)
+			if noise !=0:
+				eta=np.random.normal(loc=0,scale=noise)
+			specific_rates.append(float(np.maximum(0,J)+eta))
+		return specific_rates
+
 class LIFneuron():
 
 	def __init__(self,x_intercept,max_firing_rate,encoder,tau_ref,tau_rc):
@@ -86,6 +96,20 @@ class LIFneuron():
 
 	def get_rates_noisy(self):
 		return self.rates_noisy
+
+	def get_specific_rates(self,x_vals,noise):
+		specific_rates=[]
+		for x in x_vals:
+			eta=0
+			J=self.alpha*np.dot(x,self.e)+self.Jbias
+			if J>1:
+				rate=1/(self.tau_ref -self.tau_rc*np.log(1-1/J))
+			else:
+				rate=0
+			if noise !=0:
+				eta=np.random.normal(loc=0,scale=noise)
+			self.specific_rates.append(float(rate+eta))
+		return self.specific_rates
 
 def ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise):
 
@@ -133,7 +157,6 @@ def get_optimal_decoders(neurons,x,S):
 	upsilon=A_T*x/S
 	gamma=A_T*A/S
 	d=np.linalg.pinv(gamma)*upsilon
-
 	return d
 
 def get_optimal_decoders_noisy(neurons,x,S,noise):
@@ -148,7 +171,6 @@ def get_optimal_decoders_noisy(neurons,x,S,noise):
 	upsilon=A_T*x/S
 	gamma=A_T*A/S + np.identity(len(neurons))*noise**2
 	d=np.linalg.inv(gamma)*upsilon
-	
 	return d
 
 def get_state_estimate(neurons,x,d,noise):
@@ -158,12 +180,16 @@ def get_state_estimate(neurons,x,d,noise):
 		xhat_i=0
 		for i in range(len(neurons)):
 			if noise != 0:
-				xhat_i+=float(d[i])*neurons[i].get_rates_noisy()[j]
+				a_ij=neurons[i].get_specific_rates(x,noise)[j]
+				d_i=np.array(d[i])
+				xhat_i+=(a_ij*d_i).flatten()
 			else:
-				xhat_i+=float(d[i])*neurons[i].get_rates()[j]
+				a_ij=neurons[i].get_specific_rates(x,0)[j]
+				d_i=np.array(d[i])
+				xhat_i+=(a_ij*d_i).flatten()
 		xhat.append(xhat_i)
-
-	return np.array(np.transpose(np.matrix(xhat)))
+	xhat=np.array(xhat)
+	return xhat
 
 def error_vs_neurons(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc,n_type):
 
@@ -184,11 +210,10 @@ def error_vs_neurons(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,
 			if n_type == 'LIF':
 				neurons=LIFneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,tau_ref,tau_rc,noise)
 			d=get_optimal_decoders_noisy(neurons,x,S,noise)	#noisy optimization with noisy rates
-			E_dist_n.append(get_e_dist(neurons,x,d,0))	#no noise
+			E_dist_n.append(get_e_dist(neurons,x,d,noise))	#no noise
 			E_noise_n.append(get_e_noise(d,noise))
 		E_dist.append(np.average(E_dist_n))
 		E_noise.append(np.average(E_noise_n))
-
 	return E_dist,E_noise
 
 def get_e_dist(neurons,x,d,noise):
@@ -539,9 +564,10 @@ def two_pt_one():
 def two_pt_two(): 	#2.2
 
 	#2.2a
-	angles=np.random.uniform(0,2*np.pi,100)
-	encoders=[[np.cos(a),np.sin(a)] for a in angles]
-	encoders=encoders/np.linalg.norm(encoders)
+	points=100
+	n_neurons=100
+	angles=np.random.uniform(0,2*np.pi,n_neurons)
+	encoders=np.array([[np.cos(a),np.sin(a)] for a in angles])
 
 	#2.2b
 	n_neurons=100
@@ -564,28 +590,78 @@ def two_pt_two(): 	#2.2
 
 	neurons=LIFneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,tau_ref,tau_rc,noise)
 	d=get_optimal_decoders_noisy(neurons,x,S,noise)	#noisy optimization with noisy rates
+	# print d
+
+	#quiver plot
+	# fig = plt.figure()
+	# ax = fig.add_subplot(211)
+	# ax.set_xlabel('x1')
+	# ax.set_ylabel('x2')
+	# ax.plot(encoders[:,0],encoders[:,1],'^',label='encoders')
+	# legend=ax.legend(loc='best',shadow=True)
+	# ax = fig.add_subplot(212)
+	# ax.set_xlabel('x1')
+	# ax.set_ylabel('x2')
+	# ax.plot(d[:,0],d[:,1],'o',label='decoders')
+	# legend=ax.legend(loc='best',shadow=True)
+	# plt.show()
+
+	#2.2c
+	points=2
+	n_neurons=5
+	min_fire_rate=100
+	max_fire_rate=200
+	x1_min=-1
+	x1_max=1
+	x2_min=-1
+	x2_max=1
+	x1 = np.arange(x1_min, x1_max, dx)
+	x2 = np.arange(x2_min, x2_max, dx)
+	x_sample=np.vstack(np.meshgrid(x1, x2)).reshape(2,-1).T
+	max_rate_array=np.random.uniform(min_fire_rate,max_fire_rate,n_neurons)
+	x_intercept_array=[[np.random.uniform(x1_min,x1_max),np.random.uniform(x2_min,x2_max)] for n in range(n_neurons)]
+	noise=0.2*np.max(max_rate_array)
+
+	angles=np.random.uniform(0,2*np.pi,points) 	#note: does not distribute uniformally over the unit circle
+	radii=np.random.uniform(0,1,points) 	#but creates a high density of points near the center
+	x=np.vstack([radii*np.cos(angles),radii*np.sin(angles)]).reshape(2,-1).T
+	
+	angles_enc=np.random.uniform(0,2*np.pi,n_neurons) 	#note: does not distribute uniformally over the unit circle
+	encoders=np.array([[np.cos(a),np.sin(a)] for a in angles_enc])
+	S=len(x)
+
+	neurons=LIFneurons(n_neurons,x_intercept_array,max_rate_array,x_sample,encoders,tau_ref,tau_rc,noise)
+	d=get_optimal_decoders_noisy(neurons,x_sample,S,noise)	#noisy optimization with noisy rates
+	print d
+	xhat=get_state_estimate(neurons,x,d,noise)
+	print x
+	print xhat
 
 	fig = plt.figure()
-	ax = fig.add_subplot(211)
+	ax = fig.add_subplot(111)
 	ax.set_xlabel('x1')
 	ax.set_ylabel('x2')
-	ax.plot(encoders[:,0],encoders[:,1],'^',label='encoders')
-	legend=ax.legend(loc='best',shadow=True)
-	ax = fig.add_subplot(212)
-	ax.set_xlabel('x1')
-	ax.set_ylabel('x2')
-	ax.plot(d[:,0],d[:,1],'o',label='decoders')
+	ax.set_xlim(-1,1)
+	ax.set_ylim(-1,1)
+	ax.plot(x[:,0],x[:,1],'o',label='$x$')
+	ax.plot(xhat[:,0],xhat[:,1],'^',label='$\hat{x}$')
 	legend=ax.legend(loc='best',shadow=True)
 	plt.show()
+	# ax = fig.add_subplot(212)
+	# ax.set_xlabel('x1')
+	# ax.set_ylabel('x2')
+	# ax.plot(d[:,0],d[:,1],'o',label='decoders')
+	# legend=ax.legend(loc='best',shadow=True)
+	# plt.show()
 
 def main():
 
-	# one_pt_one_a_thru_c()
-	# one_pt_one_d()
+	one_pt_one_a_thru_c()
+	one_pt_one_d()
 	one_pt_one_e()
-	# one_pt_one_f()
-	# one_pt_two()
-	# one_pt_three()
+	one_pt_one_f()
+	one_pt_two()
+	one_pt_three()
 	# two_pt_one()
 	# two_pt_two()
 
