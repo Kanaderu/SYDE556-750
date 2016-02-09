@@ -5,6 +5,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import integrate
 
 class LIFneuron():
 
@@ -87,6 +88,66 @@ class LIFneuron():
 
     def get_rates_noisy(self):
         return self.custom_rates_noisy
+
+
+
+class spikingLIFneuron():
+
+    def __init__(self,x1,x2,a1,a2,encoder,tau_ref,tau_rc):
+        self.x1=x1
+        self.x2=x2
+        self.a1=a1
+        self.a2=a2
+        self.e=encoder
+        self.tau_ref=tau_ref
+        self.tau_rc=tau_rc
+        self.Jbias=0
+        self.alpha=0
+        self.V=0
+        self.dVdt=0
+        self.stimulus=[]
+        self.spikes=[]
+        self.Vhistory=[]
+
+        if x1==0:
+            self.Jbias=1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc))
+            self.alpha=(1/np.dot(self.x2,self.e)) * (1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - self.Jbias)
+        elif x2==0:
+            self.Jbias=1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc))
+            self.alpha=(1/np.dot(self.x1,self.e)) * (1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc)) - self.Jbias)
+        else:
+            self.Jbias=(1/(1-self.x2/self.x1)) - 1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - \
+             (self.x2/self.x1) * 1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc))
+            self.alpha=(1/(np.dot(self.x2,self.e))) * (1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - self.Jbias)
+
+        self.sample_rates=[]
+        self.sample_rates_noisy=[]
+        self.custom_rates=[]
+        self.custom_rates_noisy=[]
+        self.custom_x=np.array([])
+
+    def set_spikes(self,stimulus,T,dt):
+        self.stimulus=stimulus #an array
+        self.spikes=[]
+        self.Vhistory=[]
+        for t in range(len(stimulus)):
+            self.dVdt=((1/self.tau_rc)*(self.Jbias-self.V)) + 1/dt*self.stimulus[t]  #differential equation for LIF dV/dt+ (norm)*stimulus(time=t)
+            ref_window=int(self.tau_ref/dt)
+            for h in range(ref_window):    #check if there have been spikes in the last t_rc seconds
+                if len(self.spikes) >= ref_window and self.spikes[-h] == 1:
+                    self.dVdt=0     #if so, voltage isn't allowed to change
+            self.V=self.V+dt*self.dVdt  #Euler's Method Approximation V(t+1) = V(t) + dt *dV(t)/dt; the (norm) cancels the *dt for stim
+            if self.V >= 1:
+                self.spikes.append(1)   #a spike
+                self.V=0    #reset
+            else:
+                self.spikes.append(0)   #not a spike
+                if self.V < 0: self.V=0
+            self.Vhistory.append(self.V)
+
+    def get_spikes(self):
+        return self.spikes
+
 
 def LIFneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,tau_ref,tau_rc,noise):
 
@@ -430,9 +491,93 @@ def one_pt_two():
     ax.set_xlim(-bandwidth*2*2*np.pi, bandwidth*2*2*np.pi)
     plt.show()
 
+def two():
+
+    x1=0
+    x2=1
+    a1=40
+    a2=150
+    encoder=1
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1.0
+    dt=0.001
+
+    #1.1
+    n1=spikingLIFneuron(x1,x2,a1,a2,encoder,tau_ref,tau_rc)
+    stimulus1 = np.linspace(0,0,T/dt)  #constant stimulus of zero in an array
+    n1.set_spikes(stimulus1,T,dt)
+    spikes1=n1.get_spikes()
+    stimulus2 = np.linspace(1,1,T/dt)  #constant stimulus of one
+    n1.set_spikes(stimulus2,T,dt)
+    spikes2=n1.get_spikes()
+
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    times=np.arange(0,T,dt)
+    ax.plot(times,spikes1, label='%s spikes' %np.count_nonzero(spikes1))
+    ax.plot(times,spikes2, label='%s spikes' %np.count_nonzero(spikes2))
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('Voltage')
+    ax.set_xlim(0,T)
+    ax.set_ylim(0,2)
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+    #1.2
+    #the number of spikes we expect at stimulus=0 is zero, because voltage begins at zero, does not increase due to
+    #dV/dT in LIF equation, and has no external stimulus. when stimulus = 1, enough stimulus is added at every 
+    #timestep to fire an action potential. However, the refractory period keeps this from happening every step.
+    #there are two dts in the space of tau_ref, so a spike can only be fired once every 3 steps. this means the spike
+    #count should be steps/3 = 100/3 = 333, which is what I get.
+
+    #1.3
+    T=1
+    dt=0.001
+    rms=0.5
+    limit=30
+    seed=3
+    t=np.arange(int(T/dt))*dt
+    freq = np.arange(int(T/dt))/T - (T/dt)/2
+    x_t, x_w = generate_signal(T,dt,rms,limit,seed)
+    stimulus3 = np.array(x_t) * 10
+    n1.set_spikes(stimulus3,T,dt)
+    spikes3=n1.get_spikes()
+
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    times=np.arange(0,T,dt)
+    ax.plot(t,x_t, label='$x(t)$')
+    ax.plot(t,spikes3, label='%s spikes' %np.count_nonzero(spikes3))
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('signal')
+    # ax.set_xlim(0,T)
+    # ax.set_ylim(0,2)
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+    print n1.Vhistory
+
+    #1.4
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    times=np.arange(0,T,dt)
+    ax.plot(t,x_t, label='$x(t)$')
+    ax.plot(t,spikes3, label='%s spikes' %np.count_nonzero(spikes3))bon
+    ax.plot(t,n1.Vhistory, label='Voltage')
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('signal')
+    ax.set_xlim(0,0.2)
+    # ax.set_ylim(0,2)
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+    #Bonus Question
+
 def main():
 
-    one_pt_one()
-    one_pt_two()
+    # one_pt_one()
+    # one_pt_two()
+    two()
 
 main()
