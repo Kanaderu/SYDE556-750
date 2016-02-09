@@ -234,31 +234,67 @@ def get_e_noise(d,noise):
 
 def generate_signal(T,dt,rms,limit,seed):
 
-    rng=np.random.RandomState(seed=seed)
     #first generate x_w, with the specified constraints, then use an inverse fft to get x_t
+    rng=np.random.RandomState(seed=seed)
     t=np.arange(int(T/dt))*dt
     freq_vals = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
     w_vals = 2.0*np.pi*freq_vals #in radians
     x_w_half1=[]
     x_w_half2=[]
+
     for f in freq_vals[range(len(freq_vals)/2)]: #make half of X(w), those with negative freq
         if abs(f) < limit:
             x_w_i_real = rng.normal(loc=0,scale=1)
             x_w_i_im = rng.normal(loc=0,scale=1)
         else:
-            x_w_i_real = 0
-            x_w_i_im = 0          
+            x_w_i_real = 0.0
+            x_w_i_im = 0.0          
         x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
         x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
+   
     # print 'x_w half1',x_w_half1, '\nx_w half2',x_w_half2,
     x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
     # print 'x_w whole',x_w, len(x_w)
-
     x_w=np.array(x_w)
-    x_t=np.fft.ifft(x_w)
+    # x_w=np.fft.fftshift(np.array(x_w))
+    x_t=np.fft.ifft(np.fft.fftshift(x_w))
+    # x_t=np.fft.ifftshift(np.fft.ifft(x_w))
+    true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
+    x_t = x_t*rms/true_rms
 
     return x_t, x_w
 
+def generate_smooth_signal(T,dt,rms,bandwidth,seed):
+
+    rng=np.random.RandomState(seed=seed)
+    t=np.arange(int(T/dt))*dt
+    freq_vals = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
+    w_vals = 2.0*np.pi*freq_vals #in radians
+    x_w_half1=[]
+    x_w_half2=[]
+
+    for i in range(len(w_vals)/2): #make half of X(w), those with negative freq
+        sigma=np.exp(-np.square(w_vals[i])/(2*np.square(bandwidth)))
+        if sigma > np.finfo(float).eps: #distinguishable from zero
+            x_w_i_real = rng.normal(loc=0,scale=sigma)
+            x_w_i_im = rng.normal(loc=0,scale=sigma)       
+        else:
+            x_w_i_real = 0.0
+            x_w_i_im = 0.0             
+        x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
+        x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
+   
+    # print 'x_w half1',x_w_half1, '\nx_w half2',x_w_half2,
+    x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
+    # print 'x_w whole',x_w, len(x_w)
+    x_w=np.array(x_w)
+    # x_w=np.fft.fftshift(np.array(x_w))
+    x_t=np.fft.ifft(np.fft.fftshift(x_w))
+    # x_t=np.fft.ifftshift(np.fft.ifft(x_w))
+    true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
+    x_t = x_t*rms/true_rms
+
+    return x_t, x_w
 
 # ################################################################################################
 
@@ -271,23 +307,36 @@ def one_pt_one():
     seed=1
     t=np.arange(int(T/dt))*dt
     freq = np.arange(int(T/dt))/T - (T/dt)/2
-    x_t, x_w = generate_signal(T,dt,rms,limit,seed)
-    ps=np.abs(x_w)**2
-    print 'x_t', x_t, x_t.shape
+
+    limits=[5,10,20]
+    x_t_list=[]
+    x_w_list=[]
+    ps_list=[]
+    for i in range(len(limits)):  
+        seed=i
+        limit=limits[i]
+        x_ti, x_wi = generate_signal(T,dt,rms,limit,seed)
+        x_t_list.append(x_ti)
+        x_w_list.append(x_wi)
+        ps_list.append(np.abs(x_wi)**2)
+
+    # print 'x_t', x_t, x_t.shape, 'rms=', np.sqrt(1/T*np.sum(np.square(x_t)))
     # print 'x_w', x_w, x_w.shape
     # print 'power spectrum', ps, ps.shape
     fig=plt.figure()
-    ax=fig.add_subplot(211)
-    ax.plot(t,x_t.real,'b-', t, x_t.imag,'r--')
+    ax=fig.add_subplot(111)
+    for i in range(len(limits)):  
+        ax.plot(t,x_t_list[i].real,label='limit=%s' %int(limits[i])) #only plotting the REAL part
+    # ax.plot(t,x_t.real,'b-', t, x_t.imag,'r--')
     ax.set_xlabel('time (s)')
     ax.set_ylabel('x(t)')
-    ax=fig.add_subplot(212)
-    ax.plot(freq,ps)
-    ax.set_xlabel('Hz?')
-    ax.set_ylabel('x($\omega$)')
-    ax.set_xlim(np.min(freq), np.max(freq))
-    plt.show()
-
+    legend=ax.legend(loc='best',shadow=True)
+    # ax=fig.add_subplot(212)
+    # ax.plot(freq,ps)
+    # ax.set_xlabel('Hz?')
+    # ax.set_ylabel('x($\omega$)')
+    # ax.set_xlim(-limit*2, limit*2)
+    # plt.show()
 
     # #testing the fft methods, going from signal to power spectrum
     # vals=np.random.normal(size=len(t))
@@ -308,10 +357,84 @@ def one_pt_one():
     # ax.set_ylabel('x($\omega$)')
     # plt.show()
 
+    T=1
+    dt=0.001
+    rms=0.5
+    limit=10
+    avgs=100
+    t=np.arange(int(T/dt))*dt
+    freq = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
+    w_vals = 2.0*np.pi*freq #in radians    
+    x_w_list=[]
+    for i in range(avgs):
+        seed=i
+        x_ti, x_wi = generate_signal(T,dt,rms,limit,seed)
+        x_w_list.append(np.abs(x_wi))
+    x_w_avg=np.average(x_w_list,axis=0)
+    # print 'x_w_-1', x_w_list[-1]
+    # print 'x_w_-2', x_w_list[-2]
+    # print 'x_w_avg', x_w_avg
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    ax.plot(w_vals,x_w_avg)
+    ax.set_xlabel('$\omega$')
+    ax.set_ylabel('$|X(\omega)|$')
+    ax.set_xlim(-limit*2*2*np.pi, limit*2*2*np.pi)
+    plt.show()
 
-        
+def one_pt_two():
+
+    #part a
+    T=1
+    dt=0.001
+    rms=0.5
+    seed=1
+    t=np.arange(int(T/dt))*dt
+    freq = np.arange(int(T/dt))/T - (T/dt)/2
+
+    bandwidths=[5,10,20]
+    x_t_list=[]
+    for i in range(len(bandwidths)):  
+        seed=i
+        bandwidth=bandwidths[i]
+        x_ti, x_wi = generate_smooth_signal(T,dt,rms,bandwidth,seed)
+        x_t_list.append(x_ti)
+
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    for i in range(len(bandwidths)):  
+        ax.plot(t,x_t_list[i].real,label='bandwidth=%s' %int(bandwidths[i])) #plotting the REAL part
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('x(t)')
+    legend=ax.legend(loc='best',shadow=True)
+
+    #part b
+    T=1
+    dt=0.001
+    rms=0.5
+    bandwidth=10
+    avgs=100
+    t=np.arange(int(T/dt))*dt
+    freq = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
+    w_vals = 2.0*np.pi*freq #in radians    
+    x_w_list=[]
+    for i in range(avgs):
+        seed=i
+        x_ti, x_wi = generate_smooth_signal(T,dt,rms,bandwidth,seed)
+        x_w_list.append(np.abs(x_wi))
+    x_w_avg=np.average(x_w_list,axis=0)
+
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    ax.plot(w_vals,x_w_avg)
+    ax.set_xlabel('$\omega$')
+    ax.set_ylabel('$|X(\omega)|$')
+    ax.set_xlim(-bandwidth*2*2*np.pi, bandwidth*2*2*np.pi)
+    plt.show()
+
 def main():
 
     one_pt_one()
+    one_pt_two()
 
 main()
