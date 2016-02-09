@@ -242,8 +242,8 @@ def generate_signal(T,dt,rms,limit,seed):
     x_w_half1=[]
     x_w_half2=[]
 
-    for f in freq_vals[range(len(freq_vals)/2)]: #make half of X(w), those with negative freq
-        if abs(f) < limit:
+    for i in range(len(freq_vals)/2): #make half of X(w), those with negative freq
+        if abs(freq_vals[i]) < limit:
             x_w_i_real = rng.normal(loc=0,scale=1)
             x_w_i_im = rng.normal(loc=0,scale=1)
         else:
@@ -254,13 +254,11 @@ def generate_signal(T,dt,rms,limit,seed):
    
     # print 'x_w half1',x_w_half1, '\nx_w half2',x_w_half2,
     x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
-    # print 'x_w whole',x_w, len(x_w)
     x_w=np.array(x_w)
-    # x_w=np.fft.fftshift(np.array(x_w))
     x_t=np.fft.ifft(np.fft.fftshift(x_w))
-    # x_t=np.fft.ifftshift(np.fft.ifft(x_w))
     true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
     x_t = x_t*rms/true_rms
+    x_t = x_t.real  #ONLY return the real part, until I find the bug
 
     return x_t, x_w
 
@@ -285,14 +283,14 @@ def generate_smooth_signal(T,dt,rms,bandwidth,seed):
         x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
    
     # print 'x_w half1',x_w_half1, '\nx_w half2',x_w_half2,
+    # x_t_test=np.fft.irfft(np.fft.fftshift(np.array(x_w_half1)))
+    # print 'x_t_test', x_t_test
     x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
-    # print 'x_w whole',x_w, len(x_w)
     x_w=np.array(x_w)
-    # x_w=np.fft.fftshift(np.array(x_w))
     x_t=np.fft.ifft(np.fft.fftshift(x_w))
-    # x_t=np.fft.ifftshift(np.fft.ifft(x_w))
     true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
     x_t = x_t*rms/true_rms
+    x_t = x_t.real  #ONLY return the real part, until I find the bug
 
     return x_t, x_w
 
@@ -326,7 +324,7 @@ def one_pt_one():
     fig=plt.figure()
     ax=fig.add_subplot(111)
     for i in range(len(limits)):  
-        ax.plot(t,x_t_list[i].real,label='limit=%s' %int(limits[i])) #only plotting the REAL part
+        ax.plot(t,x_t_list[i],label='limit=%s' %int(limits[i]))
     # ax.plot(t,x_t.real,'b-', t, x_t.imag,'r--')
     ax.set_xlabel('time (s)')
     ax.set_ylabel('x(t)')
@@ -403,7 +401,7 @@ def one_pt_two():
     fig=plt.figure()
     ax=fig.add_subplot(111)
     for i in range(len(bandwidths)):  
-        ax.plot(t,x_t_list[i].real,label='bandwidth=%s' %int(bandwidths[i])) #plotting the REAL part
+        ax.plot(t,x_t_list[i],label='bandwidth=%s' %int(bandwidths[i]))
     ax.set_xlabel('time (s)')
     ax.set_ylabel('x(t)')
     legend=ax.legend(loc='best',shadow=True)
