@@ -94,17 +94,17 @@ class LIFneuron():
 class spikingLIFneuron():
 
     def __init__(self,x1,x2,a1,a2,encoder,tau_ref,tau_rc):
-        self.x1=x1
-        self.x2=x2
-        self.a1=a1
-        self.a2=a2
+        self.x1=float(x1)
+        self.x2=float(x2)
+        self.a1=float(a1)
+        self.a2=float(a2)
         self.e=encoder
         self.tau_ref=tau_ref
         self.tau_rc=tau_rc
-        self.Jbias=0
-        self.alpha=0
-        self.V=0
-        self.dVdt=0
+        self.Jbias=0.0
+        self.alpha=0.0
+        self.V=0.0
+        self.dVdt=0.0
         self.stimulus=[]
         self.spikes=[]
         self.Vhistory=[]
@@ -120,30 +120,31 @@ class spikingLIFneuron():
              (self.x2/self.x1) * 1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc))
             self.alpha=(1/(np.dot(self.x2,self.e))) * (1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - self.Jbias)
 
-        self.sample_rates=[]
-        self.sample_rates_noisy=[]
-        self.custom_rates=[]
-        self.custom_rates_noisy=[]
-        self.custom_x=np.array([])
+        print self.Jbias
+        print self.alpha
 
     def set_spikes(self,stimulus,T,dt):
         self.stimulus=stimulus #an array
         self.spikes=[]
         self.Vhistory=[]
+        ref_window=int(self.tau_ref/dt)
+
         for t in range(len(stimulus)):
-            self.dVdt=((1/self.tau_rc)*(self.Jbias-self.V)) + 1/dt*self.stimulus[t]  #differential equation for LIF dV/dt+ (norm)*stimulus(time=t)
-            ref_window=int(self.tau_ref/dt)
+            self.J=self.alpha*np.dot(self.stimulus[t],self.e) + self.Jbias
+            self.dVdt=((1/self.tau_rc)*(self.J-self.V)) + 1/dt*self.stimulus[t]  #differential equation for LIF dV/dt+ (norm)*stimulus(time=t)
             for h in range(ref_window):    #check if there have been spikes in the last t_rc seconds
-                if len(self.spikes) >= ref_window and self.spikes[-h] == 1:
+                if len(self.spikes) >= ref_window and self.spikes[-(h+1)] == 1:
                     self.dVdt=0     #if so, voltage isn't allowed to change
             self.V=self.V+dt*self.dVdt  #Euler's Method Approximation V(t+1) = V(t) + dt *dV(t)/dt; the (norm) cancels the *dt for stim
-            if self.V >= 1:
+            if self.V >= 1.0:
                 self.spikes.append(1)   #a spike
-                self.V=0    #reset
+                self.V=0.0    #reset
             else:
                 self.spikes.append(0)   #not a spike
-                if self.V < 0: self.V=0
+                if self.V < 0.0: self.V=0.0
             self.Vhistory.append(self.V)
+        print self.J
+        print self.dVdt
 
     def get_spikes(self):
         return self.spikes
@@ -297,8 +298,10 @@ def generate_signal(T,dt,rms,limit,seed):
 
     #first generate x_w, with the specified constraints, then use an inverse fft to get x_t
     rng=np.random.RandomState(seed=seed)
+    limit=2*np.pi*limit
     t=np.arange(int(T/dt))*dt
-    freq_vals = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
+    delta_w = 2*np.pi/T
+    freq_vals = np.arange(0,len(t),delta_w)
     w_vals = 2.0*np.pi*freq_vals #in radians
     x_w_half1=[]
     x_w_half2=[]
@@ -315,11 +318,11 @@ def generate_signal(T,dt,rms,limit,seed):
    
     # print 'x_w half1',x_w_half1, '\nx_w half2',x_w_half2,
     x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
+    # x_w=np.concatenate(([0.0+1.0j],x_w_half2,x_w_half1[::-1]),axis=0) #other reverse order to  preserve symmetry
     x_w=np.array(x_w)
-    x_t=np.fft.ifft(np.fft.fftshift(x_w))
+    x_t=np.fft.ifft(x_w, n=len(t))
     true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
     x_t = x_t*rms/true_rms
-    x_t = x_t.real  #ONLY return the real part, until I find the bug
 
     return x_t, x_w
 
@@ -327,7 +330,8 @@ def generate_smooth_signal(T,dt,rms,bandwidth,seed):
 
     rng=np.random.RandomState(seed=seed)
     t=np.arange(int(T/dt))*dt
-    freq_vals = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
+    delta_w = 2*np.pi/T
+    freq_vals = np.arange(0,len(t),delta_w)
     w_vals = 2.0*np.pi*freq_vals #in radians
     x_w_half1=[]
     x_w_half2=[]
@@ -348,7 +352,7 @@ def generate_smooth_signal(T,dt,rms,bandwidth,seed):
     # print 'x_t_test', x_t_test
     x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
     x_w=np.array(x_w)
-    x_t=np.fft.ifft(np.fft.fftshift(x_w))
+    x_t=np.fft.ifft(x_w)
     true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
     x_t = x_t*rms/true_rms
     x_t = x_t.real  #ONLY return the real part, until I find the bug
@@ -363,7 +367,7 @@ def one_pt_one():
     dt=0.001
     rms=0.5
     limit=10
-    seed=1
+    seed=42
     t=np.arange(int(T/dt))*dt
     freq = np.arange(int(T/dt))/T - (T/dt)/2
 
@@ -385,7 +389,7 @@ def one_pt_one():
     fig=plt.figure()
     ax=fig.add_subplot(111)
     for i in range(len(limits)):  
-        ax.plot(t,x_t_list[i],label='limit=%s' %int(limits[i]))
+        ax.plot(x_t_list[i],label='limit=%s' %int(limits[i]))
     # ax.plot(t,x_t.real,'b-', t, x_t.imag,'r--')
     ax.set_xlabel('time (s)')
     ax.set_ylabel('x(t)')
@@ -397,24 +401,6 @@ def one_pt_one():
     # ax.set_xlim(-limit*2, limit*2)
     # plt.show()
 
-    # #testing the fft methods, going from signal to power spectrum
-    # vals=np.random.normal(size=len(t))
-    # signal=np.array(vals)
-    # x_w2=np.fft.fftshift(np.fft.fft(signal))
-    # freq=np.fft.fftfreq(signal.size,d=dt)
-    # power=np.abs(x_w2)**2
-    # print 'test_signal',signal.shape
-    # print 'test_x_w', x_w2.shape
-    # print 'frequencies?', freq, freq.shape
-    # print 'power?', power, power.shape
-    # fig=plt.figure()
-    # ax=fig.add_subplot(211)
-    # ax.plot(signal)
-    # ax.set_ylabel('x(t)')
-    # ax=fig.add_subplot(212)
-    # ax.plot(freq,power)
-    # ax.set_ylabel('x($\omega$)')
-    # plt.show()
 
     T=1
     dt=0.001
@@ -422,14 +408,16 @@ def one_pt_one():
     limit=10
     avgs=100
     t=np.arange(int(T/dt))*dt
-    freq = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
-    w_vals = 2.0*np.pi*freq #in radians    
+    delta_w = 2*np.pi/T
+    freq_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
+    w_vals = 2.0*np.pi*freq_vals #in radians
     x_w_list=[]
     for i in range(avgs):
         seed=i
         x_ti, x_wi = generate_signal(T,dt,rms,limit,seed)
         x_w_list.append(np.abs(x_wi))
     x_w_avg=np.average(x_w_list,axis=0)
+    # print x_w_avg.shape
     # print 'x_w_-1', x_w_list[-1]
     # print 'x_w_-2', x_w_list[-2]
     # print 'x_w_avg', x_w_avg
@@ -438,7 +426,7 @@ def one_pt_one():
     ax.plot(w_vals,x_w_avg)
     ax.set_xlabel('$\omega$')
     ax.set_ylabel('$|X(\omega)|$')
-    ax.set_xlim(-limit*2*2*np.pi, limit*2*2*np.pi)
+    # ax.set_xlim(-limit*2*2*np.pi, limit*2*2*np.pi)
     plt.show()
 
 def one_pt_two():
@@ -503,18 +491,103 @@ def two():
     T=1.0
     dt=0.001
 
-    #1.1
+    #2.1
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder,tau_ref,tau_rc)
-    stimulus1 = np.linspace(0,0,T/dt)  #constant stimulus of zero in an array
+    stimulus1 = np.linspace(0.0,0.0,T/dt)  #constant stimulus of zero in an array
     n1.set_spikes(stimulus1,T,dt)
     spikes1=n1.get_spikes()
-    stimulus2 = np.linspace(1,1,T/dt)  #constant stimulus of one
+    stimulus2 = np.linspace(1.0,1.0,T/dt)  #constant stimulus of one
     n1.set_spikes(stimulus2,T,dt)
     spikes2=n1.get_spikes()
 
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
     times=np.arange(0,T,dt)
+    ax.plot(times,spikes1, 'b', label='%s spikes' %np.count_nonzero(spikes1))
+    ax.plot(times,spikes2, 'g', label='%s spikes' %np.count_nonzero(spikes2))
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('Voltage')
+    ax.set_xlim(0,T)
+    ax.set_ylim(0,2)
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+    #2.2
+    #the number of spikes we expect at stimulus=0 is 40Hz, because this is the firing rate corresponding to
+    # x(t)=0 (no external stimulus) that we originally specified.
+    #When stimulus = 1, we expect the firing rate corresponding to x(t)=1, which is 150Hz as specified
+
+    #2.3
+    # T=1
+    # dt=0.001
+    # rms=0.5
+    # limit=30
+    # seed=3
+    # t=np.arange(int(T/dt))*dt
+    # freq = np.arange(int(T/dt))/T - (T/dt)/2
+    # x_t, x_w = generate_signal(T,dt,rms,limit,seed)
+    # stimulus3 = np.array(x_t) * 10
+    # n1.set_spikes(stimulus3,T,dt)
+    # spikes3=n1.get_spikes()
+
+    # fig=plt.figure(figsize=(16,8))
+    # ax=fig.add_subplot(111)
+    # times=np.arange(0,T,dt)
+    # ax.plot(t,x_t, label='$x(t)$')
+    # ax.plot(t,spikes3, label='%s spikes' %np.count_nonzero(spikes3))
+    # ax.set_xlabel('time (s)')
+    # ax.set_ylabel('signal')
+    # # ax.set_xlim(0,T)
+    # # ax.set_ylim(0,2)
+    # legend=ax.legend(loc='best') 
+    # plt.show()
+
+    # #2.4
+    # fig=plt.figure(figsize=(16,8))
+    # ax=fig.add_subplot(111)
+    # times=np.arange(0,T,dt)
+    # ax.plot(t,x_t, label='$x(t)$')
+    # ax.plot(t,spikes3, label='spikes')
+    # ax.plot(t,n1.Vhistory, label='Voltage')
+    # ax.set_xlabel('time (s)')
+    # ax.set_ylabel('signal')
+    # ax.set_xlim(0,0.2)
+    # # ax.set_ylim(0,2)
+    # legend=ax.legend(loc='best') 
+    # plt.show()
+
+    #Bonus Question
+
+def three():
+
+    x1=0
+    x2=1
+    a1=40
+    a2=150
+    encoder1=1
+    encoder2=-1
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    rms=0.5
+    limit=30
+    seed=3
+
+    #3.1
+    n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
+    t=np.arange(int(T/dt))*dt
+    stimulus1 = np.linspace(0,0,T/dt)  #constant stimulus of zero in an array
+    n1.set_spikes(stimulus1,T,dt)
+    n2.set_spikes(stimulus1,T,dt)
+    spikes1=n1.get_spikes()
+    spikes2=n2.get_spikes()
+
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    times=np.arange(0,T,dt)
+    ax.plot(times,stimulus1, label='x(t)')
     ax.plot(times,spikes1, label='%s spikes' %np.count_nonzero(spikes1))
     ax.plot(times,spikes2, label='%s spikes' %np.count_nonzero(spikes2))
     ax.set_xlabel('time (s)')
@@ -524,60 +597,35 @@ def two():
     legend=ax.legend(loc='best') 
     plt.show()
 
-    #1.2
-    #the number of spikes we expect at stimulus=0 is zero, because voltage begins at zero, does not increase due to
-    #dV/dT in LIF equation, and has no external stimulus. when stimulus = 1, enough stimulus is added at every 
-    #timestep to fire an action potential. However, the refractory period keeps this from happening every step.
-    #there are two dts in the space of tau_ref, so a spike can only be fired once every 3 steps. this means the spike
-    #count should be steps/3 = 100/3 = 333, which is what I get.
 
-    #1.3
-    T=1
-    dt=0.001
-    rms=0.5
-    limit=30
-    seed=3
+    #3.2
+    n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
     t=np.arange(int(T/dt))*dt
-    freq = np.arange(int(T/dt))/T - (T/dt)/2
-    x_t, x_w = generate_signal(T,dt,rms,limit,seed)
-    stimulus3 = np.array(x_t) * 10
-    n1.set_spikes(stimulus3,T,dt)
-    spikes3=n1.get_spikes()
+    stimulus2 = np.linspace(1,1,T/dt)  #constant stimulus of zero in an array
+    n1.set_spikes(stimulus2,T,dt)
+    n2.set_spikes(stimulus2,T,dt)
+    spikes1=n1.get_spikes()
+    spikes2=n2.get_spikes()
 
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
     times=np.arange(0,T,dt)
-    ax.plot(t,x_t, label='$x(t)$')
-    ax.plot(t,spikes3, label='%s spikes' %np.count_nonzero(spikes3))
+    ax.plot(times,stimulus2, label='x(t)')
+    ax.plot(times,spikes1, label='%s spikes' %np.count_nonzero(spikes1))
+    ax.plot(times,spikes2, label='%s spikes' %np.count_nonzero(spikes2))
     ax.set_xlabel('time (s)')
-    ax.set_ylabel('signal')
-    # ax.set_xlim(0,T)
-    # ax.set_ylim(0,2)
+    ax.set_ylabel('Voltage')
+    ax.set_xlim(0,T)
+    ax.set_ylim(0,2)
     legend=ax.legend(loc='best') 
     plt.show()
-
-    print n1.Vhistory
-
-    #1.4
-    fig=plt.figure(figsize=(16,8))
-    ax=fig.add_subplot(111)
-    times=np.arange(0,T,dt)
-    ax.plot(t,x_t, label='$x(t)$')
-    ax.plot(t,spikes3, label='%s spikes' %np.count_nonzero(spikes3))bon
-    ax.plot(t,n1.Vhistory, label='Voltage')
-    ax.set_xlabel('time (s)')
-    ax.set_ylabel('signal')
-    ax.set_xlim(0,0.2)
-    # ax.set_ylim(0,2)
-    legend=ax.legend(loc='best') 
-    plt.show()
-
-    #Bonus Question
 
 def main():
 
-    # one_pt_one()
+    one_pt_one()
     # one_pt_two()
-    two()
+    # two()
+    # three()
 
 main()
