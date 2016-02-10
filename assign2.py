@@ -50,7 +50,8 @@ def generate_signal(limit, rms, T=1, dt=0.001, seed=42):
         # print 'Current RMS power:', rms1
         signal *= rms/rms1
         # print 'New RMS power:', f_rms(signal.real)
-        print 'Sum of imaginary components in x(t):', signal.imag.sum()
+        # print signal
+        # print 'Sum of imaginary components in x(t):', signal.imag.sum()
 
         return signal, coef
 
@@ -59,6 +60,8 @@ def generate_signal(limit, rms, T=1, dt=0.001, seed=42):
 x1, X1 = generate_signal(5, 0.5)
 x2, X2 = generate_signal(10, 0.5)
 x3, X3 = generate_signal(20, 0.5)
+
+print 'X3',X3,X3.shape
 
 plot_signals(x1, x2, x3, np.arange(0, 1, 0.001))
 

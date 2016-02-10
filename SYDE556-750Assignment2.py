@@ -7,89 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-class LIFneuron():
-
-    def __init__(self,x_intercept,max_firing_rate,encoder,tau_ref,tau_rc):
-        self.xintercept=x_intercept
-        self.maxrate=max_firing_rate
-        self.e=encoder
-        self.tau_ref=tau_ref
-        self.tau_rc=tau_rc
-        self.alpha=(1-np.dot(self.xintercept,self.e))**(-1)*((1-np.exp((self.tau_ref-self.maxrate**(-1))/self.tau_rc))**(-1)-1)
-        self.Jbias=1-self.alpha*np.dot(self.xintercept,self.e)
-        self.sample_rates=[]
-        self.sample_rates_noisy=[]
-        self.custom_rates=[]
-        self.custom_rates_noisy=[]
-        self.custom_x=np.array([])
-
-    def set_sample_rates(self,x_vals):
-        self.sample_x=x_vals
-        self.sample_rates=[]
-        for x in x_vals:
-            J=self.alpha*np.dot(x,self.e)+self.Jbias
-            if J>1:
-                rate=1/(self.tau_ref-self.tau_rc*np.log(1-1/J))
-            else:
-                rate=0
-            self.sample_rates.append(float(rate))
-        return self.sample_rates
-
-    def set_sample_rates_noisy(self,x_vals,noise):
-        self.sample_x=x_vals
-        self.sample_rates_noisy=[]
-        for x in x_vals:
-            eta=0
-            J=self.alpha*np.dot(x,self.e)+self.Jbias
-            if J>1:
-                rate=1/(self.tau_ref -self.tau_rc*np.log(1-1/J))
-            else:
-                rate=0
-            if noise !=0:
-                eta=np.random.normal(loc=0,scale=noise)
-            self.sample_rates_noisy.append(float(rate+eta))
-        return self.sample_rates_noisy
-
-    def get_sample_rates(self):
-        return self.sample_rates
-
-    def get_sample_rates_noisy(self):
-        return self.sample_rates_noisy
-
-    def set_custom_rates(self,x_vals):
-        self.custom_x=x_vals
-        self.custom_rates=[]
-        for x in x_vals:
-            J=self.alpha*np.dot(x,self.e)+self.Jbias
-            if J>1:
-                rate=1/(self.tau_ref-self.tau_rc*np.log(1-1/J))
-            else:
-                rate=0
-            self.custom_rates.append(float(rate))
-        return self.custom_rates
-
-    def set_custom_rates_noisy(self,x_vals,noise):
-        self.custom_x=x_vals
-        self.custom__rates_noisy=[]
-        for x in x_vals:
-            eta=0
-            J=self.alpha*np.dot(x,self.e)+self.Jbias
-            if J>1:
-                rate=1/(self.tau_ref -self.tau_rc*np.log(1-1/J))
-            else:
-                rate=0
-            if noise !=0:
-                eta=np.random.normal(loc=0,scale=noise)
-            self.custom_rates_noisy.append(float(rate+eta))
-        return self.custom_rates_noisy
-
-    def get_custom_rates(self):
-        return self.custom_rates
-
-    def get_rates_noisy(self):
-        return self.custom_rates_noisy
-
-
 
 class spikingLIFneuron():
 
@@ -131,6 +48,7 @@ class spikingLIFneuron():
 
         for t in range(len(stimulus)):
             self.J=self.alpha*np.dot(self.stimulus[t],self.e) + self.Jbias
+            print (self.J-self.V)
             self.dVdt=((1/self.tau_rc)*(self.J-self.V)) + 1/dt*self.stimulus[t]  #differential equation for LIF dV/dt+ (norm)*stimulus(time=t)
             for h in range(ref_window):    #check if there have been spikes in the last t_rc seconds
                 if len(self.spikes) >= ref_window and self.spikes[-(h+1)] == 1:
@@ -143,8 +61,8 @@ class spikingLIFneuron():
                 self.spikes.append(0)   #not a spike
                 if self.V < 0.0: self.V=0.0
             self.Vhistory.append(self.V)
-        print self.J
-        print self.dVdt
+        # print self.J
+        # print self.dVdt
 
     def get_spikes(self):
         return self.spikes
@@ -294,113 +212,86 @@ def get_e_noise(d,noise):
     E_noise=noise**2*np.sum(np.square(d))
     return E_noise
 
-def generate_signal(T,dt,rms,limit,seed):
+def generate_signal(T,dt,rms,limit,seed,distribution='uniform'):
 
     #first generate x_w, with the specified constraints, then use an inverse fft to get x_t
     rng=np.random.RandomState(seed=seed)
-    limit=2*np.pi*limit
     t=np.arange(int(T/dt))*dt
     delta_w = 2*np.pi/T
-    freq_vals = np.arange(0,len(t),delta_w)
-    w_vals = 2.0*np.pi*freq_vals #in radians
-    x_w_half1=[]
-    x_w_half2=[]
-
-    for i in range(len(freq_vals)/2): #make half of X(w), those with negative freq
-        if abs(freq_vals[i]) < limit:
-            x_w_i_real = rng.normal(loc=0,scale=1)
-            x_w_i_im = rng.normal(loc=0,scale=1)
-        else:
-            x_w_i_real = 0.0
-            x_w_i_im = 0.0          
-        x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
-        x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
-   
-    # print 'x_w half1',x_w_half1, '\nx_w half2',x_w_half2,
-    x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
-    # x_w=np.concatenate(([0.0+1.0j],x_w_half2,x_w_half1[::-1]),axis=0) #other reverse order to  preserve symmetry
-    x_w=np.array(x_w)
-    x_t=np.fft.ifft(x_w, n=len(t))
-    true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
-    x_t = x_t*rms/true_rms
-
-    return x_t, x_w
-
-def generate_smooth_signal(T,dt,rms,bandwidth,seed):
-
-    rng=np.random.RandomState(seed=seed)
-    t=np.arange(int(T/dt))*dt
-    delta_w = 2*np.pi/T
-    freq_vals = np.arange(0,len(t),delta_w)
-    w_vals = 2.0*np.pi*freq_vals #in radians
+    w_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
+    w_limit=2*np.pi*limit
+    # bandwidth=2*np.pi*limit
+    bandwidth=limit
     x_w_half1=[]
     x_w_half2=[]
 
     for i in range(len(w_vals)/2): #make half of X(w), those with negative freq
-        sigma=np.exp(-np.square(w_vals[i])/(2*np.square(bandwidth)))
-        if sigma > np.finfo(float).eps: #distinguishable from zero
-            x_w_i_real = rng.normal(loc=0,scale=sigma)
-            x_w_i_im = rng.normal(loc=0,scale=sigma)       
-        else:
-            x_w_i_real = 0.0
-            x_w_i_im = 0.0             
-        x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
-        x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
-   
-    # print 'x_w half1',x_w_half1, '\nx_w half2',x_w_half2,
-    # x_t_test=np.fft.irfft(np.fft.fftshift(np.array(x_w_half1)))
-    # print 'x_t_test', x_t_test
-    x_w=np.concatenate((x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to  preserve symmetry
-    x_w=np.array(x_w)
-    x_t=np.fft.ifft(x_w)
-    true_rms=np.sqrt(1/T*np.sum(np.square(x_t)))
-    x_t = x_t*rms/true_rms
-    x_t = x_t.real  #ONLY return the real part, until I find the bug
+        if distribution=='uniform':
+            if abs(w_vals[i]) < w_limit:
+                x_w_i_real = rng.normal(loc=0,scale=1)
+                x_w_i_im = rng.normal(loc=0,scale=1)
+                x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
+                x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
 
-    return x_t, x_w
+        elif distribution=='gaussian':          
+            sigma=np.exp(-np.square(w_vals[i])/(2*np.square(bandwidth)))
+            if sigma > np.finfo(float).eps: #distinguishable from zero
+                x_w_i_real = rng.normal(loc=0,scale=sigma)
+                x_w_i_im = rng.normal(loc=0,scale=sigma)  
+                x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
+                x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
+
+    x_w=np.concatenate(([0+0j],x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to preserve symmetry and add a zero-amplitude element at w=0
+    x_t=np.fft.ifft(x_w, n=len(t))    #pad with zeros here, because it doesn't work if I do it in the for loop :(
+    x_w=np.pad(x_w,(len(w_vals)+1-len(x_w))/2,mode='constant',constant_values=0)
+    true_rms=np.sqrt(dt/T*np.sum(np.square(x_t.real)))
+    x_t = x_t*rms/true_rms
+    # print x_t
+    # print 'Sum of imaginary components in x(t):', x_t.imag.sum()
+
+    return x_t.real, x_w     #return real part of signal until I find the bug
 
 # ################################################################################################
 
-def one_pt_one():
+def one_pt_one_a():
 
     T=1
     dt=0.001
     rms=0.5
     limit=10
-    seed=42
+    seed=1
     t=np.arange(int(T/dt))*dt
-    freq = np.arange(int(T/dt))/T - (T/dt)/2
+    delta_w = 2*np.pi/T
+    w_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
+    w_vals = np.insert(w_vals,len(w_vals)/2,0) #insert a zero frequency into the center
+    w_limit=2*np.pi*limit
 
     limits=[5,10,20]
     x_t_list=[]
-    x_w_list=[]
-    ps_list=[]
     for i in range(len(limits)):  
         seed=i
         limit=limits[i]
-        x_ti, x_wi = generate_signal(T,dt,rms,limit,seed)
+        x_ti, x_wi = generate_signal(T,dt,rms,limit,seed,'uniform')
         x_t_list.append(x_ti)
-        x_w_list.append(x_wi)
-        ps_list.append(np.abs(x_wi)**2)
 
-    # print 'x_t', x_t, x_t.shape, 'rms=', np.sqrt(1/T*np.sum(np.square(x_t)))
-    # print 'x_w', x_w, x_w.shape
-    # print 'power spectrum', ps, ps.shape
     fig=plt.figure()
     ax=fig.add_subplot(111)
     for i in range(len(limits)):  
-        ax.plot(x_t_list[i],label='limit=%s' %int(limits[i]))
-    # ax.plot(t,x_t.real,'b-', t, x_t.imag,'r--')
+        ax.plot(t,x_t_list[i],label='limit=%s*2$\pi$ radians' %(limits[i]))
     ax.set_xlabel('time (s)')
     ax.set_ylabel('x(t)')
     legend=ax.legend(loc='best',shadow=True)
-    # ax=fig.add_subplot(212)
-    # ax.plot(freq,ps)
-    # ax.set_xlabel('Hz?')
+    plt.show()
+
+    # fig=plt.figure()
+    # ax=fig.add_subplot(111)
+    # ax.plot(w_vals,np.abs(x_wi))
+    # ax.set_xlabel('$\omega$')
     # ax.set_ylabel('x($\omega$)')
-    # ax.set_xlim(-limit*2, limit*2)
+    # ax.set_xlim(-w_limit*2, w_limit*2)
     # plt.show()
 
+def one_pt_one_b():
 
     T=1
     dt=0.001
@@ -409,27 +300,26 @@ def one_pt_one():
     avgs=100
     t=np.arange(int(T/dt))*dt
     delta_w = 2*np.pi/T
-    freq_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
-    w_vals = 2.0*np.pi*freq_vals #in radians
+    w_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
+    w_vals = np.insert(w_vals,len(w_vals)/2,0) #insert a zero frequency into the center
+    w_limit=2*np.pi*limit
+
     x_w_list=[]
     for i in range(avgs):
         seed=i
-        x_ti, x_wi = generate_signal(T,dt,rms,limit,seed)
+        x_ti, x_wi = generate_signal(T,dt,rms,limit,seed,'uniform')
         x_w_list.append(np.abs(x_wi))
     x_w_avg=np.average(x_w_list,axis=0)
-    # print x_w_avg.shape
-    # print 'x_w_-1', x_w_list[-1]
-    # print 'x_w_-2', x_w_list[-2]
-    # print 'x_w_avg', x_w_avg
+  
     fig=plt.figure()
     ax=fig.add_subplot(111)
     ax.plot(w_vals,x_w_avg)
     ax.set_xlabel('$\omega$')
     ax.set_ylabel('$|X(\omega)|$')
-    # ax.set_xlim(-limit*2*2*np.pi, limit*2*2*np.pi)
+    ax.set_xlim(-w_limit*2, w_limit*2)
     plt.show()
 
-def one_pt_two():
+def one_pt_two_a():
 
     #part a
     T=1
@@ -437,37 +327,46 @@ def one_pt_two():
     rms=0.5
     seed=1
     t=np.arange(int(T/dt))*dt
-    freq = np.arange(int(T/dt))/T - (T/dt)/2
+    delta_w = 2*np.pi/T
+    w_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
+    w_vals = np.insert(w_vals,len(w_vals)/2,0) #insert a zero frequency into the center
 
     bandwidths=[5,10,20]
     x_t_list=[]
     for i in range(len(bandwidths)):  
         seed=i
         bandwidth=bandwidths[i]
-        x_ti, x_wi = generate_smooth_signal(T,dt,rms,bandwidth,seed)
+        x_ti, x_wi = generate_signal(T,dt,rms,bandwidth,seed,'gaussian')
         x_t_list.append(x_ti)
 
     fig=plt.figure()
     ax=fig.add_subplot(111)
     for i in range(len(bandwidths)):  
-        ax.plot(t,x_t_list[i],label='bandwidth=%s' %int(bandwidths[i]))
+        # ax.plot(t,x_t_list[i],label='bandwidths*2$\pi$ radians' %(bandwidths[i]))
+        ax.plot(t,x_t_list[i],label='bandwidth=%s (Hz)' %(bandwidths[i]))
     ax.set_xlabel('time (s)')
     ax.set_ylabel('x(t)')
     legend=ax.legend(loc='best',shadow=True)
+    plt.show()
 
-    #part b
+def one_pt_two_b():
+
     T=1
     dt=0.001
     rms=0.5
     bandwidth=10
     avgs=100
     t=np.arange(int(T/dt))*dt
-    freq = np.arange(int(T/dt))/T - (T/dt)/2 #in Hz
-    w_vals = 2.0*np.pi*freq #in radians    
+    delta_w = 2*np.pi/T
+    w_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
+    w_vals = np.insert(w_vals,len(w_vals)/2,0) #insert a zero frequency into the center
+    w_limit=bandwidth
+    # w_limit=2*np.pi*bandwidth
+
     x_w_list=[]
     for i in range(avgs):
         seed=i
-        x_ti, x_wi = generate_smooth_signal(T,dt,rms,bandwidth,seed)
+        x_ti, x_wi = generate_signal(T,dt,rms,bandwidth,seed,'gaussian')
         x_w_list.append(np.abs(x_wi))
     x_w_avg=np.average(x_w_list,axis=0)
 
@@ -476,10 +375,10 @@ def one_pt_two():
     ax.plot(w_vals,x_w_avg)
     ax.set_xlabel('$\omega$')
     ax.set_ylabel('$|X(\omega)|$')
-    ax.set_xlim(-bandwidth*2*2*np.pi, bandwidth*2*2*np.pi)
+    ax.set_xlim(-w_limit*8, w_limit*8)
     plt.show()
 
-def two():
+def two_a():
 
     x1=0
     x2=1
@@ -491,7 +390,6 @@ def two():
     T=1.0
     dt=0.001
 
-    #2.1
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder,tau_ref,tau_rc)
     stimulus1 = np.linspace(0.0,0.0,T/dt)  #constant stimulus of zero in an array
     n1.set_spikes(stimulus1,T,dt)
@@ -517,48 +415,59 @@ def two():
     # x(t)=0 (no external stimulus) that we originally specified.
     #When stimulus = 1, we expect the firing rate corresponding to x(t)=1, which is 150Hz as specified
 
-    #2.3
-    # T=1
-    # dt=0.001
-    # rms=0.5
-    # limit=30
-    # seed=3
-    # t=np.arange(int(T/dt))*dt
-    # freq = np.arange(int(T/dt))/T - (T/dt)/2
-    # x_t, x_w = generate_signal(T,dt,rms,limit,seed)
-    # stimulus3 = np.array(x_t) * 10
-    # n1.set_spikes(stimulus3,T,dt)
-    # spikes3=n1.get_spikes()
+def two_c():
 
-    # fig=plt.figure(figsize=(16,8))
-    # ax=fig.add_subplot(111)
-    # times=np.arange(0,T,dt)
-    # ax.plot(t,x_t, label='$x(t)$')
-    # ax.plot(t,spikes3, label='%s spikes' %np.count_nonzero(spikes3))
-    # ax.set_xlabel('time (s)')
-    # ax.set_ylabel('signal')
-    # # ax.set_xlim(0,T)
-    # # ax.set_ylim(0,2)
-    # legend=ax.legend(loc='best') 
-    # plt.show()
+    rms=0.5
+    limit=30
+    seed=3
+    x1=0
+    x2=1
+    a1=40
+    a2=150
+    encoder=1
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1.0
+    dt=0.001
 
-    # #2.4
-    # fig=plt.figure(figsize=(16,8))
-    # ax=fig.add_subplot(111)
-    # times=np.arange(0,T,dt)
-    # ax.plot(t,x_t, label='$x(t)$')
-    # ax.plot(t,spikes3, label='spikes')
-    # ax.plot(t,n1.Vhistory, label='Voltage')
-    # ax.set_xlabel('time (s)')
-    # ax.set_ylabel('signal')
-    # ax.set_xlim(0,0.2)
-    # # ax.set_ylim(0,2)
-    # legend=ax.legend(loc='best') 
-    # plt.show()
+    n1=spikingLIFneuron(x1,x2,a1,a2,encoder,tau_ref,tau_rc)
+    t=np.arange(int(T/dt))*dt
+    freq = np.arange(int(T/dt))/T - (T/dt)/2
+    x_t, x_w = generate_signal(T,dt,rms,limit,seed,'uniform')
+    stimulus3 = np.array(x_t)
+    n1.set_spikes(stimulus3,T,dt)
+    spikes3=n1.get_spikes()
+
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    times=np.arange(0,T,dt)
+    ax.plot(t,x_t, label='$x(t)$')
+    ax.plot(t,spikes3, label='%s spikes' %np.count_nonzero(spikes3))
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('signal')
+    # ax.set_xlim(0,T)
+    # ax.set_ylim(0,2)
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+def two_d():
+
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    times=np.arange(0,T,dt)
+    ax.plot(t,x_t, label='$x(t)$')
+    ax.plot(t,spikes3, label='spikes')
+    ax.plot(t,n1.Vhistory, label='Voltage')
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('signal')
+    ax.set_xlim(0,0.2)
+    # ax.set_ylim(0,2)
+    legend=ax.legend(loc='best') 
+    plt.show()
 
     #Bonus Question
 
-def three():
+def three_a():
 
     x1=0
     x2=1
@@ -574,7 +483,6 @@ def three():
     limit=30
     seed=3
 
-    #3.1
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
     n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
     t=np.arange(int(T/dt))*dt
@@ -597,8 +505,22 @@ def three():
     legend=ax.legend(loc='best') 
     plt.show()
 
+def three_b():
 
-    #3.2
+    x1=0
+    x2=1
+    a1=40
+    a2=150
+    encoder1=1
+    encoder2=-1
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    rms=0.5
+    limit=30
+    seed=3
+
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
     n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
     t=np.arange(int(T/dt))*dt
@@ -623,9 +545,13 @@ def three():
 
 def main():
 
-    one_pt_one()
-    # one_pt_two()
-    # two()
-    # three()
+    # one_pt_one_a()
+    # one_pt_one_b()
+    # one_pt_two_a()
+    # one_pt_two_b()
+    two_a()
+    # two_c()
+    # three_a()
+    # three_b()
 
 main()
