@@ -765,7 +765,7 @@ def two_pt_two_c_thru_d():     #2.2c
 def main():
 
     # one_pt_one_a_thru_c()
-    # one_pt_one_d()
+    one_pt_one_d()
     one_pt_one_e()
     # one_pt_one_f()
     # one_pt_two()

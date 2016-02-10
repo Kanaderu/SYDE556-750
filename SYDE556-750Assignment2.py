@@ -218,20 +218,20 @@ def generate_signal(T,dt,rms,limit,seed,distribution='uniform'):
     rng=np.random.RandomState(seed=seed)
     t=np.arange(int(T/dt))*dt
     delta_w = 2*np.pi/T
-    w_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
+    w_vals = np.arange(-len(t)/2,0,delta_w) #make half of X(w), those with negative freq
     w_limit=2*np.pi*limit
     # bandwidth=2*np.pi*limit
     bandwidth=limit
     x_w_half1=[]
     x_w_half2=[]
 
-    for i in range(len(w_vals)/2): #make half of X(w), those with negative freq
+    for i in range(len(w_vals)):
         if distribution=='uniform':
             if abs(w_vals[i]) < w_limit:
                 x_w_i_real = rng.normal(loc=0,scale=1)
                 x_w_i_im = rng.normal(loc=0,scale=1)
                 x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
-                x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
+                x_w_half2.append(x_w_i_real - 1j*x_w_i_im)  
 
         elif distribution=='gaussian':          
             sigma=np.exp(-np.square(w_vals[i])/(2*np.square(bandwidth)))
@@ -241,15 +241,24 @@ def generate_signal(T,dt,rms,limit,seed,distribution='uniform'):
                 x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
                 x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
 
-    x_w=np.concatenate(([0+0j],x_w_half1,x_w_half2[::-1]),axis=0) #reverse order to preserve symmetry and add a zero-amplitude element at w=0
-    x_t=np.fft.ifft(x_w, n=len(t))    #pad with zeros here, because it doesn't work if I do it in the for loop :(
-    x_w=np.pad(x_w,(len(w_vals)+1-len(x_w))/2,mode='constant',constant_values=0)
+    x_w_pos=np.hstack((x_w_half2[::-1],np.zeros(len(t)/2-len(x_w_half2))))
+    # print len(w_vals)-len(x_w_half1), np.zeros(len(w_vals)-len(x_w_half1))
+    # print len(w_vals)-len(x_w_half2), np.zeros(len(w_vals)-len(x_w_half2))
+    x_w_neg=np.hstack((np.zeros(len(t)/2-len(x_w_half1)),x_w_half1))
+    # print 'x_w_positive',x_w_pos
+    # print 'x_w_negative',x_w_neg
+    x_w=np.hstack(([0+0j],x_w_pos,x_w_neg)) #reverse order to preserve symmetry and add a zero-amplitude element at w=0
+    # x_w=np.hstack((x_w_half1,x_w_half2[::-1]))
+    x_t=np.fft.ifft(x_w)
     true_rms=np.sqrt(dt/T*np.sum(np.square(x_t.real)))
     x_t = x_t*rms/true_rms
+    print len(x_t), len(x_w)
+
+    # np.set_printoptions(precision=10)
     # print x_t
     # print 'Sum of imaginary components in x(t):', x_t.imag.sum()
 
-    return x_t.real, x_w     #return real part of signal until I find the bug
+    return x_t.real, x_w     #return real part of signal to avoid bug, but I prmose they are less than e-15
 
 # ################################################################################################
 
@@ -260,7 +269,7 @@ def one_pt_one_a():
     rms=0.5
     limit=10
     seed=1
-    t=np.arange(int(T/dt))*dt
+    t=np.arange(int(T/dt)+1)*dt
     delta_w = 2*np.pi/T
     w_vals = np.arange(-len(t)/2,len(t)/2,delta_w)
     w_vals = np.insert(w_vals,len(w_vals)/2,0) #insert a zero frequency into the center
@@ -545,11 +554,11 @@ def three_b():
 
 def main():
 
-    # one_pt_one_a()
+    one_pt_one_a()
     # one_pt_one_b()
     # one_pt_two_a()
     # one_pt_two_b()
-    two_a()
+    # two_a()
     # two_c()
     # three_a()
     # three_b()
