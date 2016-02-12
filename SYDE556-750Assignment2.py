@@ -57,7 +57,6 @@ class spikingLIFneuron():
                 self.spikes.append(0)   #not a spike
                 if self.V < 0.0: self.V=0.0
             self.Vhistory.append(self.V)
-        print self.alpha, np.dot(self.stimulus[-1],self.e), self.J
 
     def get_spikes(self):
         return self.spikes
@@ -501,7 +500,7 @@ def three_a():
     seed=3
 
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     stimulus1 = np.linspace(0,0,T/dt+1)  #constant stimulus of zero in an array
     n1.set_spikes(stimulus1,T,dt)
@@ -511,9 +510,9 @@ def three_a():
 
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
-    ax.plot(t,stimulus1, label='x(t)')
-    ax.plot(t,spikes1, label='%s spikes' %np.count_nonzero(spikes1))
-    ax.plot(t,spikes2, label='%s spikes' %np.count_nonzero(spikes2))
+    ax.plot(t,stimulus1, label='$x(t)=0$')
+    ax.plot(t,spikes1, label='%s spikes, $e=1$' %np.count_nonzero(spikes1))
+    ax.plot(t,spikes2, label='%s spikes, $e=-1$' %np.count_nonzero(spikes2))
     ax.set_xlabel('time (s)')
     ax.set_ylabel('Voltage')
     ax.set_xlim(0,T)
@@ -538,7 +537,7 @@ def three_b():
     seed=3
 
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     stimulus2 = np.linspace(1,1,T/dt+1)
     n1.set_spikes(stimulus2,T,dt)
@@ -548,9 +547,9 @@ def three_b():
 
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
-    ax.plot(t,stimulus2, label='x(t)')
-    ax.plot(t,spikes1, label='%s spikes' %np.count_nonzero(spikes1))
-    ax.plot(t,spikes2, label='%s spikes' %np.count_nonzero(spikes2))
+    ax.plot(t,stimulus2, label='$x(t)=1$')
+    ax.plot(t,spikes1, label='%s spikes, $e=1$' %np.count_nonzero(spikes1))
+    ax.plot(t,spikes2, label='%s spikes, $e=-1$' %np.count_nonzero(spikes2))
     ax.set_xlabel('time (s)')
     ax.set_ylabel('Voltage')
     ax.set_xlim(0,T)
@@ -575,7 +574,7 @@ def three_c():
     seed=3
 
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     stimulus3 = 0.5*np.sin(10*np.pi*t)
     n1.set_spikes(stimulus3,T,dt)
@@ -585,9 +584,9 @@ def three_c():
 
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
-    ax.plot(t,stimulus3, label='x(t)')
-    ax.plot(t,spikes1, label='%s spikes' %np.count_nonzero(spikes1))
-    ax.plot(t,spikes2, label='%s spikes' %np.count_nonzero(spikes2))
+    ax.plot(t,stimulus3, label='$x(t)=0.5 sin(10 \omega t)$')
+    ax.plot(t,spikes1, label='%s spikes, $e=1$' %np.count_nonzero(spikes1))
+    ax.plot(t,spikes2, label='%s spikes, $e=-1$' %np.count_nonzero(spikes2))
     ax.set_xlabel('time (s)')
     ax.set_ylabel('Voltage')
     ax.set_xlim(0,T)
@@ -615,7 +614,7 @@ def three_d():
 
 
     n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,x2,a1,a2,encoder2,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     x_t, x_w = generate_signal(T,dt,rms,limit,seed,'uniform')
     stimulus4 = np.array(x_t)
@@ -626,9 +625,9 @@ def three_d():
 
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
-    ax.plot(t,stimulus4, label='x(t)')
-    ax.plot(t,spikes1, label='%s spikes' %np.count_nonzero(spikes1))
-    ax.plot(t,spikes2, label='%s spikes' %np.count_nonzero(spikes2))
+    ax.plot(t,stimulus4, label='$x(t)$ = smoothed white noise')
+    ax.plot(t,spikes1, label='%s spikes, $e=1$' %np.count_nonzero(spikes1))
+    ax.plot(t,spikes2, label='%s spikes, $e=-1$' %np.count_nonzero(spikes2))
     ax.set_xlabel('time (s)')
     ax.set_ylabel('Voltage')
     ax.set_xlim(0,T)
@@ -645,9 +644,9 @@ def main():
     # two_a()
     # two_c()
     # two_d()
-    # three_a()
+    three_a()
     three_b()
-    # three_c()
-    # three_d()
+    three_c()
+    three_d()
 
 main()
