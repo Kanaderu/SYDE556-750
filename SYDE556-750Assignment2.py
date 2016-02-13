@@ -10,9 +10,9 @@ from scipy import integrate
 
 class spikingLIFneuron():
 
-    def __init__(self,x1,x2,a1,a2,encoder,tau_ref,tau_rc):
-        self.x1=float(x1)
-        self.x2=float(x2)
+    def __init__(self,x1_dot_e,x2_dot_e,a1,a2,encoder,tau_ref,tau_rc):
+        self.x1_dot_e=float(x1_dot_e)
+        self.x2_dot_e=float(x2_dot_e)
         self.a1=float(a1)
         self.a2=float(a2)
         self.e=encoder
@@ -26,16 +26,16 @@ class spikingLIFneuron():
         self.spikes=[]
         self.Vhistory=[]
 
-        if x1==0:
+        if self.x1_dot_e==0:
             self.Jbias=1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc))
-            self.alpha=(1/np.dot(self.x2,self.e)) * (1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - self.Jbias)
-        elif x2==0:
+            self.alpha=(1/self.x2_dot_e) * (1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - self.Jbias)
+        elif self.x2_dot_e==0:
             self.Jbias=1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc))
-            self.alpha=(1/np.dot(self.x1,self.e)) * (1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc)) - self.Jbias)
+            self.alpha=(1/self.x1_dot_e) * (1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc)) - self.Jbias)
         else:
-            self.Jbias=(1/(1-self.x2/self.x1)) - 1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - \
-             (self.x2/self.x1) * 1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc))
-            self.alpha=(1/(np.dot(self.x2,self.e))) * (1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - self.Jbias)
+            self.Jbias=(1/(1-self.x2_dot_e/self.x1_dot_e)) - 1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - \
+              (self.x2_dot_e/self.x1_dot_e) * 1/(1-np.exp((self.tau_ref - 1/self.a1)/self.tau_rc))
+            self.alpha=(1/self.x2_dot_e) * (1/(1-np.exp((self.tau_ref - 1/self.a2)/self.tau_rc)) - self.Jbias)
 
     def set_spikes(self,stimulus,T,dt):
         self.stimulus=stimulus #an array
@@ -489,8 +489,8 @@ def three_a():
     x2=1
     a1=40
     a2=150
-    encoder1=1
-    encoder2=-1
+    e1=1
+    e2=-1
     tau_ref=0.002
     tau_rc=0.02
     T=1
@@ -499,8 +499,12 @@ def three_a():
     limit=30
     seed=3
 
-    n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
+    x1_dot_e1=np.dot(x1,e1)
+    x2_dot_e1=np.dot(x2,e1)
+    x1_dot_e2=np.dot(x1,e2)
+    x2_dot_e2=np.dot(-x2,e2)
+    n1=spikingLIFneuron(x1_dot_e1,x2_dot_e1,a1,a2,e1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1_dot_e2,x2_dot_e2,a1,a2,e2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     stimulus1 = np.linspace(0,0,T/dt+1)  #constant stimulus of zero in an array
     n1.set_spikes(stimulus1,T,dt)
@@ -526,8 +530,8 @@ def three_b():
     x2=1
     a1=40
     a2=150
-    encoder1=1
-    encoder2=-1
+    e1=1
+    e2=-1
     tau_ref=0.002
     tau_rc=0.02
     T=1
@@ -536,8 +540,13 @@ def three_b():
     limit=30
     seed=3
 
-    n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
+    x1_dot_e1=np.dot(x1,e1)
+    x2_dot_e1=np.dot(x2,e1)
+    x1_dot_e2=np.dot(x1,e2)
+    x2_dot_e2=np.dot(-x2,e2)
+    # print x1_dot_e1,x1_dot_e2,x2_dot_e1,x2_dot_e2
+    n1=spikingLIFneuron(x1_dot_e1,x2_dot_e1,a1,a2,e1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1_dot_e2,x2_dot_e2,a1,a2,e2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     stimulus2 = np.linspace(1,1,T/dt+1)
     n1.set_spikes(stimulus2,T,dt)
@@ -563,8 +572,8 @@ def three_c():
     x2=1
     a1=40
     a2=150
-    encoder1=1
-    encoder2=-1
+    e1=1
+    e2=-1
     tau_ref=0.002
     tau_rc=0.02
     T=1
@@ -573,8 +582,12 @@ def three_c():
     limit=30
     seed=3
 
-    n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
+    x1_dot_e1=np.dot(x1,e1)
+    x2_dot_e1=np.dot(x2,e1)
+    x1_dot_e2=np.dot(x1,e2)
+    x2_dot_e2=np.dot(-x2,e2)
+    n1=spikingLIFneuron(x1_dot_e1,x2_dot_e1,a1,a2,e1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1_dot_e2,x2_dot_e2,a1,a2,e2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     stimulus3 = 0.5*np.sin(10*np.pi*t)
     n1.set_spikes(stimulus3,T,dt)
@@ -600,8 +613,8 @@ def three_d():
     x2=1
     a1=40
     a2=150
-    encoder1=1
-    encoder2=-1
+    e1=1
+    e2=-1
     tau_ref=0.002
     tau_rc=0.02
     T=1
@@ -609,12 +622,13 @@ def three_d():
     rms=0.5
     limit=30
     seed=3
-    T=1.0
-    dt=0.001
 
-
-    n1=spikingLIFneuron(x1,x2,a1,a2,encoder1,tau_ref,tau_rc)
-    n2=spikingLIFneuron(x1,-x2,a1,a2,encoder2,tau_ref,tau_rc)
+    x1_dot_e1=np.dot(x1,e1)
+    x2_dot_e1=np.dot(x2,e1)
+    x1_dot_e2=np.dot(x1,e2)
+    x2_dot_e2=np.dot(-x2,e2)
+    n1=spikingLIFneuron(x1_dot_e1,x2_dot_e1,a1,a2,e1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1_dot_e2,x2_dot_e2,a1,a2,e2,tau_ref,tau_rc)
     t=np.arange(int(T/dt)+1)*dt
     x_t, x_w = generate_signal(T,dt,rms,limit,seed,'uniform')
     stimulus4 = np.array(x_t)
@@ -634,6 +648,125 @@ def three_d():
     # ax.set_ylim(0,2)
     legend=ax.legend(loc='best') 
     plt.show()
+
+def four_a():
+
+    T = 4.0         # length of signal in seconds
+    dt = 0.001      # time step size
+    rms=0.5
+    limit=5
+    seed=3
+
+    # Generate bandlimited white noise (use your own function from part 1.1)
+    x_t, x_w = generate_signal(T,dt,rms,limit,seed,'uniform')
+
+    Nt = len(x_t)                #length of the returned signal
+    t = numpy.arange(Nt) * dt  #time values of the signal
+
+    # Neuron parameters
+    tau_ref = 0.002          # refractory period in seconds
+    tau_rc = 0.02            # RC time constant in seconds
+    x1 = 0.0                 # firing rate at x=x0 is a0
+    a1 = 40.0
+    x2 = 1.0                 # firing rate at x=x1 is a1
+    a2 = 150.0
+
+    #I actually calculate alpha and Jbias when I initialize the neurons
+        # Calculation of alpha and Jbias for the given neuron parameters
+        # eps = tau_rc/tau_ref
+        # r1 = 1.0 / (tau_ref * a0)
+        # r2 = 1.0 / (tau_ref * a1)
+        # f1 = (r1 - 1) / eps
+        # f2 = (r2 - 1) / eps
+        # alpha = (1.0/(numpy.exp(f2)-1) - 1.0/(numpy.exp(f1)-1))/(x1-x0) 
+        # x_threshold = x0-1/(alpha*(numpy.exp(f1)-1))              
+        # Jbias = 1-alpha*x_threshold;   
+        # Simulate the two neurons (use your own function from part 3)
+        # spikes = syde556.two_neurons(x, dt, alpha, Jbias, tau_rc, tau_ref)
+    e1=1
+    e2=-1
+    x1_dot_e1=np.dot(x1,e1)
+    x2_dot_e1=np.dot(x2,e1)
+    x1_dot_e2=np.dot(x1,e2)
+    x2_dot_e2=np.dot(-x2,e2)
+    n1=spikingLIFneuron(x1_dot_e1,x2_dot_e1,a1,a2,e1,tau_ref,tau_rc) #create spiking neurons
+    n2=spikingLIFneuron(x1_dot_e2,x2_dot_e2,a1,a2,e2,tau_ref,tau_rc)
+    stimulus4 = np.array(x_t)   #set the stimulus of these neurons equal to the generated signal
+    n1.set_spikes(stimulus4,T,dt)   #calculate the spikes corresponding to this signal 
+    n2.set_spikes(stimulus4,T,dt)
+    spikes1=n1.get_spikes()     #return the spikes
+    spikes2=n2.get_spikes()
+    spikes=np.array(spikes1,spikes2)    #put spikes in the given form
+
+    freq = numpy.arange(Nt)/T - Nt/(2.0*T)   #frequencies in Hz of the signal, shiften from -f_max to +f_max
+    omega = freq*2*numpy.pi                  #corresponding frequencies in radians
+
+    r = spikes[0] - spikes[1]               # the response of the two neurons combined together:
+                                            # nonzero values at each time step when one neuron spiked and the
+                                            # other did not
+    R = numpy.fft.fftshift(numpy.fft.fft(r)) # translate this response difference into the frequency domain
+                                            # this will turn convolution into multiplication
+
+
+    sigma_t = 0.025                          #
+    W2 = numpy.exp(-omega**2*sigma_t**2)     #
+    W2 = W2 / sum(W2)                        #
+
+    CP = X*R.conjugate()                  #
+    WCP = numpy.convolve(CP, W2, 'same')  #
+    RP = R*R.conjugate()                  #
+    WRP = numpy.convolve(RP, W2, 'same')  #
+    XP = X*X.conjugate()                  #
+    WXP = numpy.convolve(XP, W2, 'same')  #
+
+    H = WCP / WRP                         #
+
+    h = numpy.fft.fftshift(numpy.fft.ifft(numpy.fft.ifftshift(H))).real  #
+
+    XHAT = H*R                            #
+
+    xhat = numpy.fft.ifft(numpy.fft.ifftshift(XHAT)).real  #
+
+
+    import pylab
+
+    pylab.figure(1)
+    pylab.subplot(1,2,1)
+    pylab.plot(freq, numpy.sqrt(XP), label='???')  # 
+    pylab.legend()
+    pylab.xlabel('???')
+    pylab.ylabel('???')
+
+    pylab.subplot(1,2,2)
+    pylab.plot(freq, numpy.sqrt(RP), label='???')  # 
+    pylab.legend()
+    pylab.xlabel('???')
+    pylab.ylabel('???')
+
+
+    pylab.figure(2)
+    pylab.subplot(1,2,1)
+    pylab.plot(freq, H.real)   #
+    pylab.xlabel('???')
+    pylab.title('???')
+    pylab.xlim(-50, 50)
+
+    pylab.subplot(1,2,2)
+    pylab.plot(t-T/2, h)       #
+    pylab.title('???')
+    pylab.xlabel('???')
+    pylab.xlim(-0.5, 0.5)
+
+
+    pylab.figure(3)
+    pylab.plot(t, r, color='k', label='???', alpha=0.2)  #
+    pylab.plot(t, x, linewidth=2, label='???')           #
+    pylab.plot(t, xhat, label='???')                     #
+    pylab.title('???')
+    pylab.legend(loc='best')
+    pylab.xlabel('???')
+
+    pylab.show()
 
 def main():
 
