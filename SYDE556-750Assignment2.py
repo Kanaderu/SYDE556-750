@@ -651,7 +651,7 @@ def three_d():
 
 def four_a():
 
-    T = 4.0         # length of signal in seconds
+    T = 2.0         # length of signal in seconds
     dt = 0.001      # time step size
     rms=0.5
     limit=5
@@ -661,7 +661,7 @@ def four_a():
     x_t, x_w = generate_signal(T,dt,rms,limit,seed,'uniform')
 
     Nt = len(x_t)                #length of the returned signal
-    t = numpy.arange(Nt) * dt  #time values of the signal
+    t = np.arange(Nt) * dt  #time values of the signal
 
     # Neuron parameters
     tau_ref = 0.002          # refractory period in seconds
@@ -678,8 +678,8 @@ def four_a():
         # r2 = 1.0 / (tau_ref * a1)
         # f1 = (r1 - 1) / eps
         # f2 = (r2 - 1) / eps
-        # alpha = (1.0/(numpy.exp(f2)-1) - 1.0/(numpy.exp(f1)-1))/(x1-x0) 
-        # x_threshold = x0-1/(alpha*(numpy.exp(f1)-1))              
+        # alpha = (1.0/(np.exp(f2)-1) - 1.0/(np.exp(f1)-1))/(x1-x0) 
+        # x_threshold = x0-1/(alpha*(np.exp(f1)-1))              
         # Jbias = 1-alpha*x_threshold;   
         # Simulate the two neurons (use your own function from part 3)
         # spikes = syde556.two_neurons(x, dt, alpha, Jbias, tau_rc, tau_ref)
@@ -696,77 +696,217 @@ def four_a():
     n2.set_spikes(stimulus4,T,dt)
     spikes1=n1.get_spikes()     #return the spikes
     spikes2=n2.get_spikes()
-    spikes=np.array(spikes1,spikes2)    #put spikes in the given form
+    spikes=np.array([spikes1,spikes2])    #put spikes in the given form
 
-    freq = numpy.arange(Nt)/T - Nt/(2.0*T)   #frequencies in Hz of the signal, shiften from -f_max to +f_max
-    omega = freq*2*numpy.pi                  #corresponding frequencies in radians
+    freq = np.arange(Nt)/T - Nt/(2.0*T)   #frequencies in Hz of the signal, shifted from -f_max to +f_max
+    omega = freq*2*np.pi                  #corresponding frequencies in radians
+    # w_vals=np.fft.fftfreq(len(x_w))*2*np.pi/dt
 
-    r = spikes[0] - spikes[1]               # the response of the two neurons combined together:
-                                            # nonzero values at each time step when one neuron spiked and the
-                                            # other did not
-    R = numpy.fft.fftshift(numpy.fft.fft(r)) # translate this response difference into the frequency domain
-                                            # this will turn convolution into multiplication
+    # the response of the two neurons combined together: nonzero values at each time step when one neuron spiked and the other did not
+    r = spikes[0] - spikes[1]               
+    # translate this response difference into the frequency domain,
+    # this will turn convolution into multiplication and represents spike train power
+    R = np.fft.fftshift(np.fft.fft(r))
+    # R = np.fft.fft(r)
+    # X is frequency domain description of the white noise signal to be decoded (amplitudes A(w))
+    X=np.fft.fftshift(x_w)                                 
+    # X=x_w 
 
+    #width of the filter (in the time domain)?
+    sigma_t = 0.025                          
+    #Gaussian filter, expressing power as a function of the freqency omega
+    #(why multiply instead of divide by sigma^2? Is is a change from time to freq space?)
+    W2 = np.exp(-omega**2*sigma_t**2)     
+    #Normalize the filter form 0 to 1
+    W2 = W2 / sum(W2)                        
 
-    sigma_t = 0.025                          #
-    W2 = numpy.exp(-omega**2*sigma_t**2)     #
-    W2 = W2 / sum(W2)                        #
+                                
+    # X(w)*R*(w) represents the correlated power between the signal and spike train amplitudes
+    CP = X*R.conjugate()  
+    # convolve the correlated power values with the gaussian filter, creating a windowed filter
+    WCP = np.convolve(CP, W2, 'same')  
+    # Calculate |R(w_n:A)|^2, which idenetical to R * complex congugate R, and represents the spike train power
+    RP = R*R.conjugate()
+    # convolve the spike train power with the gaussian filter,
+    # to generate the amplitudes in the frequency domains with a windowed filter (average them)
+    WRP = np.convolve(RP, W2, 'same')   
+    # Calculate |signal|^2, which idenetical to R * complex congugate R, removes imaginary parts
+    XP = X*X.conjugate()
+    # ??? convolve the R(w) values for the neuron pair response with the gaussian filter. not used.
+    WXP = np.convolve(XP, W2, 'same')  
+    #The optimal temporal filter in the frequency domain; equation 4.19 in NEF book
+    H = WCP / WRP
+    H_unsmoothed = CP / RP
 
-    CP = X*R.conjugate()                  #
-    WCP = numpy.convolve(CP, W2, 'same')  #
-    RP = R*R.conjugate()                  #
-    WRP = numpy.convolve(RP, W2, 'same')  #
-    XP = X*X.conjugate()                  #
-    WXP = numpy.convolve(XP, W2, 'same')  #
+    # bring the optimal temporal filter into the time domain, making sure the frequencies line up properly
+    h = np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(H))).real  
 
-    H = WCP / WRP                         #
+    #The convolution of temporal filter and  neuron pair response in the frequency domain,
+    #returns the temporally filtered estimate for spiking neurons in frequency domain
+    XHAT = H*R
+    XHAT2= np.fft.ifftshift(H)*np.fft.ifftshift(R)                            
+    #bring the frequency domain state estimate into the time domain, ignoring imaginary parts
+    xhat = np.fft.ifft(np.fft.ifftshift(XHAT)).real
+    #normalize it using the desired rms - is this legit?
+    true_rms=np.sqrt(dt/T*np.sum(np.square(xhat)))
+    xhat = xhat*rms/true_rms
+    # xhat2 = np.fft.ifft(XHAT2)
+    # true_rms=np.sqrt(dt/T*np.sum(np.square(xhat2)))
+    # xhat2 = xhat2*rms/true_rms
 
-    h = numpy.fft.fftshift(numpy.fft.ifft(numpy.fft.ifftshift(H))).real  #
+    # x=x_t.real
+    # print 'x_t', x_t.sum(), np.max(x_t)
+    # print 'x', x.sum(), np.max(x)
+    # print 'xhat', xhat.sum(), np.max(xhat)
+    # print 'xhat2', xhat2.sum(), np.max(xhat2) 
+         
+    #4b
+    fig=plt.figure(figsize=(16,8))
+    # plt.title('Optimal Temporal Filter')
+    ax=fig.add_subplot(121)
+    ax.plot(omega,H.real, label='gaussian smoothed') #optimal temporal filter power, gaussian smoothed, real values in frequency space
+    ax.plot(omega,H_unsmoothed.real, label='unsmoothed') #optimal temporal filter power, unsmoothed, absolute values in frequency space
+    # ax.plot(omega,XHAT, label='xhat') #for testing
+    # ax.plot(omega,np.fft.fftshift(x_w),label='x_w') #for testing
+    ax.set_xlabel('$\omega$')
+    ax.set_ylabel('$H(\omega)$')
+    ax.set_xlim(-350,350)
+    legend=ax.legend(loc='best')
+    ax=fig.add_subplot(122)
+    # ax.plot(t-T/2, h) #temporal filter power in the time domain
+    ax.plot(t-T/2, np.abs(h)) #absolute value of temporal filter power in the time domain
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('$h(t)$')
+    ax.set_xlim(-0.5,0.5)
+    plt.tight_layout()
+    plt.show()
 
-    XHAT = H*R                            #
+    #4c
+    fig=plt.figure(figsize=(16,8))
+    plt.title('Signal and Estimation')
+    ax=fig.add_subplot(111)
+    plt.plot(t, r, color='k', label='neuron spike train', alpha=0.2)  #neuron pair response function in time domain
+    plt.plot(t, x_t, linewidth=2, label='$x(t)$')           #white noise signal in time domain
+    plt.plot(t, xhat, label='$\hat{x}(t)$')                  #estimated state in time domain, rms normalized
+    # plt.plot(t, xhat2, label='$\hat{x}(t)_2$')                  #estimated state in time domain
+    # plt.title('Time Domain')
+    legend=ax.legend(loc='best')
+    ax.set_xlabel('time')
+    plt.show()
 
-    xhat = numpy.fft.ifft(numpy.fft.ifftshift(XHAT)).real  #
+    #4c
+    fig=plt.figure(figsize=(16,8))
+    # plt.title('Frequency Domain')
+    # .real removes unnecessary warnings when plotting, but they have zero imaginary so it makes no difference
+    ax=fig.add_subplot(121)
+    ax.plot(omega,np.sqrt(XP).real, label='$|X(\omega)$|') #unsmoothed white noise signal in frequency space,
+    ax.plot(omega,np.abs(XHAT).real, label='$|\hat{X}(\omega)|$') #state estimate in frequency space
+    ax.set_xlabel('$\omega$')
+    ax.set_ylabel('Value of coefficient')
+    ax.set_xlim(-50,50)
+    legend=ax.legend(loc='best') 
+    ax=fig.add_subplot(122)
+    ax.plot(omega,np.sqrt(RP).real, label='$|R(\omega)|$') #unsmoothed spike train pair in frequency space
+    ax.set_xlabel('$\omega$')
+    ax.set_ylabel('Value of coefficient')
+    legend=ax.legend(loc='best') 
+    legend=ax.legend(loc='best') 
+    # ax=fig.add_subplot(223)
+    # ax.plot(omega,np.abs(np.fft.fftshift(XHAT2)), label='$|\hat{X}(\omega)|_2$ w/ shift') 
+    # ax.plot(omega,np.abs(np.fft.fftshift(x_w)), label='$|X(\omega)|$ original w/ shift') 
+    # ax.set_xlabel('$\omega$')
+    # ax.set_ylabel('Value of coefficient')
+    # ax.set_xlim(-50,50)
+    # ax.set_ylim(0,2)
+    legend=ax.legend(loc='best') 
+    plt.tight_layout()
+    plt.show()
+    # The power spectrum for X and \hat{X} align fairly closely, giving a first indication that the state
+    # estimate is capturing the original signal. \hat{X} does have spurious power above the cutoff, however,
+    # which ultimately gives the time-domain signal more high-frequency components than it should have.
+    # \hat{X} is the only spectrum which is related to the optimal filter, as it is calculated by convolving
+    # h(t) with r(t), or by multiplying H(\omega) with R(\omega) in the frequency domain and taking the inverse
+    # fourier transform. X and R are filtered with gaussian windowing in these plots, but this is an arbitrary filter
+    # that isn't related to H. 
 
+def four_e():
 
-    import pylab
+    T = 2.0         # length of signal in seconds
+    dt = 0.001      # time step size
+    rms=0.5
+    limit=5
+    seed=3
 
-    pylab.figure(1)
-    pylab.subplot(1,2,1)
-    pylab.plot(freq, numpy.sqrt(XP), label='???')  # 
-    pylab.legend()
-    pylab.xlabel('???')
-    pylab.ylabel('???')
+    # Neuron creation and spike generation
+    tau_ref = 0.002         
+    tau_rc = 0.02            
+    x1 = 0.0                 
+    a1 = 40.0
+    x2 = 1.0                 
+    a2 = 150.0
+    e1=1
+    e2=-1
+    x1_dot_e1=np.dot(x1,e1)
+    x2_dot_e1=np.dot(x2,e1)
+    x1_dot_e2=np.dot(x1,e2)
+    x2_dot_e2=np.dot(-x2,e2)
+    n1=spikingLIFneuron(x1_dot_e1,x2_dot_e1,a1,a2,e1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1_dot_e2,x2_dot_e2,a1,a2,e2,tau_ref,tau_rc)
 
-    pylab.subplot(1,2,2)
-    pylab.plot(freq, numpy.sqrt(RP), label='???')  # 
-    pylab.legend()
-    pylab.xlabel('???')
-    pylab.ylabel('???')
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('$x(t)$')
 
+    limits=[2,10,30]
+    for i in range(len(limits)):  
+        seed=i
+        limit=limits[i]
+        x_t, x_w = generate_signal(T,dt,rms,limit,seed,'uniform')
+        Nt = len(x_t)                
+        t = np.arange(Nt) * dt
+        stimulus = np.array(x_t)   
+        n1.set_spikes(stimulus,T,dt) 
+        n2.set_spikes(stimulus,T,dt)
+        spikes1=n1.get_spikes()     
+        spikes2=n2.get_spikes()
+        spikes=np.array([spikes1,spikes2])
 
-    pylab.figure(2)
-    pylab.subplot(1,2,1)
-    pylab.plot(freq, H.real)   #
-    pylab.xlabel('???')
-    pylab.title('???')
-    pylab.xlim(-50, 50)
+        freq = np.arange(Nt)/T - Nt/(2.0*T)   
+        omega = freq*2*np.pi                  
 
-    pylab.subplot(1,2,2)
-    pylab.plot(t-T/2, h)       #
-    pylab.title('???')
-    pylab.xlabel('???')
-    pylab.xlim(-0.5, 0.5)
+        r = spikes[0] - spikes[1]               
+        R = np.fft.fftshift(np.fft.fft(r))
+        X=np.fft.fftshift(x_w)                                 
 
+        sigma_t = 0.025                          
+        W2 = np.exp(-omega**2*sigma_t**2)     
+        W2 = W2 / sum(W2)                        
 
-    pylab.figure(3)
-    pylab.plot(t, r, color='k', label='???', alpha=0.2)  #
-    pylab.plot(t, x, linewidth=2, label='???')           #
-    pylab.plot(t, xhat, label='???')                     #
-    pylab.title('???')
-    pylab.legend(loc='best')
-    pylab.xlabel('???')
+        CP = X*R.conjugate()  
+        WCP = np.convolve(CP, W2, 'same')  
+        RP = R*R.conjugate()
+        WRP = np.convolve(RP, W2, 'same')   
+        XP = X*X.conjugate()
+        WXP = np.convolve(XP, W2, 'same')  
+        H = WCP / WRP
+        H_unsmoothed = CP / RP
 
-    pylab.show()
+        h = np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(H))).real
+        ax.plot(t-T/2,h,label='limit=%sHz' %(limits[i]))
+
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('$h(t)$')
+    ax.set_xlim(-0.2,0.2)
+    legend=ax.legend(loc='best',shadow=True)
+    plt.show()
+
+    #Increasing the frequency limit of the signal increases the magnitude of the temporal filter multiplicatively. 
+    #Mathematically, increasing the limit increases the numerator in H(\omega) through X(w)*R(w)
+    #which translates to larger values after the transform to the time domain at all frequencies/times
+    #Intuitively, increasing the limit allows the spike train to account for more of the high frequency noise
+    #in the signal, meaning that each spike is more predictive of every frequency/time value of the signal. This
+    #is reflected in a higher magnitude h(t)
 
 def main():
 
@@ -777,9 +917,11 @@ def main():
     # two_a()
     # two_c()
     # two_d()
-    three_a()
-    three_b()
-    three_c()
-    three_d()
+    # three_a()
+    # three_b()
+    # three_c()
+    # three_d()
+    # four_a()
+    four_e()
 
 main()
