@@ -61,150 +61,23 @@ class spikingLIFneuron():
     def get_spikes(self):
         return self.spikes
 
+def get_decoders_smoothed(spikes,h,x):
 
-def LIFneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,tau_ref,tau_rc,noise):
-
-    neurons=[]
-    for i in range(n_neurons):
-        n=LIFneuron(x_intercept_array[i],max_rate_array[i],encoders[i],tau_ref,tau_rc)
-        n.set_sample_rates(x)
-        n.set_sample_rates_noisy(x,noise)
-        neurons.append(n)
-    return neurons
-
-def neuron_responses(neurons,x,noise):
-
-    fig=plt.figure()
-    ax=fig.add_subplot(111)
-    for n in neurons:
-        if noise != 0:
-            y=n.get_sample_rates_noisy()
-        else:
-            y=n.get_sample_rates()
-        ax.plot(x,y)
-    ax.set_xlim(-1,1)
-    ax.set_xlabel('x')
-    ax.set_ylabel('Firing Rate $a$ (Hz)')
-    plt.show()
-
-def get_optimal_decoders(neurons,x,S):
-
-    A_T=[]
-    for n in neurons:
-        A_T.append(n.get_sample_rates())
-    A_T=np.matrix(A_T)
-    A=np.transpose(A_T)
-    x=np.matrix(x)
+    S=len(x)
+    print len(spikes[0]),len(h)
+    A_T=np.array([np.convolve(s,h,mode='full')[:len(spikes[0])] for s in spikes]) #have to truncate from full here, same cuts off last half
+    A=np.matrix(A_T).T
+    x=np.matrix(x).T
     upsilon=A_T*x/S
     gamma=A_T*A/S
     d=np.linalg.pinv(gamma)*upsilon
     return d
 
-def get_optimal_decoders_noisy(neurons,x,S,noise):
+def get_estimate_smoothed(spikes,h,d):
 
-    # Use A=matrix of activities (the firing of each neuron for each x value)
-    A_T=[]
-    for n in neurons:
-        A_T.append(n.get_sample_rates())
-    A_T=np.matrix(A_T)
-    A=np.transpose(A_T)
-    x=np.matrix(x)
-    upsilon=A_T*x/S
-    gamma=A_T*A/S + np.identity(len(neurons))*noise**2
-    d=np.linalg.inv(gamma)*upsilon
-    return d
-
-def get_state_estimate(neurons,x,d,noise):
-
-    #check if the state to be estimated is equivalent to any of the stored firing
-    #rate distributions held in the neuron class. If it is, there's no need to 
-    #recompute the firing rates.
-    xhat=[]
-    if np.all(x == neurons[0].sample_x):
-        for j in range(len(x)):
-            xhat_i=0
-            for i in range(len(neurons)):
-                if noise != 0:
-                    a_ij=neurons[i].get_sample_rates_noisy()[j]
-                    d_i=np.array(d[i])
-                    xhat_i+=(a_ij*d_i).flatten()
-                else:
-                    a_ij=neurons[i].get_sample_rates()[j]
-                    d_i=np.array(d[i])
-                    xhat_i+=(a_ij*d_i).flatten()
-            xhat.append(xhat_i)
-        xhat=np.array(xhat)
-
-    elif np.all(x == neurons[0].custom_x):
-        for j in range(len(x)):
-            xhat_i=0
-            for i in range(len(neurons)):
-                if noise != 0:
-                    a_ij=neurons[i].get_custom_rates()[j]
-                    d_i=np.array(d[i])
-                    xhat_i+=(a_ij*d_i).flatten()
-                else:
-                    a_ij=neurons[i].get_custom_rates()[j]
-                    d_i=np.array(d[i])
-                    xhat_i+=(a_ij*d_i).flatten()
-            xhat.append(xhat_i)
-        xhat=np.array(xhat)
-
-    else:
-        for n in neurons:
-            n.set_custom_rates(x)
-            n.set_custom_rates_noisy(x,noise)
-            n.custom_x=x
-        for j in range(len(x)):
-            xhat_i=0
-            for i in range(len(neurons)):
-                if noise != 0:
-                    a_ij=neurons[i].get_custom_rates()[j]
-                    d_i=np.array(d[i])
-                    xhat_i+=(a_ij*d_i).flatten()
-                else:
-                    a_ij=neurons[i].get_custom_rates()[j]
-                    d_i=np.array(d[i])
-                    xhat_i+=(a_ij*d_i).flatten()
-            xhat.append(xhat_i)
-        xhat=np.array(xhat)
-
+    xhat=np.sum([d[i]*np.convolve(spikes[i],h,mode='full')[:len(spikes[i])] for i in range(len(d))],axis=0)
+    xhat=xhat.T
     return xhat
-
-def error_vs_neurons(N_list,min_fire_rate,max_fire_rate,min_x,max_x,x,noise_mag,averages,tau_ref,tau_rc,n_type):
-
-    E_dist=[]
-    E_noise=[]
-    S=len(x)
-    for n in N_list:
-        n_neurons=n
-        E_dist_n=[]
-        E_noise_n=[]
-        for a in range(averages):
-            max_rate_array=np.random.uniform(100,200,n_neurons)
-            x_intercept_array=np.random.uniform(-0.95,0.95,n_neurons)
-            encoders=-1+2*np.random.randint(2,size=n_neurons)
-            noise=noise_mag*np.max(max_rate_array)
-            if n_type == 'ReLU':
-                neurons=ReLUneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,noise)
-            if n_type == 'LIF':
-                neurons=LIFneurons(n_neurons,x_intercept_array,max_rate_array,x,encoders,tau_ref,tau_rc,noise)
-            d=get_optimal_decoders_noisy(neurons,x,S,noise)    #noisy optimization with noisy rates
-            E_dist_n.append(get_e_dist(neurons,x,d,0))    #no noise
-            E_noise_n.append(get_e_noise(d,noise))
-        E_dist.append(np.average(E_dist_n))
-        E_noise.append(np.average(E_noise_n))
-    return E_dist,E_noise
-
-def get_e_dist(neurons,x,d,noise):
-
-    xhat=get_state_estimate(neurons,x,d,noise)
-    E_dist=0.5*np.average(np.square(x-xhat))
-    return E_dist
-
-def get_e_noise(d,noise):
-    E_noise=noise**2*np.sum(np.square(d))
-    return E_noise
 
 def generate_signal(T,dt,rms,limit,seed,distribution='uniform'):
 
@@ -256,7 +129,7 @@ def generate_signal(T,dt,rms,limit,seed,distribution='uniform'):
     # print 'signal`s imaginary values (signal.imag)', x_t.imag
     # print 'sum of imaginary components in signal (x_t.imag.sum())', x_t.imag.sum()
 
-    return x_t.real, x_w     #return real part of signal to avoid bug, but I prmose they are less than e-15
+    return x_t.real, x_w     #return real part of signal to avoid warning, but I prmose they are less than e-15
 
 # ################################################################################################
 
@@ -649,7 +522,7 @@ def three_d():
     legend=ax.legend(loc='best') 
     plt.show()
 
-def four_a():
+def four_a_thru_d():
 
     T = 2.0         # length of signal in seconds
     dt = 0.001      # time step size
@@ -753,12 +626,6 @@ def four_a():
     # xhat2 = np.fft.ifft(XHAT2)
     # true_rms=np.sqrt(dt/T*np.sum(np.square(xhat2)))
     # xhat2 = xhat2*rms/true_rms
-
-    # x=x_t.real
-    # print 'x_t', x_t.sum(), np.max(x_t)
-    # print 'x', x.sum(), np.max(x)
-    # print 'xhat', xhat.sum(), np.max(xhat)
-    # print 'xhat2', xhat2.sum(), np.max(xhat2) 
          
     #4b
     fig=plt.figure(figsize=(16,8))
@@ -785,7 +652,7 @@ def four_a():
     fig=plt.figure(figsize=(16,8))
     plt.title('Signal and Estimation')
     ax=fig.add_subplot(111)
-    plt.plot(t, r, color='k', label='neuron spike train', alpha=0.2)  #neuron pair response function in time domain
+    plt.plot(t, r, color='k', label='spikes', alpha=0.2)  #neuron pair response function in time domain
     plt.plot(t, x_t, linewidth=2, label='$x(t)$')           #white noise signal in time domain
     plt.plot(t, xhat, label='$\hat{x}(t)$')                  #estimated state in time domain, rms normalized
     # plt.plot(t, xhat2, label='$\hat{x}(t)_2$')                  #estimated state in time domain
@@ -895,8 +762,6 @@ def four_e():
         h = np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(H))).real
         ax.plot(t-T/2,h,label='limit=%sHz' %(limits[i]))
 
-    ax.set_xlabel('time (s)')
-    ax.set_ylabel('$h(t)$')
     ax.set_xlim(-0.2,0.2)
     legend=ax.legend(loc='best',shadow=True)
     plt.show()
@@ -907,6 +772,145 @@ def four_e():
     #Intuitively, increasing the limit allows the spike train to account for more of the high frequency noise
     #in the signal, meaning that each spike is more predictive of every frequency/time value of the signal. This
     #is reflected in a higher magnitude h(t)
+
+def five_a_thru_b():
+
+    #5a
+    T=1
+    dt=0.001
+    tau=0.007
+    t=np.arange(T/dt)*dt
+    n_list=[0,1,2]
+
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('$h(t)$')
+    for n in n_list:
+        h=t**n*np.exp(-t/tau)
+        h=h/np.linalg.norm(h)
+        ax.plot(t,h,label='n=%s' %n)
+    ax.set_xlim(0,0.05)
+    legend=ax.legend(loc='best',shadow=True)
+    plt.show()
+    #I expect increasing n to increase the amount of smoothing on \hat{x}, because h extends farther in time with larger n
+    #I expect increasing n to cause greater lag in \hat{x}, because the peak of h moves farther from zero with larger n
+
+    #5a
+    T=1
+    dt=0.001
+    n=0
+    t=np.arange(T/dt)*dt
+    tau_list=[0.002,0.005,0.01]
+
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('$h(t)$')
+    for tau in tau_list:
+        h=t**n*np.exp(-t/tau)
+        h=h/np.linalg.norm(h)
+        ax.plot(t,h,label='$\\tau$ = %s s' %tau)
+    ax.set_xlim(0,0.05)
+    legend=ax.legend(loc='best',shadow=True)
+    plt.show()
+    #I expect increasing tau to increase the amount of smoothing on \hat{x}, because h extends farther in time with larger tau
+    #???
+
+def five_c_thru_d():
+
+    x1=0
+    x2=1
+    a1=40
+    a2=150
+    e1=1
+    e2=-1
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    rms=0.5
+    limit=30
+    n=0
+    tau_synapse=0.007
+    seed=3
+
+    #create neurons, generate signals, generate spikes
+    x1_dot_e1=np.dot(x1,e1)
+    x2_dot_e1=np.dot(x2,e1)
+    x1_dot_e2=np.dot(x1,e2)
+    x2_dot_e2=np.dot(-x2,e2)
+    n1=spikingLIFneuron(x1_dot_e1,x2_dot_e1,a1,a2,e1,tau_ref,tau_rc)
+    n2=spikingLIFneuron(x1_dot_e2,x2_dot_e2,a1,a2,e2,tau_ref,tau_rc)
+    t=np.arange(int(T/dt)+1)*dt
+    x_t, x_w = generate_signal(T,dt,rms,limit,seed,'uniform')
+    stimulus = np.array(x_t)
+    n1.set_spikes(stimulus,T,dt)
+    n2.set_spikes(stimulus,T,dt)
+    spikes1=n1.get_spikes()
+    spikes2=n2.get_spikes()
+
+    #set post-synaptic current temporal filter
+    Nt = len(x_t)                
+    freq = np.arange(Nt)/T - Nt/(2.0*T)   
+    omega = freq*2*np.pi                  
+    spikes=np.array([spikes1,spikes2])
+    h=t**n*np.exp(-t/tau_synapse)
+    h=h/np.linalg.norm(h)
+    H=np.fft.fft(h)
+
+    #calculate decoders and filtered state estimate
+    d=get_decoders_smoothed(spikes,h,x_t)
+    xhat=get_estimate_smoothed(spikes,h,d)
+
+    #plot
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.plot(t,x_t, label='$x(t)$ = smoothed white noise')
+    plt.plot(t,(spikes[0]-spikes[1]), color='k', label='spikes', alpha=0.2)  #neuron pair response function in time domain
+    ax.plot(t,xhat, label='$\hat{x}(t)$, $\\tau$ = %s' %tau_synapse)
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(121)
+    ax.plot(omega,np.fft.fftshift(H).real)
+    ax.set_xlabel('$\omega$')
+    ax.set_ylabel('$H(\omega)$')
+    ax.set_xlim(-350,350)
+    ax=fig.add_subplot(122)
+    ax.plot(t,h)
+    ax.set_xlabel('time (s)')
+    ax.set_ylabel('$h(t)$')
+    ax.set_xlim(0,0.02)
+    plt.tight_layout()
+    plt.show()
+
+    #5d
+    limit=5
+    x_t2, x_w2 = generate_signal(T,dt,rms,limit,seed,'uniform')     #generate a new signal with limit=5hz
+    stimulus2 = np.array(x_t2)
+    n1.set_spikes(stimulus2,T,dt) #generate new spikes
+    n2.set_spikes(stimulus2,T,dt)
+    spikes3=n1.get_spikes()
+    spikes4=n2.get_spikes()
+    spikes2=np.array([spikes3,spikes4])
+    xhat2=get_estimate_smoothed(spikes2,h,d) #estimate the new state with the old decoders
+
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.plot(t,x_t2, label='$x(t)$ = smoothed white noise')
+    plt.plot(t,(spikes2[0]-spikes[1]), color='k', label='spikes', alpha=0.2)  #neuron pair response function in time domain
+    ax.plot(t,xhat2, label='$\hat{x}(t)$, old decoders, $\\tau$ = %s' %tau_synapse)
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+    #the estimate of the new signal works pretty well. In both cases the small number of neurons makes it hard to capture the magnitude
+    #of the signal or transitions from positive to negative, but the estimate captures positive/negative values with only a small delay.
+    #the fidelity of the old decoders to a new signal indicates that postsynaptic filtering can be applied to estimate many signals withou
+    #needing to fine-tune its parameters (tau)
 
 def main():
 
@@ -921,7 +925,9 @@ def main():
     # three_b()
     # three_c()
     # three_d()
-    # four_a()
-    four_e()
+    # four_a_thru_d()
+    # four_e()
+    # five_a_thru_b()
+    five_c_thru_d()
 
 main()

@@ -209,11 +209,14 @@ def get_optimal_decoders_noisy(neurons,x,S,noise):
     for n in neurons:
         A_T.append(n.get_sample_rates())
     A_T=np.matrix(A_T)
+    print A_T.shape
     A=np.transpose(A_T)
     x=np.matrix(x)
+    print x.shape
     upsilon=A_T*x/S
     gamma=A_T*A/S + np.identity(len(neurons))*noise**2
     d=np.linalg.inv(gamma)*upsilon
+    print d.shape
     return d
 
 def get_state_estimate(neurons,x,d,noise):
@@ -765,11 +768,11 @@ def two_pt_two_c_thru_d():     #2.2c
 def main():
 
     # one_pt_one_a_thru_c()
-    one_pt_one_d()
-    one_pt_one_e()
+    # one_pt_one_d()
+    # one_pt_one_e()
     # one_pt_one_f()
     # one_pt_two()
-    # one_pt_three()
+    one_pt_three()
     # two_pt_one()
     # two_pt_two_a_thru_b()
     # two_pt_two_c_thru_d()
