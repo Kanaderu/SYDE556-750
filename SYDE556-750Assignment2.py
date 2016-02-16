@@ -64,7 +64,6 @@ class spikingLIFneuron():
 def get_decoders_smoothed(spikes,h,x):
 
     S=len(x)
-    print len(spikes[0]),len(h)
     A_T=np.array([np.convolve(s,h,mode='full')[:len(spikes[0])] for s in spikes]) #have to truncate from full here, same cuts off last half
     A=np.matrix(A_T).T
     x=np.matrix(x).T
@@ -109,25 +108,12 @@ def generate_signal(T,dt,rms,limit,seed,distribution='uniform'):
                 x_w_half2.append(x_w_i_real - 1j*x_w_i_im) #make the 2nd half of X(w) with complex conjugates 
 
     x_w_pos=np.hstack((x_w_half2[::-1],np.zeros(len(t)/2-len(x_w_half2))))
-    # print len(w_vals)-len(x_w_half1), np.zeros(len(w_vals)-len(x_w_half1))
-    # print len(w_vals)-len(x_w_half2), np.zeros(len(w_vals)-len(x_w_half2))
     x_w_neg=np.hstack((np.zeros(len(t)/2-len(x_w_half1)),x_w_half1))
-    # print 'x_w_positive',x_w_pos
-    # print 'x_w_negative',x_w_neg
     x_w=np.hstack(([0+0j],x_w_pos,x_w_neg)) #amplitudes corresponding to [w_0, w_pos increasing, w_neg increasing]
     x_t=np.fft.ifft(x_w)
-    true_rms=np.sqrt(dt/T*np.sum(np.square(x_t)))
+    true_rms=np.sqrt(dt/T*np.sum(np.square(x_t)))   #normalize time and frequency signals using RMS
     x_t = x_t*rms/true_rms
-
-    # print 'default precision'
-    # print 'signal after ifft', x_t
-    # print 'signal`s imaginary values (signal.imag)', x_t.imag
-    # print 'sum of imaginary components in signal (x_t.imag.sum())', x_t.imag.sum()
-    # # np.set_printoptions(precision=10)
-    # print 'precision=10'
-    # print 'signal after ifft', x_t
-    # print 'signal`s imaginary values (signal.imag)', x_t.imag
-    # print 'sum of imaginary components in signal (x_t.imag.sum())', x_t.imag.sum()
+    x_w = x_w*rms/true_rms
 
     return x_t.real, x_w     #return real part of signal to avoid warning, but I prmose they are less than e-15
 
@@ -160,15 +146,6 @@ def one_pt_one_a():
     legend=ax.legend(loc='best',shadow=True)
     plt.show()
 
-    # w_vals=np.fft.fftfreq(len(x_w_avg))*2*np.pi/dt
-    # w_limit=2*np.pi*limit
-    # fig=plt.figure()
-    # ax=fig.add_subplot(111)
-    # ax.plot(w_vals,np.abs(x_wi))
-    # ax.set_xlabel('$\omega$')
-    # ax.set_ylabel('x($\omega$)')
-    # ax.set_xlim(-w_limit*2, w_limit*2)
-    # plt.show()
 
 def one_pt_one_b():
 
@@ -544,18 +521,7 @@ def four_a_thru_d():
     x2 = 1.0                 # firing rate at x=x1 is a1
     a2 = 150.0
 
-    #I actually calculate alpha and Jbias when I initialize the neurons
-        # Calculation of alpha and Jbias for the given neuron parameters
-        # eps = tau_rc/tau_ref
-        # r1 = 1.0 / (tau_ref * a0)
-        # r2 = 1.0 / (tau_ref * a1)
-        # f1 = (r1 - 1) / eps
-        # f2 = (r2 - 1) / eps
-        # alpha = (1.0/(np.exp(f2)-1) - 1.0/(np.exp(f1)-1))/(x1-x0) 
-        # x_threshold = x0-1/(alpha*(np.exp(f1)-1))              
-        # Jbias = 1-alpha*x_threshold;   
-        # Simulate the two neurons (use your own function from part 3)
-        # spikes = syde556.two_neurons(x, dt, alpha, Jbias, tau_rc, tau_ref)
+    #I actually calculate alpha and Jbias when I initialize the neurons, so I'm leaving out your code
     e1=1
     e2=-1
     x1_dot_e1=np.dot(x1,e1)
@@ -573,7 +539,6 @@ def four_a_thru_d():
 
     freq = np.arange(Nt)/T - Nt/(2.0*T)   #frequencies in Hz of the signal, shifted from -f_max to +f_max
     omega = freq*2*np.pi                  #corresponding frequencies in radians
-    # w_vals=np.fft.fftfreq(len(x_w))*2*np.pi/dt
 
     # the response of the two neurons combined together: nonzero values at each time step when one neuron spiked and the other did not
     r = spikes[0] - spikes[1]               
@@ -617,15 +582,8 @@ def four_a_thru_d():
     #The convolution of temporal filter and  neuron pair response in the frequency domain,
     #returns the temporally filtered estimate for spiking neurons in frequency domain
     XHAT = H*R
-    XHAT2= np.fft.ifftshift(H)*np.fft.ifftshift(R)                            
     #bring the frequency domain state estimate into the time domain, ignoring imaginary parts
     xhat = np.fft.ifft(np.fft.ifftshift(XHAT)).real
-    #normalize it using the desired rms - is this legit?
-    true_rms=np.sqrt(dt/T*np.sum(np.square(xhat)))
-    xhat = xhat*rms/true_rms
-    # xhat2 = np.fft.ifft(XHAT2)
-    # true_rms=np.sqrt(dt/T*np.sum(np.square(xhat2)))
-    # xhat2 = xhat2*rms/true_rms
          
     #4b
     fig=plt.figure(figsize=(16,8))
@@ -633,8 +591,6 @@ def four_a_thru_d():
     ax=fig.add_subplot(121)
     ax.plot(omega,H.real, label='gaussian smoothed') #optimal temporal filter power, gaussian smoothed, real values in frequency space
     ax.plot(omega,H_unsmoothed.real, label='unsmoothed') #optimal temporal filter power, unsmoothed, absolute values in frequency space
-    # ax.plot(omega,XHAT, label='xhat') #for testing
-    # ax.plot(omega,np.fft.fftshift(x_w),label='x_w') #for testing
     ax.set_xlabel('$\omega$')
     ax.set_ylabel('$H(\omega)$')
     ax.set_xlim(-350,350)
@@ -655,7 +611,6 @@ def four_a_thru_d():
     plt.plot(t, r, color='k', label='spikes', alpha=0.2)  #neuron pair response function in time domain
     plt.plot(t, x_t, linewidth=2, label='$x(t)$')           #white noise signal in time domain
     plt.plot(t, xhat, label='$\hat{x}(t)$')                  #estimated state in time domain, rms normalized
-    # plt.plot(t, xhat2, label='$\hat{x}(t)_2$')                  #estimated state in time domain
     # plt.title('Time Domain')
     legend=ax.legend(loc='best')
     ax.set_xlabel('time')
@@ -678,16 +633,10 @@ def four_a_thru_d():
     ax.set_ylabel('Value of coefficient')
     legend=ax.legend(loc='best') 
     legend=ax.legend(loc='best') 
-    # ax=fig.add_subplot(223)
-    # ax.plot(omega,np.abs(np.fft.fftshift(XHAT2)), label='$|\hat{X}(\omega)|_2$ w/ shift') 
-    # ax.plot(omega,np.abs(np.fft.fftshift(x_w)), label='$|X(\omega)|$ original w/ shift') 
-    # ax.set_xlabel('$\omega$')
-    # ax.set_ylabel('Value of coefficient')
-    # ax.set_xlim(-50,50)
-    # ax.set_ylim(0,2)
     legend=ax.legend(loc='best') 
     plt.tight_layout()
     plt.show()
+
     # The power spectrum for X and \hat{X} align fairly closely, giving a first indication that the state
     # estimate is capturing the original signal. \hat{X} does have spurious power above the cutoff, however,
     # which ultimately gives the time-domain signal more high-frequency components than it should have.
@@ -723,7 +672,7 @@ def four_e():
     fig=plt.figure()
     ax=fig.add_subplot(111)
     ax.set_xlabel('time (s)')
-    ax.set_ylabel('$x(t)$')
+    ax.set_ylabel('$h(t)$')
 
     limits=[2,10,30]
     for i in range(len(limits)):  
@@ -914,20 +863,20 @@ def five_c_thru_d():
 
 def main():
 
-    # one_pt_one_a()
-    # one_pt_one_b()
-    # one_pt_two_a()
-    # one_pt_two_b()
-    # two_a()
-    # two_c()
-    # two_d()
-    # three_a()
-    # three_b()
-    # three_c()
-    # three_d()
-    # four_a_thru_d()
-    # four_e()
-    # five_a_thru_b()
+    one_pt_one_a()
+    one_pt_one_b()
+    one_pt_two_a()
+    one_pt_two_b()
+    two_a()
+    two_c()
+    two_d()
+    three_a()
+    three_b()
+    three_c()
+    three_d()
+    four_a_thru_d()
+    four_e()
+    five_a_thru_b()
     five_c_thru_d()
 
 main()
