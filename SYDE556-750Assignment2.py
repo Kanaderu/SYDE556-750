@@ -745,7 +745,7 @@ def five_a_thru_b():
     #I expect increasing n to increase the amount of smoothing on \hat{x}, because h extends farther in time with larger n
     #I expect increasing n to cause greater lag in \hat{x}, because the peak of h moves farther from zero with larger n
 
-    #5a
+    #5b
     T=1
     dt=0.001
     n=0
