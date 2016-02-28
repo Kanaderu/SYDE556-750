@@ -5,6 +5,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+plt.rcParams['lines.linewidth'] = 4
+plt.rcParams['font.size'] = 24
 
 class LIF_rate_neuron():
 
@@ -88,15 +90,17 @@ class LIF_spiking_neuron():
         self.stimulus=stimulus #an array
         self.spikes=[]
         self.Vhistory=[]
-        ref_window=int(self.tau_ref/dt)
+        ref_window=int(self.tau_ref/dt) #number of timesteps in refractory period
 
         for t in range(len(stimulus)):
             self.J=self.alpha*np.dot(self.stimulus[t],self.e) + self.Jbias
             self.dVdt=((1/self.tau_rc)*(self.J-self.V))
-            for h in range(ref_window):    #check if there have been spikes in the last t_rc seconds
+            #check if there have been spikes in the last tau_rc seconds
+            for h in range(ref_window):   
                 if len(self.spikes) >= ref_window and self.spikes[-(h+1)] == 1:
                     self.dVdt=0     #if so, voltage isn't allowed to change
-            self.V=self.V+dt*self.dVdt  #Euler's Method Approximation V(t+1) = V(t) + dt *dV(t)/dt
+            #Euler's Method Approximation V(t+1) = V(t) + dt *dV(t)/dt
+            self.V=self.V+dt*self.dVdt  
             if self.V >= 1.0:
                 self.spikes.append(1)   #a spike
                 self.V=0.0    #reset
@@ -108,46 +112,56 @@ class LIF_spiking_neuron():
     def get_spikes(self):
         return self.spikes
 
-def generate_signal(T,dt,rms,limit,seed,rng,distribution='uniform'):
 
-    #first generate x_w, with the specified constraints, then use an inverse fft to get x_t
+def generate_signal(T,dt,rms,limit,rng,distribution='uniform'):
+
+    #first generate X(w), with the specified constraints, then use an inverse fft to get x_t
+    # rng=np.random.RandomState(seed=seed)
     t=np.arange(int(T/dt))*dt
-    delta_w = 2*np.pi/T
+    delta_w = 2*np.pi/T #omega stepsize
     w_vals = np.arange(-len(t)/2,0,delta_w) #make half of X(w), those with negative freq
-    w_limit=2*np.pi*limit
-    bandwidth=2*np.pi*limit
-    # bandwidth=limit
+    w_limit=2*np.pi*limit #frequency in radians
+    bandwidth=2*np.pi*limit #bandwidth in radians
     x_w_half1=[]
     x_w_half2=[]
 
-    for i in range(len(w_vals)):
+    for i in range(len(w_vals)):    #loop over frequency values
         if distribution=='uniform':
-            if abs(w_vals[i]) < w_limit:
-                x_w_i_real = rng.normal(loc=0,scale=1)
+            #if |w| is within the specified limit, generate a coefficient
+            if abs(w_vals[i]) < w_limit:    
+                x_w_i_real = rng.normal(loc=0,scale=1)  #mean=0, sigma=1
                 x_w_i_im = rng.normal(loc=0,scale=1)
                 x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
+                #make the 2nd half of X(w) with complex conjugates
                 x_w_half2.append(x_w_i_real - 1j*x_w_i_im)  
 
-        elif distribution=='gaussian':          
+        elif distribution=='gaussian':
+            #draw sigma from a gaussian distribution
             sigma=np.exp(-np.square(w_vals[i])/(2*np.square(bandwidth)))
             if sigma > np.finfo(float).eps: #distinguishable from zero
                 x_w_i_real = rng.normal(loc=0,scale=sigma)
                 x_w_i_im = rng.normal(loc=0,scale=sigma)  
                 x_w_half1.append(x_w_i_real + 1j*x_w_i_im)
-                x_w_half2.append(x_w_i_real - 1j*x_w_i_im) 
+                x_w_half2.append(x_w_i_real - 1j*x_w_i_im)  
 
+    #zero pad the positive and negative amplitude lists, so each is len(samples/2)
     x_w_pos=np.hstack((x_w_half2[::-1],np.zeros(len(t)/2-len(x_w_half2))))
     x_w_neg=np.hstack((np.zeros(len(t)/2-len(x_w_half1)),x_w_half1))
-    x_w=np.hstack(([0+0j],x_w_pos,x_w_neg)) 
+    #assemble the symmetric X(w) according to numpy.fft documentation
+    #amplitudes corresponding to [w_0, w_pos increasing, w_neg increasing]
+    x_w=np.hstack(([0+0j],x_w_pos,x_w_neg))
     x_t=np.fft.ifft(x_w)
+    #normalize time and frequency signals using RMS
     true_rms=np.sqrt(dt/T*np.sum(np.square(x_t)))   
     x_t = x_t*rms/true_rms
+    #return real part of signal to avoid warning, but I promise they are less than e-15
+    x_t = x_t.real.reshape(len(x_t),1)
     x_w = x_w*rms/true_rms
 
-    return x_t.real, x_w     
+    return x_t, x_w  
 
 
-def get_optimal_decoders_noisy(neurons,x,S,noise):
+def get_rate_decoders(neurons,x,S,noise):
 
     # Use A=matrix of activities (the firing of each neuron for each x value)
     A_T=[]
@@ -161,6 +175,30 @@ def get_optimal_decoders_noisy(neurons,x,S,noise):
     d=np.linalg.inv(gamma)*upsilon
     return d
 
+def get_spike_decoders(spikes,h,x):
+
+    S=len(x)
+    A_T=np.array([np.convolve(s,h,mode='full')[:len(spikes[0])] for s in spikes]) #have to truncate from full here, same cuts off last half
+    A=np.matrix(A_T).T
+    x=np.matrix(x)
+    upsilon=A_T*x/S
+    gamma=A_T*A/S
+    d=np.linalg.pinv(gamma)*upsilon
+    return d
+
+def get_function_decoders(neurons,x,S,noise,function):
+
+    # Use A=matrix of activities (the firing of each neuron for each x value)
+    A_T=[]
+    for n in neurons:
+        A_T.append(n.get_sample_rates())
+    A_T=np.matrix(A_T)
+    A=np.transpose(A_T)
+    x=np.matrix(x)
+    upsilon=A_T*function(x)/S
+    gamma=A_T*A/S + np.identity(len(neurons))*noise**2
+    d=np.linalg.inv(gamma)*upsilon
+    return d
 
 def get_rate_estimate(neurons,x,d,noise):
 
@@ -183,15 +221,13 @@ def get_rate_estimate(neurons,x,d,noise):
     xhat=np.array(xhat)
     return xhat
 
-def get_estimate_smoothed(spikes,h,d,rms):
+def get_spike_estimate(spikes,h,d):
 
     xhat=np.sum([d[i]*np.convolve(spikes[i],h,mode='full')
-        [:len(spikes[i])] for i in range(len(d))],axis=0)
-    true_rms=np.sqrt(1.0/len(spikes[0])*np.sum(np.square(xhat))) #normalize using rms
-    xhat=(xhat*rms/true_rms).T
+        [:len(spikes[i])] for i in range(len(d))],axis=0).T
     return xhat
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 def one():
 
@@ -239,7 +275,7 @@ def one():
     plt.show()
 
     #compute decoders and state estimate
-    d=get_optimal_decoders_noisy(neurons,x_sample,S,noise)
+    d=get_rate_decoders(neurons,x_sample,S,noise)
     xhat=get_rate_estimate(neurons,x_sample,d,noise)
 
     #plot signal and estimate
@@ -317,8 +353,7 @@ def two():
 
     #generate white noise signal
     t=np.arange(int(T/dt)+1)*dt
-    x_t, x_w = generate_signal(T,dt,rms,limit,seed,rng2,'uniform')
-    Nt = len(x_t)                
+    x_t, x_w = generate_signal(T,dt,rms,limit,rng2,'uniform')
     stimulus = np.array(x_t)
     n1.set_spikes(stimulus,T,dt)
     n2.set_spikes(stimulus,T,dt)
@@ -327,24 +362,21 @@ def two():
     spikes=np.array([spikes1,spikes2])
 
     #set post-synaptic current temporal filter
-    tau_synapse=0.005
-    freq = np.arange(Nt)/T - Nt/(2.0*T)   
-    omega = freq*2*np.pi            
-    spikes=np.array([spikes1,spikes2])
+    tau_synapse=0.005          
     h=t**n*np.exp(-t/tau_synapse)
-    h=h/np.linalg.norm(h)
+    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
 
     #calculate decoders using rate prodecure and filtered state estimate
     rate_neurons=[nr1,nr2]
-    d=get_optimal_decoders_noisy(rate_neurons,x_sample,S,noise)
-    # d=get_decoders_smoothed(spikes,h,x_t)
-    xhat=get_estimate_smoothed(spikes,h,d,rms)
+    d1=get_rate_decoders(rate_neurons,x_sample,S,noise)
+    # d2=get_spike_decoders(spikes,h,x_t)
+    xhat=get_spike_estimate(spikes,h,d1)
 
     #plot signal, spikes, and estimate
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
-    ax.plot(t,x_t, label='$x(t)$ = smoothed white noise')
-    ax.plot(t,(spikes[0]-spikes[1]), color='k', label='spikes', alpha=0.2)
+    ax.plot(t,x_t, label='$x(t)$ (smoothed white noise)')
+    # ax.plot(t,(spikes[0]-spikes[1]), color='k', label='spikes', alpha=0.2)
     ax.plot(t,xhat, label='$\hat{x}(t)$, $\\tau$ = %s' %tau_synapse)
     ax.plot([],label='RMSE=%f' %np.sqrt(np.average((x_t-xhat)**2)))
     ax.set_xlabel('time (s)')
@@ -354,17 +386,413 @@ def two():
     #plot filter
     fig=plt.figure(figsize=(16,8))
     ax=fig.add_subplot(111)
-    ax.plot(t,h)
+    ax.plot(t,h, label='$h(t)$')
     ax.set_xlabel('time (s)')
     ax.set_ylabel('$h(t)$')
     ax.set_xlim(0,0.02)
-    plt.tight_layout()
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+def three():
+
+    #parameters
+    a_min=100
+    a_max=200
+    x_min=-2
+    x_max=2
+    dx=0.05
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    rms=1
+    limit=5
+    n=0
+    avg=10
+    t=np.arange(int(T/dt)+1)*dt
+
+    #set post-synaptic current temporal filter
+    tau_synapse=0.005          
+    h=t**n*np.exp(-t/tau_synapse)
+    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+
+    n_neuron_list=[1,2,4,8,16,32,64,128,256]
+    RMSE_list=[]
+
+    for n in range(len(n_neuron_list)):
+        n_neurons=n_neuron_list[n]
+        RMSE_n=[]
+        
+        for a in range(avg):
+            seed_neuron=n*avg+a
+            seed_signal=n*3*a
+
+            #generate white noise signal
+            rng2=np.random.RandomState(seed=seed_signal) #for white noise signal
+            x_t, x_w = generate_signal(T,dt,rms,limit,rng2,'uniform')
+
+            #create sample points
+            rng1=np.random.RandomState(seed=seed_neuron) #for neuron parameters
+            a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+            x_int_array=rng1.uniform(x_min,x_max,n_neurons)
+            e_array=-1+2*rng1.randint(2,size=n_neurons)
+            x_sample=np.vstack(np.arange(x_min,x_max,dx))
+            S=len(x_sample)
+            noise=0.1*np.max(a_max_array)
+
+            #create neurons, rate neurons for decoders, spiking neurons for estimate
+            rate_neurons=[]
+            spiking_neurons=[]
+            spikes=[]
+            for i in range(n_neurons):
+                alpha=1/(np.dot(x_max,1)-np.dot(x_int_array[i],1))*\
+                        (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+                Jbias=1-alpha*np.dot(x_int_array[i],1)
+                nr=LIF_rate_neuron(e_array[i],alpha,Jbias,tau_ref,tau_rc)
+                ns=LIF_spiking_neuron(e_array[i],alpha,Jbias,tau_ref,tau_rc)
+                nr.set_sample_rates(x_sample)
+                nr.set_sample_rates_noisy(x_sample,noise,rng1)
+                ns.set_spikes(x_t,T,dt)
+                rate_neurons.append(nr)
+                spiking_neurons.append(ns)
+                spikes.append(ns.get_spikes())
+
+            #calculate decoders using rate prodecure and filtered state estimate
+            d=get_rate_decoders(rate_neurons,x_sample,S,noise)
+            xhat=get_spike_estimate(spikes,h,d)
+
+            #calculate RMSE
+            RMSE_n_a=np.sqrt(np.average((x_t-xhat)**2))
+            RMSE_n.append(RMSE_n_a)
+
+        # plot signal, spikes, and estimate
+        fig=plt.figure(figsize=(16,8))
+        ax=fig.add_subplot(111)
+        ax.plot(t,x_t, label='$x(t)$')
+        ax.plot(t,xhat, label='$\hat{x}(t)$')
+        ax.plot([],label='average RMSE=%f' %np.average(RMSE_n))
+        ax.set_xlabel('time (s)')
+        legend=ax.legend(loc='best') 
+        plt.show()
+
+        RMSE_list.append(np.average(RMSE_n))
+
+    #plot RMSE vs n_neurons
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.loglog(n_neuron_list,RMSE_list, label='RMSE, $n_{avg}=%s$' %avg)
+    ax.loglog(n_neuron_list,1/np.sqrt(n_neuron_list), label='$1/\sqrt{n}$')
+    ax.set_xlabel('neurons')
+    ax.set_ylabel('RMSE')
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+def four_a():
+
+    #parameters
+    n_neurons=200
+    a_min=100
+    a_max=200
+    x_min=-1
+    x_max=1
+    dx=0.05
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    limit=5
+    n=0
+    seed_neuron=3
+    seed_signal=3
+    rng1=np.random.RandomState(seed=seed_neuron)
+    x_sample=np.vstack(np.arange(x_min,x_max,dx))  #firing rates sampled over all x
+    S=len(x_sample)
+
+    #generate linear ramp signal x(t)=t-1
+    t=np.arange(int(T/dt)+1)*dt
+    x_t=t-1
+
+    #set post-synaptic current temporal filter
+    tau_synapse=0.005          
+    h=t**n*np.exp(-t/tau_synapse)
+    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+
+    #create first ensemble (rate neurons for decoders, spiking neurons for estimate)
+    a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+    x_int_array=rng1.uniform(x_min,x_max,n_neurons)
+    e_array_1=-1+2*rng1.randint(2,size=n_neurons)
+    noise=0.1*np.max(a_max_array)
+    rate_neurons_1=[]
+    spiking_neurons_1=[]
+    spikes_1=[]
+    for i in range(n_neurons):
+        alpha=1/(np.dot(x_max,1)-np.dot(x_int_array[i],1))*\
+                (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        Jbias=1-alpha*np.dot(x_int_array[i],1)
+        nr=LIF_rate_neuron(e_array_1[i],alpha,Jbias,tau_ref,tau_rc)
+        ns=LIF_spiking_neuron(e_array_1[i],alpha,Jbias,tau_ref,tau_rc)
+        nr.set_sample_rates(x_sample) #firing rates sampled over all x
+        nr.set_sample_rates_noisy(x_sample,noise,rng1)
+        ns.set_spikes(x_t,T,dt)  #find spikes for the signal x_t
+        rate_neurons_1.append(nr)
+        spiking_neurons_1.append(ns)
+        spikes_1.append(ns.get_spikes())
+
+    #calculate decoders for f(x)=2x+1, using x_sample, not x_t, to define rates
+    function_1=lambda x: 2*x + 1
+    d_1=get_function_decoders(rate_neurons_1,x_sample,S,noise,function_1)
+    # d_11=get_rate_decoders(rate_neurons_1,x_sample,S,noise)
+    f_xhat_1=get_spike_estimate(spikes_1,h,d_1)
+    # f_xhat_11=get_spike_estimate(spikes_1,h,d_11)
+
+    #create second ensemble (rate neurons for decoders, spiking neurons for estimate)
+    a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+    x_int_array=rng1.uniform(x_min,x_max,n_neurons)
+    e_array_2=-1+2*rng1.randint(2,size=n_neurons)
+    noise=0.1*np.max(a_max_array)
+    rate_neurons_2=[]
+    spiking_neurons_2=[]
+    spikes_2=[]
+    for i in range(n_neurons):
+        alpha=1/(np.dot(x_max,1)-np.dot(x_int_array[i],1))*\
+                (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        Jbias=1-alpha*np.dot(x_int_array[i],1)
+        nr=LIF_rate_neuron(e_array_2[i],alpha,Jbias,tau_ref,tau_rc)
+        ns=LIF_spiking_neuron(e_array_2[i],alpha,Jbias,tau_ref,tau_rc)
+        nr.set_sample_rates(x_sample)
+        nr.set_sample_rates_noisy(x_sample,noise,rng1)
+        ns.set_spikes(f_xhat_1,T,dt)  #find spikes for signal = previous decoded f(x)
+        rate_neurons_2.append(nr)
+        spiking_neurons_2.append(ns)
+        spikes_2.append(ns.get_spikes())
+
+    #calculate decoders for f(y)=y
+    function_2=lambda y: y
+    d_2=get_function_decoders(rate_neurons_2,x_sample,S,noise,function_2)
+    yhat=get_spike_estimate(spikes_2,h,d_2)
+
+    #plot signal, transformed signal, and estimate
+    y_t=function_1(x_t)
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.plot(t,x_t, label='$x(t)=t-1$')
+    # ax.plot(t,f_xhat_1, label='$f(\hat{x}(t))_{transformed}$')
+    # ax.plot(t,f_xhat_11, label='$\hat{x}(t)_{rate}$')
+    ax.plot(t,y_t, label='$y(t)=2x(t)+1$')
+    ax.plot(t,yhat, label='$\hat{y}(t)$')
+    ax.plot([],label='RMSE=%f' %np.sqrt(np.average((y_t-yhat)**2)))
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best') 
     plt.show()
 
 
+def four_b():
+
+    #parameters
+    n_neurons=200
+    a_min=100
+    a_max=200
+    x_min=-1
+    x_max=1
+    dx=0.05
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    limit=5
+    n=0
+    seed_neuron=3
+    seed_signal=3
+    rng1=np.random.RandomState(seed=seed_neuron)
+    x_sample=np.vstack(np.arange(x_min,x_max,dx))  #firing rates sampled over all x
+    S=len(x_sample)
+
+    #generate a randomly varying step signal
+    rng2=np.random.RandomState(seed=seed_signal)
+    t=np.arange(int(T/dt)+1)*dt
+    x_t=np.array([np.full((len(t)/10),rng2.rand()-1) for i in range(10)]).flatten()
+    x_t=np.insert(x_t,len(x_t),0).reshape(len(t),1)
+ 
+    #set post-synaptic current temporal filter
+    tau_synapse=0.005          
+    h=t**n*np.exp(-t/tau_synapse)
+    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+
+    #create first ensemble (rate neurons for decoders, spiking neurons for estimate)
+    a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+    x_int_array=rng1.uniform(x_min,x_max,n_neurons)
+    e_array_1=-1+2*rng1.randint(2,size=n_neurons)
+    noise=0.1*np.max(a_max_array)
+    rate_neurons_1=[]
+    spiking_neurons_1=[]
+    spikes_1=[]
+    for i in range(n_neurons):
+        alpha=1/(np.dot(x_max,1)-np.dot(x_int_array[i],1))*\
+                (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        Jbias=1-alpha*np.dot(x_int_array[i],1)
+        nr=LIF_rate_neuron(e_array_1[i],alpha,Jbias,tau_ref,tau_rc)
+        ns=LIF_spiking_neuron(e_array_1[i],alpha,Jbias,tau_ref,tau_rc)
+        nr.set_sample_rates(x_sample) #firing rates sampled over all x
+        nr.set_sample_rates_noisy(x_sample,noise,rng1)
+        ns.set_spikes(x_t,T,dt)  #find spikes for the signal x_t
+        rate_neurons_1.append(nr)
+        spiking_neurons_1.append(ns)
+        spikes_1.append(ns.get_spikes())
+
+    #calculate decoders for f(x)=2x+1, using x_sample, not x_t, to define rates
+    function_1=lambda x: 2*x + 1
+    d_1=get_function_decoders(rate_neurons_1,x_sample,S,noise,function_1)
+    # d_11=get_rate_decoders(rate_neurons_1,x_sample,S,noise)
+    f_xhat_1=get_spike_estimate(spikes_1,h,d_1)
+    # f_xhat_11=get_spike_estimate(spikes_1,h,d_11)
+
+    #create second ensemble (rate neurons for decoders, spiking neurons for estimate)
+    a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+    x_int_array=rng1.uniform(x_min,x_max,n_neurons)
+    e_array_2=-1+2*rng1.randint(2,size=n_neurons)
+    noise=0.1*np.max(a_max_array)
+    rate_neurons_2=[]
+    spiking_neurons_2=[]
+    spikes_2=[]
+    for i in range(n_neurons):
+        alpha=1/(np.dot(x_max,1)-np.dot(x_int_array[i],1))*\
+                (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        Jbias=1-alpha*np.dot(x_int_array[i],1)
+        nr=LIF_rate_neuron(e_array_2[i],alpha,Jbias,tau_ref,tau_rc)
+        ns=LIF_spiking_neuron(e_array_2[i],alpha,Jbias,tau_ref,tau_rc)
+        nr.set_sample_rates(x_sample)
+        nr.set_sample_rates_noisy(x_sample,noise,rng1)
+        ns.set_spikes(f_xhat_1,T,dt)  #find spikes for signal = previous decoded f(x)
+        rate_neurons_2.append(nr)
+        spiking_neurons_2.append(ns)
+        spikes_2.append(ns.get_spikes())
+
+    #calculate decoders for f(y)=y
+    function_2=lambda y: y
+    d_2=get_function_decoders(rate_neurons_2,x_sample,S,noise,function_2)
+    yhat=get_spike_estimate(spikes_2,h,d_2)
+
+    #plot signal, transformed signal, and estimate
+    y_t=function_1(x_t)
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.plot(t,x_t, label='$x(t)$ (random step input)')
+    # ax.plot(t,f_xhat_1, label='$f(\hat{x}(t))_{transformed}$')
+    # ax.plot(t,f_xhat_11, label='$\hat{x}(t)_{rate}$')
+    ax.plot(t,y_t, label='$y(t)=2x(t)+1$')
+    ax.plot(t,yhat, label='$\hat{y}(t)$')
+    ax.plot([],label='RMSE=%f' %np.sqrt(np.average((y_t-yhat)**2)))
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+def four_c():
+
+    #parameters
+    n_neurons=200
+    a_min=100
+    a_max=200
+    x_min=-1
+    x_max=1
+    dx=0.05
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    limit=5
+    n=0
+    seed_neuron=3
+    seed_signal=3
+    rng1=np.random.RandomState(seed=seed_neuron)
+    x_sample=np.vstack(np.arange(x_min,x_max,dx))  #firing rates sampled over all x
+    S=len(x_sample)
+
+    #generate a sinusoid
+    t=np.arange(int(T/dt)+1)*dt
+    x_t=0.2*np.sin(6*np.pi*t)
+ 
+    #set post-synaptic current temporal filter
+    tau_synapse=0.005          
+    h=t**n*np.exp(-t/tau_synapse)
+    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+
+    #create first ensemble (rate neurons for decoders, spiking neurons for estimate)
+    a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+    x_int_array=rng1.uniform(x_min,x_max,n_neurons)
+    e_array_1=-1+2*rng1.randint(2,size=n_neurons)
+    noise=0.1*np.max(a_max_array)
+    rate_neurons_1=[]
+    spiking_neurons_1=[]
+    spikes_1=[]
+    for i in range(n_neurons):
+        alpha=1/(np.dot(x_max,1)-np.dot(x_int_array[i],1))*\
+                (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        Jbias=1-alpha*np.dot(x_int_array[i],1)
+        nr=LIF_rate_neuron(e_array_1[i],alpha,Jbias,tau_ref,tau_rc)
+        ns=LIF_spiking_neuron(e_array_1[i],alpha,Jbias,tau_ref,tau_rc)
+        nr.set_sample_rates(x_sample) #firing rates sampled over all x
+        nr.set_sample_rates_noisy(x_sample,noise,rng1)
+        ns.set_spikes(x_t,T,dt)  #find spikes for the signal x_t
+        rate_neurons_1.append(nr)
+        spiking_neurons_1.append(ns)
+        spikes_1.append(ns.get_spikes())
+
+    #calculate decoders for f(x)=2x+1, using x_sample, not x_t, to define rates
+    function_1=lambda x: 2*x + 1
+    d_1=get_function_decoders(rate_neurons_1,x_sample,S,noise,function_1)
+    # d_11=get_rate_decoders(rate_neurons_1,x_sample,S,noise)
+    f_xhat_1=get_spike_estimate(spikes_1,h,d_1)
+    # f_xhat_11=get_spike_estimate(spikes_1,h,d_11)
+
+    #create second ensemble (rate neurons for decoders, spiking neurons for estimate)
+    a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+    x_int_array=rng1.uniform(x_min,x_max,n_neurons)
+    e_array_2=-1+2*rng1.randint(2,size=n_neurons)
+    noise=0.1*np.max(a_max_array)
+    rate_neurons_2=[]
+    spiking_neurons_2=[]
+    spikes_2=[]
+    for i in range(n_neurons):
+        alpha=1/(np.dot(x_max,1)-np.dot(x_int_array[i],1))*\
+                (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        Jbias=1-alpha*np.dot(x_int_array[i],1)
+        nr=LIF_rate_neuron(e_array_2[i],alpha,Jbias,tau_ref,tau_rc)
+        ns=LIF_spiking_neuron(e_array_2[i],alpha,Jbias,tau_ref,tau_rc)
+        nr.set_sample_rates(x_sample)
+        nr.set_sample_rates_noisy(x_sample,noise,rng1)
+        ns.set_spikes(f_xhat_1,T,dt)  #find spikes for signal = previous decoded f(x)
+        rate_neurons_2.append(nr)
+        spiking_neurons_2.append(ns)
+        spikes_2.append(ns.get_spikes())
+
+    #calculate decoders for f(y)=y
+    function_2=lambda y: y
+    d_2=get_function_decoders(rate_neurons_2,x_sample,S,noise,function_2)
+    yhat=get_spike_estimate(spikes_2,h,d_2)
+
+    #plot signal, transformed signal, and estimate
+    y_t=function_1(x_t)
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.plot(t,x_t, label='$x(t)$ (random step input)')
+    # ax.plot(t,f_xhat_1, label='$f(\hat{x}(t))_{transformed}$')
+    # ax.plot(t,f_xhat_11, label='$\hat{x}(t)_{rate}$')
+    ax.plot(t,y_t, label='$y(t)=2x(t)+1$')
+    ax.plot(t,yhat, label='$\hat{y}(t)$')
+    ax.plot([],label='RMSE=%f' %np.sqrt(np.average((y_t-yhat)**2)))
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best') 
+    plt.show()
+
+    #discussion
+
 def main():
 
-	# one()
-    two()
+    # one()
+    # two()
+    # three()
+    # four_a()
+    # four_b()
+    four_c()
 
 main()
