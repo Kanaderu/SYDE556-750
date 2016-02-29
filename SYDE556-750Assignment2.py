@@ -809,7 +809,6 @@ def five_c_thru_d():
     H=np.fft.fft(h)
 
     #calculate decoders and filtered state estimate
-    print spikes.shape, x_t.shape
     d=get_decoders_smoothed(spikes,h,x_t)
     xhat=get_estimate_smoothed(spikes,h,d)
 
@@ -864,20 +863,20 @@ def five_c_thru_d():
 
 def main():
 
-    # one_pt_one_a()
-    # one_pt_one_b()
-    # one_pt_two_a()
-    # one_pt_two_b()
-    # two_a()
-    # two_c()
-    # two_d()
-    # three_a()
-    # three_b()
-    # three_c()
-    # three_d()
-    # four_a_thru_d()
-    # four_e()
-    # five_a_thru_b()
+    one_pt_one_a()
+    one_pt_one_b()
+    one_pt_two_a()
+    one_pt_two_b()
+    two_a()
+    two_c()
+    two_d()
+    three_a()
+    three_b()
+    three_c()
+    three_d()
+    four_a_thru_d()
+    four_e()
+    five_a_thru_b()
     five_c_thru_d()
 
 main()
