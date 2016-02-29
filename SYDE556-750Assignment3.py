@@ -74,7 +74,6 @@ class LIF_spiking_neuron():
         self.spikes=[]
         self.Vhistory=[]
         ref_window=int(self.tau_ref/dt) #number of timesteps in refractory period
-
         for t in range(len(stimulus)):
             self.J=self.alpha*np.dot(self.stimulus[t],self.e) + self.Jbias
             self.dVdt=((1/self.tau_rc)*(self.J-self.V))
@@ -117,6 +116,56 @@ def ensemble(n_neurons,x_min,x_max,dx,a_min,a_max,
         ns=LIF_spiking_neuron(e_array[i],alpha,Jbias,tau_ref,tau_rc)
         nr.set_sample_rates(x_sample)
         nr.set_sample_rates_noisy(x_sample,noise,rng1)
+        ns.set_spikes(stimulus,T,dt)
+        rate_neurons.append(nr)
+        spiking_neurons.append(ns)
+        spikes.append(ns.get_spikes())
+
+    return rate_neurons, spiking_neurons, spikes
+
+def ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus):
+
+    #create sample points
+    rng1=np.random.RandomState(seed=seed) #for neuron parameters
+    a_max_array=rng1.uniform(a_min,a_max,n_neurons)
+    x_int_array=rng1.uniform(x_min,x_max,(n_neurons,dimension))
+    x_sample=np.array([np.arange(x_min,x_max,dx) for i in range(dimension)]).T
+
+    #generate encoders over an n-dimensional hypersphere (not evenly distributed)
+    e_array=rng1.uniform(-1,1,(n_neurons,dimension))
+
+    x1 = np.arange(x_min, x_max, dx)
+    x2 = np.arange(x_min, x_max, dx)
+    x_mesh=np.vstack(np.meshgrid(x1, x2)).reshape(2,-1).T
+    # print 'x_sample',x_sample.shape
+    # print 'x_mesh',x_mesh.shape
+
+    # a_max_array=rng1.uniform(a_max,a_max,n_neurons)
+    # x_int_array=rng1.uniform(0,0,(n_neurons,2))
+    # e_array=np.full((n_neurons,2),[0,1])
+
+    #create neurons, rate neurons for decoders, spiking neurons for estimate
+    rate_neurons=[]
+    spiking_neurons=[]
+    spikes=[]
+    for i in range(n_neurons):
+        #assume e=[1...1] (len dimensions) when calculating alpha, Jbias
+        x_max_D=np.full((dimension),x_max)
+        x_max_dot_1=np.dot(x_max_D,np.full((dimension),1))/dimension
+        x_int_dot_1=np.dot(x_int_array[i],np.full((dimension),1))/dimension
+        alpha=1/(x_max_dot_1-x_int_dot_1)*\
+                (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        Jbias=1-alpha*x_int_dot_1
+        # x_max_dot_e=np.dot(x_max_D,e_array[i])
+        # x_int_dot_e=np.dot(x_int_array[i],e_array[i])
+        # alpha=1/(x_max_dot_e-x_int_dot_e)*\
+        #         (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
+        # Jbias=1-alpha*x_int_dot_e
+        nr=LIF_rate_neuron(e_array[i],alpha,Jbias,tau_ref,tau_rc)
+        ns=LIF_spiking_neuron(e_array[i],alpha,Jbias,tau_ref,tau_rc)
+        nr.set_sample_rates(x_mesh)
+        nr.set_sample_rates_noisy(x_mesh,noise,rng1)
         ns.set_spikes(stimulus,T,dt)
         rate_neurons.append(nr)
         spiking_neurons.append(ns)
@@ -204,6 +253,8 @@ def get_function_decoders(neurons,noise,function):
         A_T.append(n.get_sample_rates())
     A_T=np.matrix(A_T)
     A=np.transpose(A_T)
+    # print '0',A[0]
+    # print '1',A[1]
     x=np.matrix(neurons[0].sample_x) #use x_sample, not x_t, to define rates
     upsilon=A_T*function(x)/len(x)
     gamma=A_T*A/len(x) + np.identity(len(neurons))*noise**2
@@ -233,8 +284,18 @@ def get_rate_estimate(neurons,d,noise):
 
 def get_spike_estimate(spikes,h,d):
 
-    xhat=np.sum([d[i]*np.convolve(spikes[i],h,mode='full')
-        [:len(spikes[i])] for i in range(len(d))],axis=0).T
+    # xhat=np.sum([d[i]*np.convolve(spikes[i],h,mode='full')
+    #     [:len(spikes[i])] for i in range(len(d))],axis=0).T
+    timesteps=len(spikes[0])
+    dimension=d[0].shape[1]
+    n_neurons=len(d)
+    xhat=np.zeros((timesteps,dimension))
+    for i in range(n_neurons):
+        decoder=d[i]
+        filtered_spikes=np.convolve(spikes[i],h,mode='full')[:timesteps].reshape(timesteps,1)
+        value=filtered_spikes*decoder
+        xhat+=value
+
     return xhat
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -774,6 +835,12 @@ def five_b():
     d_3=get_function_decoders(rate_neurons_3,noise,function_3)
     f_zhat=get_spike_estimate(spikes_3,h,d_3)
 
+    # nr3,ns3,spikes3=ensemble_ndim(n_neurons,1,x_min,x_max,dx,a_min,a_max,
+    #             seed_neuron,tau_ref,tau_rc,noise,T,dt,stimulus=z_t)
+    # f3=lambda z: z  #no transformation?
+    # d3=get_function_decoders(nr3,noise,f3)
+    # f_zhat=get_spike_estimate(spikes3,h,d3)
+
 
     #plot signal, transformed signal, and estimate
     fig=plt.figure(figsize=(16,8))
@@ -787,6 +854,161 @@ def five_b():
     legend=ax.legend(loc='best')
     plt.show()
 
+def six_a():
+
+    #parameters
+    n_neurons=200
+    dimension=2
+    a_min=100
+    a_max=200
+    x_min=-1
+    x_max=1
+    dx=0.05
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    n=0
+    rms=0.5
+    noise=0.1*a_max
+    seed=3
+    t=np.arange(int(T/dt)+1)*dt
+
+    #stimuli
+    x_t=np.full((len(t),dimension),[0.5,1])
+    y_t=np.full((len(t),dimension),[0.1,0.3])
+    z_t=np.full((len(t),dimension),[0.2,0.1])
+    q_t=np.full((len(t),dimension),[0.4,-0.2])
+    w_t=x_t-3*y_t+2*z_t-2*q_t
+
+    #set post-synaptic current temporal filter
+    tau_synapse=0.005          
+    h=t**n*np.exp(-t/tau_synapse)
+    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+
+    nr1,ns1,spikes1=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=x_t)
+    f1=lambda x: x  #no transformation?
+    d1=get_function_decoders(nr1,noise,f1)
+    f_xhat=get_spike_estimate(spikes1,h,d1)   
+    # print d1
+
+    nr2,ns2,spikes2=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=y_t)
+    f2=lambda y: y  #no transformation?
+    d2=get_function_decoders(nr2,noise,f2)
+    f_yhat=get_spike_estimate(spikes2,h,d2)
+
+    nr3,ns3,spikes3=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=z_t)
+    f3=lambda z: z  #no transformation?
+    d3=get_function_decoders(nr3,noise,f3)
+    f_zhat=get_spike_estimate(spikes3,h,d3)
+
+    nr4,ns4,spikes4=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=q_t)
+    f4=lambda q: q  #no transformation?
+    d4=get_function_decoders(nr4,noise,f4)
+    f_qhat=get_spike_estimate(spikes4,h,d4)
+
+    feedforward=f_xhat-3*f_yhat+2*f_zhat-2*f_qhat
+    nr5,ns5,spikes5=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=feedforward)
+    f5=lambda w: w
+    d5=get_function_decoders(nr5,noise,f5)
+    f_what=get_spike_estimate(spikes5,h,d5)
+
+    #plot signal, transformed signal, and estimate
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.plot(t,w_t[:,0], label='$w_0(t)=x(t)-3*y(t)+2*z(t)-2*q(t)$')
+    ax.plot(t,w_t[:,1], label='$w_1(t)=x(t)-3*y(t)+2*z(t)-2*q(t)$')
+    ax.plot(t,f_what[:,0], label='$\hat{w}_0(t)$')
+    ax.plot(t,f_what[:,1], label='$\hat{w}_1(t)$')
+    # ax.plot(t,x_t[:,0], label='$x_0(t)$')
+    # ax.plot(t,x_t[:,1], label='$x_1(t)$')
+    # ax.plot(t,f_xhat[:,0], label='$\hat{x}_0(t)$')
+    # ax.plot(t,f_xhat[:,1], label='$\hat{x}_1(t)$')
+    ax.plot([],label='RMSE=%f' %np.sqrt(np.average((w_t-f_what)**2)))
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best')
+    plt.show()
+
+def six_b():
+
+    #parameters
+    n_neurons=200
+    dimension=2
+    a_min=100
+    a_max=200
+    x_min=-1
+    x_max=1
+    dx=0.05
+    tau_ref=0.002
+    tau_rc=0.02
+    T=1
+    dt=0.001
+    n=0
+    rms=0.5
+    noise=0.1*a_max
+    seed=3
+    t=np.arange(int(T/dt)+1)*dt
+
+    #stimuli
+    x_t=np.full((len(t),dimension),[0.5,1])
+    y_t=np.vstack([np.sin(4*np.pi*t),0.3*np.cos(0*t)]).T
+    z_t=np.full((len(t),dimension),[0.2,0.1])
+    q_t=np.vstack([np.sin(4*np.pi*t),-0.2*np.cos(0*t)]).T
+    w_t=x_t-3*y_t+2*z_t-2*q_t
+
+    #set post-synaptic current temporal filter
+    tau_synapse=0.005          
+    h=t**n*np.exp(-t/tau_synapse)
+    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+
+    nr1,ns1,spikes1=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=x_t)
+    f1=lambda x: x  #no transformation?
+    d1=get_function_decoders(nr1,noise,f1)
+    f_xhat=get_spike_estimate(spikes1,h,d1)   
+    # print d1
+
+    nr2,ns2,spikes2=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=y_t)
+    f2=lambda y: y  #no transformation?
+    d2=get_function_decoders(nr2,noise,f2)
+    f_yhat=get_spike_estimate(spikes2,h,d2)
+
+    nr3,ns3,spikes3=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=z_t)
+    f3=lambda z: z  #no transformation?
+    d3=get_function_decoders(nr3,noise,f3)
+    f_zhat=get_spike_estimate(spikes3,h,d3)
+
+    nr4,ns4,spikes4=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=q_t)
+    f4=lambda q: q  #no transformation?
+    d4=get_function_decoders(nr4,noise,f4)
+    f_qhat=get_spike_estimate(spikes4,h,d4)
+
+    feedforward=f_xhat-3*f_yhat+2*f_zhat-2*f_qhat
+    nr5,ns5,spikes5=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
+                seed,tau_ref,tau_rc,noise,T,dt,stimulus=feedforward)
+    f5=lambda w: w
+    d5=get_function_decoders(nr5,noise,f5)
+    f_what=get_spike_estimate(spikes5,h,d5)
+
+    #plot signal, transformed signal, and estimate
+    fig=plt.figure(figsize=(16,8))
+    ax=fig.add_subplot(111)
+    ax.plot(t,w_t[:,0], label='$w_0(t)$')
+    ax.plot(t,w_t[:,1], label='$w_1(t)$')
+    ax.plot(t,f_what[:,0], label='$\hat{w}_0(t)$')
+    ax.plot(t,f_what[:,1], label='$\hat{w}_1(t)$')
+    ax.plot([],label='RMSE=%f' %np.sqrt(np.average((w_t-f_what)**2)))
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best')
+    plt.show()
 
 def main():
 
@@ -797,6 +1019,8 @@ def main():
     # four_b()
     # four_c()
     # five_a()
-    five_b()
+    # five_b()
+    # six_a()
+    six_b()
 
 main()
