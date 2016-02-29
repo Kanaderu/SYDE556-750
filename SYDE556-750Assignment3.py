@@ -130,16 +130,19 @@ def ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
     rng1=np.random.RandomState(seed=seed) #for neuron parameters
     a_max_array=rng1.uniform(a_min,a_max,n_neurons)
     x_int_array=rng1.uniform(x_min,x_max,(n_neurons,dimension))
-    x_sample=np.array([np.arange(x_min,x_max,dx) for i in range(dimension)]).T
 
-    #generate encoders over an n-dimensional hypersphere (not evenly distributed)
-    e_array=rng1.uniform(-1,1,(n_neurons,dimension))
+    #doesn't work
+    # x_full=np.array([np.arange(x_min, x_max, dx) for i in range(dimension)])
+    # x_sample=np.vstack(np.meshgrid(x_full)).reshape(2,-1).T
 
+    #ONLY WORKS FOR 2D
     x1 = np.arange(x_min, x_max, dx)
     x2 = np.arange(x_min, x_max, dx)
     x_mesh=np.vstack(np.meshgrid(x1, x2)).reshape(2,-1).T
-    # print 'x_sample',x_sample.shape
-    # print 'x_mesh',x_mesh.shape
+    print x_sample,x_mesh
+
+    #generate encoders over an n-dimensional hypersphere (not evenly distributed)
+    e_array=rng1.uniform(-1,1,(n_neurons,dimension))
 
     # a_max_array=rng1.uniform(a_max,a_max,n_neurons)
     # x_int_array=rng1.uniform(0,0,(n_neurons,2))
@@ -157,11 +160,6 @@ def ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
         alpha=1/(x_max_dot_1-x_int_dot_1)*\
                 (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
         Jbias=1-alpha*x_int_dot_1
-        # x_max_dot_e=np.dot(x_max_D,e_array[i])
-        # x_int_dot_e=np.dot(x_int_array[i],e_array[i])
-        # alpha=1/(x_max_dot_e-x_int_dot_e)*\
-        #         (-1+1/(1-np.exp((tau_ref-1/a_max_array[i])/tau_rc)))
-        # Jbias=1-alpha*x_int_dot_e
         nr=LIF_rate_neuron(e_array[i],alpha,Jbias,tau_ref,tau_rc)
         ns=LIF_spiking_neuron(e_array[i],alpha,Jbias,tau_ref,tau_rc)
         nr.set_sample_rates(x_mesh)
@@ -253,8 +251,6 @@ def get_function_decoders(neurons,noise,function):
         A_T.append(n.get_sample_rates())
     A_T=np.matrix(A_T)
     A=np.transpose(A_T)
-    # print '0',A[0]
-    # print '1',A[1]
     x=np.matrix(neurons[0].sample_x) #use x_sample, not x_t, to define rates
     upsilon=A_T*function(x)/len(x)
     gamma=A_T*A/len(x) + np.identity(len(neurons))*noise**2
@@ -722,37 +718,31 @@ def five_a():
     #set post-synaptic current temporal filter
     tau_synapse=0.005          
     h=t**n*np.exp(-t/tau_synapse)
-    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+    h=h/np.sum(h*dt)
 
-    #create first ensemble
+    #create first ensemble and calculate transformational decoders
     seed_neuron=3
     rate_neurons_1, spiking_neurons_1, spikes_1 = ensemble(
             n_neurons,x_min,x_max,dx,a_min,a_max,seed_neuron,
             tau_ref,tau_rc,noise,T,dt,stimulus=x_t)
-
-    #calculate decoders for f(x)=0.5x
     function_1=lambda x: 0.5*x
     d_1=get_function_decoders(rate_neurons_1,noise,function_1)
     f_xhat=get_spike_estimate(spikes_1,h,d_1)
 
-    #create second ensemble
+    #create second ensemble and calculate transformational decoders
     seed_neuron=9
     rate_neurons_2, spiking_neurons_2, spikes_2 = ensemble(
             n_neurons,x_min,x_max,dx,a_min,a_max,seed_neuron,
             tau_ref,tau_rc,noise,T,dt,stimulus=y_t)
-
-    #calculate decoders for f(y)=2y
     function_2=lambda y: 2*y
     d_2=get_function_decoders(rate_neurons_2,noise,function_2)
     f_yhat=get_spike_estimate(spikes_2,h,d_2)
 
-    #create third ensemble
+    #create third ensemble and calculate transformational decoders
     seed_neuron=9
     rate_neurons_3, spiking_neurons_3, spikes_3 = ensemble(
             n_neurons,x_min,x_max,dx,a_min,a_max,seed_neuron,
             tau_ref,tau_rc,noise,T,dt,stimulus=f_xhat+f_yhat)
-
-    #calculate decoders for f(y)=2y
     function_3=lambda z: z
     d_3=get_function_decoders(rate_neurons_3,noise,function_3)
     f_zhat=get_spike_estimate(spikes_3,h,d_3)
@@ -800,47 +790,34 @@ def five_b():
     #set post-synaptic current temporal filter
     tau_synapse=0.005          
     h=t**n*np.exp(-t/tau_synapse)
-    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+    h=h/np.sum(h*dt)
 
-    #create first ensemble
+    #create first ensemble and calculate transformational decoders
     seed_neuron=3
     rate_neurons_1, spiking_neurons_1, spikes_1 = ensemble(
             n_neurons,x_min,x_max,dx,a_min,a_max,seed_neuron,
             tau_ref,tau_rc,noise,T,dt,stimulus=x_t)
-
-    #calculate decoders for f(x)=0.5x
     function_1=lambda x: 0.5*x
     d_1=get_function_decoders(rate_neurons_1,noise,function_1)
     f_xhat=get_spike_estimate(spikes_1,h,d_1)
 
-    #create second ensemble
+    #create second ensemble and calculate transformational decoders
     seed_neuron=9
     rate_neurons_2, spiking_neurons_2, spikes_2 = ensemble(
             n_neurons,x_min,x_max,dx,a_min,a_max,seed_neuron,
             tau_ref,tau_rc,noise,T,dt,stimulus=y_t)
-
-    #calculate decoders for f(y)=2y
     function_2=lambda y: 2*y
     d_2=get_function_decoders(rate_neurons_2,noise,function_2)
     f_yhat=get_spike_estimate(spikes_2,h,d_2)
 
-    #create third ensemble
+    #create third ensemble and calculate transformational decoders
     seed_neuron=9
     rate_neurons_3, spiking_neurons_3, spikes_3 = ensemble(
             n_neurons,x_min,x_max,dx,a_min,a_max,seed_neuron,
             tau_ref,tau_rc,noise,T,dt,stimulus=f_xhat+f_yhat)
-
-    #calculate decoders for f(y)=2y
     function_3=lambda z: z
     d_3=get_function_decoders(rate_neurons_3,noise,function_3)
     f_zhat=get_spike_estimate(spikes_3,h,d_3)
-
-    # nr3,ns3,spikes3=ensemble_ndim(n_neurons,1,x_min,x_max,dx,a_min,a_max,
-    #             seed_neuron,tau_ref,tau_rc,noise,T,dt,stimulus=z_t)
-    # f3=lambda z: z  #no transformation?
-    # d3=get_function_decoders(nr3,noise,f3)
-    # f_zhat=get_spike_estimate(spikes3,h,d3)
-
 
     #plot signal, transformed signal, and estimate
     fig=plt.figure(figsize=(16,8))
@@ -884,30 +861,29 @@ def six_a():
     #set post-synaptic current temporal filter
     tau_synapse=0.005          
     h=t**n*np.exp(-t/tau_synapse)
-    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+    h=h/np.sum(h*dt)
 
     nr1,ns1,spikes1=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=x_t)
-    f1=lambda x: x  #no transformation?
+    f1=lambda x: x
     d1=get_function_decoders(nr1,noise,f1)
     f_xhat=get_spike_estimate(spikes1,h,d1)   
-    # print d1
 
     nr2,ns2,spikes2=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=y_t)
-    f2=lambda y: y  #no transformation?
+    f2=lambda y: y
     d2=get_function_decoders(nr2,noise,f2)
     f_yhat=get_spike_estimate(spikes2,h,d2)
 
     nr3,ns3,spikes3=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=z_t)
-    f3=lambda z: z  #no transformation?
+    f3=lambda z: z
     d3=get_function_decoders(nr3,noise,f3)
     f_zhat=get_spike_estimate(spikes3,h,d3)
 
     nr4,ns4,spikes4=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=q_t)
-    f4=lambda q: q  #no transformation?
+    f4=lambda q: q
     d4=get_function_decoders(nr4,noise,f4)
     f_qhat=get_spike_estimate(spikes4,h,d4)
 
@@ -920,16 +896,16 @@ def six_a():
 
     #plot signal, transformed signal, and estimate
     fig=plt.figure(figsize=(16,8))
-    ax=fig.add_subplot(111)
-    ax.plot(t,w_t[:,0], label='$w_0(t)=x(t)-3*y(t)+2*z(t)-2*q(t)$')
-    ax.plot(t,w_t[:,1], label='$w_1(t)=x(t)-3*y(t)+2*z(t)-2*q(t)$')
+    ax=fig.add_subplot(121)
+    ax.plot(t,w_t[:,0], label='$w_0(t)$')#=x(t)-3*y(t)+2*z(t)-2*q(t)$')
     ax.plot(t,f_what[:,0], label='$\hat{w}_0(t)$')
+    ax.plot([],label='RMSE_0=%f' %np.sqrt(np.average((w_t[:,0]-f_what[:,0])**2)))
+    ax.set_xlabel('time (s)')
+    legend=ax.legend(loc='best')
+    ax=fig.add_subplot(122)
+    ax.plot(t,w_t[:,1], label='$w_1(t)$')#=x(t)-3*y(t)+2*z(t)-2*q(t)$')
     ax.plot(t,f_what[:,1], label='$\hat{w}_1(t)$')
-    # ax.plot(t,x_t[:,0], label='$x_0(t)$')
-    # ax.plot(t,x_t[:,1], label='$x_1(t)$')
-    # ax.plot(t,f_xhat[:,0], label='$\hat{x}_0(t)$')
-    # ax.plot(t,f_xhat[:,1], label='$\hat{x}_1(t)$')
-    ax.plot([],label='RMSE=%f' %np.sqrt(np.average((w_t-f_what)**2)))
+    ax.plot([],label='RMSE_1=%f' %np.sqrt(np.average((w_t[:,1]-f_what[:,1])**2)))
     ax.set_xlabel('time (s)')
     legend=ax.legend(loc='best')
     plt.show()
@@ -964,30 +940,29 @@ def six_b():
     #set post-synaptic current temporal filter
     tau_synapse=0.005          
     h=t**n*np.exp(-t/tau_synapse)
-    h=h/np.sum(h*dt)  #normalize, effectively scaling spikes by dt
+    h=h/np.sum(h*dt)
 
     nr1,ns1,spikes1=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=x_t)
-    f1=lambda x: x  #no transformation?
+    f1=lambda x: x
     d1=get_function_decoders(nr1,noise,f1)
     f_xhat=get_spike_estimate(spikes1,h,d1)   
-    # print d1
 
     nr2,ns2,spikes2=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=y_t)
-    f2=lambda y: y  #no transformation?
+    f2=lambda y: y
     d2=get_function_decoders(nr2,noise,f2)
     f_yhat=get_spike_estimate(spikes2,h,d2)
 
     nr3,ns3,spikes3=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=z_t)
-    f3=lambda z: z  #no transformation?
+    f3=lambda z: z
     d3=get_function_decoders(nr3,noise,f3)
     f_zhat=get_spike_estimate(spikes3,h,d3)
 
     nr4,ns4,spikes4=ensemble_ndim(n_neurons,dimension,x_min,x_max,dx,a_min,a_max,
                 seed,tau_ref,tau_rc,noise,T,dt,stimulus=q_t)
-    f4=lambda q: q  #no transformation?
+    f4=lambda q: q
     d4=get_function_decoders(nr4,noise,f4)
     f_qhat=get_spike_estimate(spikes4,h,d4)
 
@@ -1020,7 +995,7 @@ def main():
     # four_c()
     # five_a()
     # five_b()
-    # six_a()
-    six_b()
+    six_a()
+    # six_b()
 
 main()
