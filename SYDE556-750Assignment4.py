@@ -4,6 +4,7 @@
 # Assignment 4
 
 import numpy as np
+import scipy.integrate as integrate
 import matplotlib.pyplot as plt
 plt.rcParams['lines.linewidth'] = 4
 plt.rcParams['font.size'] = 24
@@ -20,8 +21,8 @@ def one_a():
 	dimensions=1
 	tau_rc=0.02
 	tau_ref=0.002
-	noise=0.2
-	lif_model=nengo.LIFRate(tau_rc=tau_rc,tau_ref=tau_ref)
+	noise=0.1
+	lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
 
 	#model definition
 	model = nengo.Network(label='1D Ensemble of LIF Rate Neurons')
@@ -73,7 +74,7 @@ def one_b():
 	dimensions=1
 	tau_rc=0.02
 	tau_ref=0.002
-	noise=0.2
+	noise=0.1
 	averages=5
 	seed=3
 
@@ -89,7 +90,7 @@ def one_b():
 
 			seed=3+a+r*len(radii)
 			rng1=np.random.RandomState(seed=seed)
-			lif_model=nengo.LIFRate(tau_rc=tau_rc,tau_ref=tau_ref)
+			lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
 
 			#generate encoders which are -r OR r
 			# encoders = [[radii[r]*(-1+2*rng1.randint(2))] for i in range(N)]
@@ -145,7 +146,7 @@ def one_c():
 	dimensions=1
 	tau_rc=0.02
 	tau_ref=0.002
-	noise=0.2
+	noise=0.1
 	averages=5
 	seed=3
 
@@ -162,7 +163,7 @@ def one_c():
 
 			seed=3+a+i*len(tau_refs) #unique seed for each iteration
 			rng1=np.random.RandomState(seed=seed)
-			lif_model=nengo.LIFRate(tau_rc=tau_rc,tau_ref=tau_refs[i])
+			lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_refs[i])
 
 			#model definition
 			model = nengo.Network(label='1D LIF Ensemble',seed=seed)
@@ -229,7 +230,7 @@ def one_d():
 	dimensions=1
 	tau_rc=0.02
 	tau_ref=0.002
-	noise=0.2
+	noise=0.1
 	averages=5
 	seed=3
 
@@ -245,7 +246,7 @@ def one_d():
 
 			seed=3+a+i*len(tau_rcs) #unique seed for each iteration
 			rng1=np.random.RandomState(seed=seed)
-			lif_model=nengo.LIFRate(tau_rc=tau_rcs[i],tau_ref=tau_ref)
+			lif_model=nengo.LIF(tau_rc=tau_rcs[i],tau_ref=tau_ref)
 
 			#model definition
 			model = nengo.Network(label='1D LIF Ensemble',seed=seed)
@@ -312,11 +313,11 @@ def two_a():
 	dimensions=1
 	tau_rc=0.02
 	tau_ref=0.002
-	noise=0.2
+	noise=0.1
 	T=0.5
 	seed=3
 
-	lif_model=nengo.LIFRate(tau_rc=tau_rc,tau_ref=tau_ref)
+	lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
 
 	model=nengo.Network(label='Communication Channel')
 
@@ -359,21 +360,21 @@ def two_a():
 	ax.plot(sim.trange(),sim.data[probe_stim],label='stimulus')
 	ax.set_xlabel('time (s)')
 	# ax.set_ylabel('value')
-	ax.set_ylim(0,1)
+	# ax.set_ylim(0,1)
 	legend=ax.legend(loc='best',shadow=True,fontsize=18)
 	ax=fig.add_subplot(312)
 	ax.plot(sim.trange(),sim.data[probe_stim],label='input')
 	ax.plot(sim.trange(),sim.data[probe_ensemble_1],label='ensemble 1 decoded output')
 	ax.set_xlabel('time (s)')
 	# ax.set_ylabel('value')
-	ax.set_ylim(0,1)
+	# ax.set_ylim(0,1)
 	legend=ax.legend(loc='best',shadow=True,fontsize=18)
 	ax=fig.add_subplot(313)
 	ax.plot(sim.trange(),sim.data[probe_ensemble_1],label='input')
 	ax.plot(sim.trange(),sim.data[probe_ensemble_2],label='ensemble 2 decoded output')
 	ax.set_xlabel('time (s)')
 	# ax.set_ylabel('value')
-	ax.set_ylim(0,1)
+	# ax.set_ylim(0,1)
 	legend=ax.legend(loc='best',shadow=True,fontsize=18)
 	plt.tight_layout()
 	plt.show()
@@ -385,11 +386,11 @@ def two_b():
 	dimensions=1
 	tau_rc=0.02
 	tau_ref=0.002
-	noise=0.2
+	noise=0.1
 	T=0.5
 	seed=3
 
-	lif_model=nengo.LIFRate(tau_rc=tau_rc,tau_ref=tau_ref)
+	lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
 
 	model=nengo.Network(label='Communication Channel')
 
@@ -432,14 +433,14 @@ def two_b():
 	ax.plot(sim.trange(),sim.data[probe_stim],label='stimulus')
 	ax.set_xlabel('time (s)')
 	# ax.set_ylabel('value')
-	ax.set_ylim(0,1)
+	# ax.set_ylim(0,1)
 	legend=ax.legend(loc='best',shadow=True,fontsize=18)
 	ax=fig.add_subplot(312)
 	ax.plot(sim.trange(),sim.data[probe_stim],label='input from stimulus')
 	ax.plot(sim.trange(),sim.data[probe_ensemble_1],label='ensemble 1 decoded output')
 	ax.set_xlabel('time (s)')
 	# ax.set_ylabel('value')
-	ax.set_ylim(0,1)
+	# ax.set_ylim(0,1)
 	legend=ax.legend(loc='best',shadow=True,fontsize=18)
 	ax=fig.add_subplot(313)
 	ax.plot(sim.trange(),sim.data[probe_ensemble_1],label='input from ensemble 1')
@@ -451,12 +452,78 @@ def two_b():
 	plt.tight_layout()
 	plt.show()
 
+def three():
+
+	#ensemble parameters
+	N=200
+	dimensions=1
+	tau_rc=0.02
+	tau_ref=0.002
+	tau_feedback=0.05
+	tau_input=0.005
+	noise=0.1
+	T=1.5
+	seed=3
+
+	lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
+
+	model=nengo.Network(label='Communication Channel')
+
+	with model:
+		stimulus=nengo.Node(output=lambda t: 0.9*(0.04<t<0.5))  
+
+		integrator=nengo.Ensemble(N,dimensions,
+									intercepts=Uniform(-1.0,1.0),
+									max_rates=Uniform(100,200),
+									neuron_type=lif_model)
+
+		#define feedforward transformation
+		def feedforward(u):
+			return tau_feedback
+
+		stimulation=nengo.Connection(stimulus,integrator,
+									function=feedforward,
+									synapse=tau_input)
+
+		#define recurrent transformation
+		def recurrent(x):
+			return 1.0*x
+
+		#create recurrent connection
+		channel=nengo.Connection(integrator,integrator,
+									function=recurrent,
+									synapse=tau_feedback,  
+									solver=LstsqNoise(noise=noise))
+
+		#probes
+		probe_stimulus=nengo.Probe(stimulus,synapse=0.01)
+		probe_integrator=nengo.Probe(integrator,synapse=0.01)
+
+	#run the model
+	sim=nengo.Simulator(model,seed=seed)
+	sim.run(T)
+
+	#plot input and integrator value
+	fig=plt.figure(figsize=(16,8))
+	ax=fig.add_subplot(111)
+	ax.plot(sim.trange(),sim.data[probe_stimulus],label='stimulus')
+	ax.plot(sim.trange(),sim.data[probe_integrator],label='integrator')
+	# ax.plot(integrate.quad(
+	# 			lambda t: 0.9*(0.04<t<1.0),0,T),label='ideal')
+	ax.set_xlabel('time (s)')
+	# ax.set_ylabel('value')
+	# ax.set_ylim(0,1)
+	legend=ax.legend(loc='best',shadow=True,fontsize=18)
+	plt.show()
+
+
 def main():
 	# one_a()
 	# one_b()
 	# one_c()
 	# one_d()
 	# two_a()
-	two_b()
+	# two_b()
+	three()
 
 main()
