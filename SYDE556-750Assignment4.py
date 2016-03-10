@@ -25,7 +25,7 @@ def one_a():
 	lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
 
 	#model definition
-	model = nengo.Network(label='1D Ensemble of LIF Rate Neurons')
+	model = nengo.Network(label='1D Ensemble of LIF Neurons')
 	with model:
 		ens_1d = nengo.Ensemble(N,dimensions,
 								intercepts=Uniform(-1.0,1.0),
@@ -35,7 +35,6 @@ def one_a():
 		#generate the decoders
 		connection = nengo.Connection(ens_1d,ens_1d,
 								solver=LstsqNoise(noise=noise))
-
 
 	#create the simulator
 	sim = nengo.Simulator(model)
@@ -79,16 +78,16 @@ def one_b():
 	seed=3
 
 	#objects and lists
-	radii=np.logspace(-4,8,20)
+	radii=np.logspace(-2,2,20)
 	RMSE_list=[]
 	RMSE_stddev_list=[]
 
-	for r in range(len(radii)):
+	for i in range(len(radii)):
 
 		RMSE_list_i=[]
 		for a in range(averages):
 
-			seed=3+a+r*len(radii)
+			seed=3+a+i*len(radii)
 			rng1=np.random.RandomState(seed=seed)
 			lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
 
@@ -101,9 +100,11 @@ def one_b():
 			model = nengo.Network(label='1D LIF Ensemble',seed=seed)
 			with model:
 				ens_1d = nengo.Ensemble(N,dimensions,
-										intercepts=Uniform(-1.0*r,1.0*r),
+										intercepts=Uniform(-1.0,1.0),
 										max_rates=Uniform(100,200),
-										neuron_type=lif_model)#,encoders=encoders)
+										radius=radii[i],
+										#encoders=encoders,
+										neuron_type=lif_model)
 
 				#generate the decoders
 				connection = nengo.Connection(ens_1d,ens_1d,
@@ -147,14 +148,16 @@ def one_c():
 	tau_rc=0.02
 	tau_ref=0.002
 	noise=0.1
-	averages=5
+	averages=10
 	seed=3
 
 	#objects and lists
-	tau_refs=np.logspace(-7,-3,5)
+	tau_refs=np.logspace(-6,-2.333,10)
 	# tau_refs=np.linspace(0.0002,0.0049,10)
 	RMSE_list=[]
 	RMSE_stddev_list=[]
+	eval_points_list=[]
+	activities_list=[]
 
 	for i in range(len(tau_refs)):
 
@@ -182,6 +185,8 @@ def one_c():
 
 			#retrieve evaluation points, activities, and decoders
 			eval_points, activities = tuning_curves(ens_1d,sim)
+			eval_points_list.append(eval_points)
+			activities_list.append(activities)
 			activities_noisy = activities + rng1.normal(
 										scale=noise*np.max(activities),
 										size=activities.shape)
@@ -192,22 +197,6 @@ def one_c():
 
 			#calculate RMSE
 			RMSE_list_i.append(np.sqrt(np.average((eval_points-xhat)**2)))
-
-		#plot tuning curves
-		# fig=plt.figure(figsize=(16,8))
-		# ax=fig.add_subplot(111)
-		# ax.plot(eval_points,activities)
-		# ax.set_xlabel('$x$')
-		# ax.set_ylabel('Firing Rate $a$ (Hz)')
-		# plt.show()
-		# ax=fig.add_subplot(212)
-		# ax.plot(eval_points,eval_points)
-		# ax.plot(eval_points,xhat,
-		# 	label='RMSE=%f' %np.average(RMSE_list_i))
-		# ax.set_xlabel('$x$')
-		# ax.set_ylabel('$\hat{x}$')
-		# legend=ax.legend(loc='best',shadow=True)
-		# plt.show()
 
 		RMSE_list.append(np.average(RMSE_list_i))
 		RMSE_stddev_list.append(np.std(RMSE_list_i))
@@ -221,6 +210,20 @@ def one_c():
 		color='lightgray')
 	ax.set_xlabel('log($\\tau_{ref}$)')
 	ax.set_ylabel('RMSE')
+	plt.show()
+
+	# plot tuning curves
+	fig=plt.figure(figsize=(16,8))
+	ax=fig.add_subplot(211)
+	ax.plot(eval_points_list[0],activities_list[0])
+	ax.set_title('$\\tau_{ref}=%f$' %tau_refs[0])
+	# ax.set_xlabel('$x$')
+	ax.set_ylabel('Firing Rate $a$ (Hz)')
+	ax=fig.add_subplot(212)
+	ax.plot(eval_points_list[-1],activities_list[-1])
+	ax.set_title('$\\tau_{ref}=%f$' %tau_refs[-1])
+	ax.set_xlabel('$x$')
+	ax.set_ylabel('Firing Rate $a$ (Hz)')
 	plt.show()
 
 def one_d():
@@ -238,6 +241,8 @@ def one_d():
 	tau_rcs=np.logspace(-3,2,10)
 	RMSE_list=[]
 	RMSE_stddev_list=[]
+	eval_points_list=[]
+	activities_list=[]
 
 	for i in range(len(tau_rcs)):
 
@@ -265,6 +270,8 @@ def one_d():
 
 			#retrieve evaluation points, activities, and decoders
 			eval_points, activities = tuning_curves(ens_1d,sim)
+			eval_points_list.append(eval_points)
+			activities_list.append(activities)
 			activities_noisy = activities + rng1.normal(
 										scale=noise*np.max(activities),
 										size=activities.shape)
@@ -275,21 +282,6 @@ def one_d():
 
 			#calculate RMSE
 			RMSE_list_i.append(np.sqrt(np.average((eval_points-xhat)**2)))
-
-		#plot tuning curves and representational accuracy
-		# fig=plt.figure(figsize=(16,8))
-		# ax=fig.add_subplot(211)
-		# ax.plot(eval_points,activities)
-		# ax.set_xlabel('$x$')
-		# ax.set_ylabel('Firing Rate $a$ (Hz)')
-		# ax=fig.add_subplot(212)
-		# ax.plot(eval_points,eval_points)
-		# ax.plot(eval_points,xhat,
-		# 	label='RMSE=%f' %np.average(RMSE_list_i))
-		# ax.set_xlabel('$x$')
-		# ax.set_ylabel('$\hat{x}$')
-		# legend=ax.legend(loc='best',shadow=True)
-		# plt.show()
 
 		RMSE_list.append(np.average(RMSE_list_i))
 		RMSE_stddev_list.append(np.std(RMSE_list_i))
@@ -304,6 +296,20 @@ def one_d():
 	# ax.plot(tau_refs,RMSE_list)
 	ax.set_xlabel('log($\\tau_{RC}$)')
 	ax.set_ylabel('RMSE')
+	plt.show()
+
+	# plot tuning curves
+	fig=plt.figure(figsize=(16,8))
+	ax=fig.add_subplot(211)
+	ax.plot(eval_points_list[0],activities_list[0])
+	ax.set_title('$\\tau_{ref}=%f$' %tau_rcs[0])
+	# ax.set_xlabel('$x$')
+	ax.set_ylabel('Firing Rate $a$ (Hz)')
+	ax=fig.add_subplot(212)
+	ax.plot(eval_points_list[-1],activities_list[-1])
+	ax.set_title('$\\tau_{ref}=%f$' %tau_rcs[-1])
+	ax.set_xlabel('$x$')
+	ax.set_ylabel('Firing Rate $a$ (Hz)')
 	plt.show()
 
 def two_template(channel_function):
@@ -494,9 +500,9 @@ def main():
 	# one_a()
 	# one_b()
 	# one_c()
-	# one_d()
-	two_a()
-	two_b()
+	one_d()
+	# two_a()
+	# two_b()
 	# three_a()
 	# three_b()
 	# three_c()
