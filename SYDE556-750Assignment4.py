@@ -41,13 +41,10 @@ def one_a():
 
 	#retrieve evaluation points, activities, and decoders
 	eval_points, activities = tuning_curves(ens_1d,sim)
-	activities_noisy = activities + np.random.normal(
-								scale=noise*np.max(activities),
-								size=activities.shape)
-	decoders = sim.data[connection].weights.T
+	decoders = sim.data[connection].decoders.T
 
 	#calculate the state estimate
-	xhat = np.dot(activities_noisy,decoders)
+	xhat = np.dot(activities,decoders)
 
 	#plot tuning curves
 	fig=plt.figure(figsize=(16,8))
@@ -91,11 +88,6 @@ def one_b():
 			rng1=np.random.RandomState(seed=seed)
 			lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
 
-			#generate encoders which are -r OR r
-			# encoders = [[radii[r]*(-1+2*rng1.randint(2))] for i in range(N)]
-			#generate encoders which are -r TO r
-			# encoders = [[radii[r]*(-1+2*rng1.rand())] for i in range(N)]
-
 			#model definition
 			model = nengo.Network(label='1D LIF Ensemble',seed=seed)
 			with model:
@@ -118,7 +110,7 @@ def one_b():
 			activities_noisy = activities + rng1.normal(
 										scale=noise*np.max(activities),
 										size=activities.shape)
-			decoders = sim.data[connection].weights.T
+			decoders = sim.data[connection].decoders.T
 
 			#calculate the state estimate
 			xhat = np.dot(activities_noisy,decoders)
@@ -190,7 +182,7 @@ def one_c():
 			activities_noisy = activities + rng1.normal(
 										scale=noise*np.max(activities),
 										size=activities.shape)
-			decoders = sim.data[connection].weights.T
+			decoders = sim.data[connection].decoders.T
 
 			#calculate the state estimate
 			xhat = np.dot(activities_noisy,decoders)
@@ -275,7 +267,7 @@ def one_d():
 			activities_noisy = activities + rng1.normal(
 										scale=noise*np.max(activities),
 										size=activities.shape)
-			decoders = sim.data[connection].weights.T
+			decoders = sim.data[connection].decoders.T
 
 			#calculate the state estimate
 			xhat = np.dot(activities_noisy,decoders)
@@ -496,11 +488,135 @@ def three_e():
 	neuron_type = 'spike'
 	three_template(stim_function,neuron_type)
 
+def three_bonus():
+    
+ 	#ensemble parameters
+	N=2000
+	dimensions=4
+	tau_rc=0.02
+	tau_ref=0.002
+	tau=0.02
+	noise=0.001
+	T=15.0
+	seed=3
+
+	#pendulum parameters
+	G = 9.8  # acceleration due to gravity, in m/s^2
+	L1 = 1.0  # length of pendulum 1 in m
+	L2 = 1.0  # length of pendulum 2 in m
+	M1 = 1.0  # mass of pendulum 1 in kg
+	M2 = 1.0  # mass of pendulum 2 in kg
+    
+	# th1 and th2 are the initial angles (degrees)
+	# w10 and w20 are the initial angular velocities (degrees per second)
+	th1 = 120.0
+	w1 = 0.0
+	th2 = -10.0
+	w2 = 0.0
+	t_stim=0.1
+
+	# initial state to push the neurons towards
+	state_init = np.radians([th1, w1, th2, w2])
+    
+	# normal spiking LIF neurons
+	lif_model=nengo.LIF(tau_rc=tau_rc,tau_ref=tau_ref)
+
+	model=nengo.Network(label='Double Pendulum')
+
+	with model:
+
+		#push the model into the initial state using stimulus noes
+		stimulus_2=nengo.Node(output=lambda t: state_init[1]*(0<t<t_stim))
+		stimulus_3=nengo.Node(output=lambda t: state_init[2]*(0<t<t_stim))
+		stimulus_4=nengo.Node(output=lambda t: state_init[3]*(0<t<t_stim))
+		stimulus_1=nengo.Node(output=lambda t: state_init[0]*(0<t<t_stim))
+        
+		#create the ensemble
+		ens1 = nengo.Ensemble(N,dimensions,
+									intercepts=Uniform(-1.0*2.0*np.pi,1.0*2.0*np.pi),
+									max_rates=Uniform(100,200),
+									neuron_type=lif_model)
+
+		#define recurrent transformation
+		def recurrent(state):
+
+			dydx = np.zeros_like(state)
+			dydx[0] = state[1]
+
+			del_ = state[2] - state[0]
+			den1 = (M1 + M2)*L1 - M2*L1*np.cos(del_)*np.cos(del_)
+			dydx[1] = (M2*L1*state[1]*state[1]*np.sin(del_)*np.cos(del_) +
+				M2*G*np.sin(state[2])*np.cos(del_) +
+				M2*L2*state[3]*state[3]*np.sin(del_) -
+				(M1 + M2)*G*np.sin(state[0]))/den1
+
+			dydx[2] = state[3]
+
+			den2 = (L2/L1)*den1
+			dydx[3] = (-M2*L2*state[3]*state[3]*np.sin(del_)*np.cos(del_) +
+				(M1 + M2)*G*np.sin(state[0])*np.cos(del_) -
+				(M1 + M2)*L1*state[1]*state[1]*np.sin(del_) -
+				(M1 + M2)*G*np.sin(state[2]))/den2
+
+			return dydx
+
+		#stimulate the ensemble
+		stim1=nengo.Connection(stimulus_1,ens1[0],transform=tau,synapse=tau)
+		stim2=nengo.Connection(stimulus_2,ens1[1],transform=tau,synapse=tau)
+		stim3=nengo.Connection(stimulus_3,ens1[2],transform=tau,synapse=tau)
+		stim4=nengo.Connection(stimulus_4,ens1[3],transform=tau,synapse=tau)
+
+		#create recurrent connection
+		channel=nengo.Connection(ens1,ens1,
+									function=recurrent,
+									synapse=tau,  
+									solver=LstsqNoise(noise=noise))
+
+		#le probing man
+		probe_pendulum=nengo.Probe(ens1,synapse=tau)
+
+	#run the model
+	sim=nengo.Simulator(model,seed=seed)
+	sim.run(T)
+
+	data=sim.data[probe_pendulum]
+
+	theta1=data[:,0]
+	p1=data[:,1]
+	theta2=data[:,2]
+	p2=data[:,3]
+
+	#transform into x-y coordinates of the respective masses
+	x1 = L1*np.sin(data[:, 0])
+	y1 = -L1*np.cos(data[:, 0])
+	x2 = L2*np.sin(data[:, 2]) + x1
+	y2 = -L2*np.cos(data[:, 2]) + y1
+
+	#debugging
+	# print theta1
+
+	#plot input and integrator value
+	fig=plt.figure(figsize=(16,8))
+	ax=fig.add_subplot(211)
+	ax.plot(sim.trange(),theta1,label='$\\theta_1$')
+	ax.plot(sim.trange(),p1,label='$p_1$')
+	ax.plot(sim.trange(),theta2,label='$\\theta_2$')
+	ax.plot(sim.trange(),p2,label='$p_2$')
+	legend=ax.legend(loc='best',shadow=True)
+	ax=fig.add_subplot(212)
+	ax.plot(x1,y1,label='mass 1')
+	ax.plot(x2,y2,label='mass 2')
+	ax.set_xlabel('x')
+	ax.set_ylabel('y')
+	# ax.set_ylim(0,1)
+	legend=ax.legend(loc='best',shadow=True)
+	plt.show()
+    
 def main():
 	# one_a()
 	# one_b()
 	# one_c()
-	one_d()
+	# one_d()
 	# two_a()
 	# two_b()
 	# three_a()
@@ -508,5 +624,6 @@ def main():
 	# three_c()
 	# three_d()
 	# three_e()
+	three_bonus()
 
 main()
