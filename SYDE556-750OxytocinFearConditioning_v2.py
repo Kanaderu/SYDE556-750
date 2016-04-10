@@ -17,7 +17,7 @@ ens_N=50 #neurons for ensembles
 ens_dim=1 #dimensions for ensembles
 stim_syn=0.01 #synaptic time constant of stimuli to populations
 ens_syn=0.01 #synaptic time constant between ensembles
-learn_rate = 5e-5 #first order conditioning learning rate
+first_order_rate = 5e-5 #first order conditioning learning rate
 learn_syn=0.02
 
 #stimuli
@@ -49,12 +49,19 @@ with model:
 
 	#PAG subpopulations
 	US=nengo.Ensemble(stim_N,1) #US is scalar valued
-	U=nengo.Ensemble(ens_N,ens_dim) #intermediary
-	R=nengo.Ensemble(ens_N,ens_dim) #excited by stim_US through U, recurrent inhibition to dampen
+	U=nengo.Ensemble(ens_N,1) #intermediary
+	R=nengo.Ensemble(ens_N,1) #excited by stim_US through U, recurrent inhibition to dampen
 
 	#Amygdala subpopulations
 	LA=nengo.Ensemble(ens_N,ens_dim) #lateral amygdala, learns associations
-	BA=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala, named BL in Carter
+	BA_fear=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala activated by fear
+	BA_extinct=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala cells activated by extinction
+	BA_int1=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala interneuron
+	BA_int2=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala interneuron
+	ITCd=nengo.Ensemble(ens_N,ens_dim) #intercalated neurons between LA and Ce
+	ITCv=nengo.Ensemble(ens_N,ens_dim) #intercalated neurons between LA and Ce
+	CeL_ON=nengo.Ensemble(ens_N,ens_dim) #ON cells in the lateral central amygdala
+	CeL_OFF=nengo.Ensemble(ens_N,ens_dim) #ON cells in the lateral central amygdala
 	CeM=nengo.Ensemble(ens_N,ens_dim) #medial central amygdala, outputs fear responses
 
 	#Cortex subpopulations
@@ -62,28 +69,46 @@ with model:
 
 	#Hippocampus subpopulations
 	C=nengo.Ensemble(stim_N,stim_dim) #intermediary
+	
+	#Motor population
+	M=nengo.Ensemble(stim_N,stim_dim) #indicates movement or freezing
 
 	#CONNECTIONS ####################################
 
 	#Connections between stimuli and ensembles
 	nengo.Connection(stim_US,US,synapse=stim_syn)
 	nengo.Connection(stim_CS,CS,synapse=stim_syn)
-
-	#Feedforward connections between ensembles
 	nengo.Connection(CS,C,synapse=ens_syn)
-	nengo.Connection(U,R,synapse=ens_syn)
 	nengo.Connection(US,U,synapse=ens_syn)
-	nengo.Connection(LA,BA,synapse=ens_syn)
-	nengo.Connection(BA,CeM,synapse=ens_syn)
+	nengo.Connection(U,R,synapse=ens_syn)
 	
-	#recurrent inhibition on R
-	nengo.Connection(R,R,function=lambda x: -x,synapse=0.01)
+	#Amygdala connections
+	nengo.Connection(LA,BA_fear,synapse=ens_syn) #normal fear circuit
+	nengo.Connection(BA_fear,CeM,synapse=ens_syn)
+	
+	nengo.Connection(LA,ITCd,synapse=ens_syn) #CeL pathway
+	nengo.Connection(ITCd,CeL_OFF,transform=-1,synapse=ens_syn)
+	nengo.Connection(LA,CeL_ON,synapse=ens_syn)
+	nengo.Connection(CeL_ON,CeL_OFF,transform=-1,synapse=ens_syn)
+	nengo.Connection(CeL_OFF,CeM,transform=-1)
+	
+	nengo.Connection(LA,BA_int1,synapse=ens_syn) #BA pathway
+	nengo.Connection(BA_int1,BA_extinct,transform=-0.9,synapse=ens_syn)
+	nengo.Connection(BA_extinct,ITCv,synapse=ens_syn)
+	nengo.Connection(ITCv,CeM,transform=-1,synapse=ens_syn)
+	nengo.Connection(BA_fear,BA_int1,synapse=ens_syn)
+	nengo.Connection(BA_extinct,BA_int2,synapse=ens_syn)
+	nengo.Connection(BA_int2,BA_fear,transform=-0.9,synapse=ens_syn)
+	nengo.Connection(ITCd,ITCv,transform=-1,synapse=ens_syn)
+	
+	#context into the BA pathway
+
+	
+	nengo.Connection(CeM,M,transform=-1,synapse=ens_syn)
 
 	#Learned connections
-	conditioning = nengo.Connection(C,LA,function=lambda x: [0]*ens_dim,synapse=learn_syn)
-	conditioning.learning_rule_type = nengo.PES(learning_rate=learn_rate)
-	nengo.Connection(R, conditioning.learning_rule)
-    
+	first_order = nengo.Connection(C,LA,synapse=learn_syn,learning_rule_type=nengo.PES())
+
 	#PROBES ####################################
 	US_probe=nengo.Probe(US, synapse=0.01)
 	CS_probe=nengo.Probe(CS, synapse=0.01)
