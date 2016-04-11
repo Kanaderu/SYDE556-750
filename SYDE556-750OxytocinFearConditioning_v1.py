@@ -17,23 +17,20 @@ ens_N=50 #neurons for ensembles
 ens_dim=1 #dimensions for ensembles
 stim_syn=0.01 #synaptic time constant of stimuli to populations
 ens_syn=0.01 #synaptic time constant between ensembles
-learn_rate = 5e-5 #first order conditioning learning rate
+learn_rate = 5e-4 #first order conditioning learning rate
 learn_syn=0.02
 
 #stimuli
 def US_function(t):
-    # cycle through the three US
-    if 0<t<1: return 0
-    if 1<=t<=2: return 1
-    if 2<t<3: return 0
+    if 0.8<t<1: return 1
+    if 1.8<t<2: return 1
+    if 2.8<t<3: return 1
     return 0
 
 def CS_function(t):
-    # cycle through the three CS
-    if 0<t<1: return 0
-    if 1<=t<=2: return 1
-    if 2<t<3: return 0
-    if 3<t<4: return 1
+    if 0.7<t<1: return 1
+    if 1.7<t<2: return 1
+    if 2.7<t<3: return 1
     return 0
 
 #model definition
@@ -44,13 +41,14 @@ with model:
 
 	stim_US=nengo.Node(output=US_function)
 	stim_CS=nengo.Node(output=CS_function)
+	stop_learn = nengo.Node([0])
 
 	#ENSEMBLES ####################################
 
 	#PAG subpopulations
 	US=nengo.Ensemble(stim_N,1) #US is scalar valued
 	U=nengo.Ensemble(ens_N,ens_dim) #intermediary
-	R=nengo.Ensemble(ens_N,ens_dim) #excited by stim_US through U, recurrent inhibition to dampen
+	Error=nengo.Ensemble(ens_N,ens_dim) #excited by stim_US through U, recurrent inhibition to dampen
 
 	#Amygdala subpopulations
 	LA=nengo.Ensemble(ens_N,ens_dim) #lateral amygdala, learns associations
@@ -71,18 +69,22 @@ with model:
 
 	#Feedforward connections between ensembles
 	nengo.Connection(CS,C,synapse=ens_syn)
-	nengo.Connection(U,R,synapse=ens_syn)
+	nengo.Connection(U,Error,synapse=ens_syn)
 	nengo.Connection(US,U,synapse=ens_syn)
 	nengo.Connection(LA,BA,synapse=ens_syn)
 	nengo.Connection(BA,CeM,synapse=ens_syn)
 	
 	#recurrent inhibition on R
-	nengo.Connection(R,R,function=lambda x: -x,synapse=0.01)
+# 	Rinhib=nengo.Ensemble(ens_N,ens_dim)
+#  	nengo.Connection(R,Rinhib,transform=1,synapse=0.01)
+#  	nengo.Connection(Rinhib,R,transform=-1,synapse=0.01)
 
-	#Learned connections
+	#Learned connections and Error calculation
 	conditioning = nengo.Connection(C,LA,function=lambda x: [0]*ens_dim,synapse=learn_syn)
 	conditioning.learning_rule_type = nengo.PES(learning_rate=learn_rate)
-	nengo.Connection(R, conditioning.learning_rule)
+	nengo.Connection(Error, conditioning.learning_rule,transform=-1)
+	nengo.Connection(stop_learn, Error.neurons, transform=-10*np.ones((ens_N, ens_dim)))
+	nengo.Connection(CeM, Error,transform=-0.5)
     
 	#PROBES ####################################
 	US_probe=nengo.Probe(US, synapse=0.01)
