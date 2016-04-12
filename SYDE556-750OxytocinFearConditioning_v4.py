@@ -4,6 +4,7 @@
 # Final Project - Oxytocin and Fear Conditioning
 
 import nengo
+from nengo.dists import Choice,Exponential,Uniform
 import nengo_gui
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,37 +17,45 @@ stim_dim=1 #dimensionality of CS and context
 ens_N=50 #neurons for ensembles
 ens_dim=1 #dimensions for ensembles
 tau_stim=0.01 #synaptic time constant of stimuli to populations
+ens_syn=0.01 #synaptic time constant between ensembles
+condition_rate = 5e-4 #first order conditioning learning rate
+extinction_rate = 5e-6 #extinction learning rate
+learn_syn=0.01
 tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
-first_order_rate = 5e-5 #first order conditioning learning rate
-learn_syn=0.02
-
-seed=3
-rng=np.random.RandomState(seed=seed)
-shock_times=np.zeros((40.0/0.001))
-shock_indices_1=rng.uniform(0,7.0/0.001,size=7) #ignore spacing constraint
-shock_indices_2=rng.uniform(10.0/0.001,17.0/0.001,size=7)
-for i in shock_indices_1:
-    shock_times[int(i):int(i)+100]=1
-for i in shock_indices_2:
-    shock_times[int(i):int(i)+100]=1
 
 #stimuli
 def US_function(t):
-    return shock_times[int(t/0.001)]
+    if 0.9<t<1: return 1
+    if 1.9<t<2: return 1
+    if 2.9<t<3: return 1
+    return 0
 
 def CS_function(t):
-    return 1 #always in conditioning box
+    if 0.7<t<1: return 1
+    if 1.7<t<2: return 1
+    if 2.7<t<3: return 1
+    return 0
 
+def Context_function(t):
+    return 1
+    
+def stop_conditioning_function(t): #learning before drug application
+    if 0<t<3: return 0
+    return 1
+
+def stop_extinction_function(t): #for testing
+    return 1
+    
 def oxy_function(t):
-    # if 5<t<6: return 1 #oxytocin application phase
+    if 4<t<5: return 1 #oxytocin application phase
     return 0
 
 def GABA_function(t):
-    # if 7<t<8: return 1 #muscimol application phase
+    if 6<t<7: return 1 #muscimol application phase
     return 0
-    
+
 #model definition
 model=nengo.Network(label='Oxytocin Fear Conditioning')
 with model:
@@ -55,87 +64,96 @@ with model:
 
 	stim_US=nengo.Node(output=US_function)
 	stim_CS=nengo.Node(output=CS_function)
+	stim_Context=nengo.Node(output=Context_function)
 	stim_oxy=nengo.Node(output=oxy_function)
 	stim_GABA=nengo.Node(output=GABA_function)
 	stim_motor=nengo.Node(output=1)
+	stop_conditioning=nengo.Node(output=stop_conditioning_function)
+	stop_extinction=nengo.Node(output=stop_extinction_function)
 
 	#ENSEMBLES ####################################
 
 	#PAG subpopulations
-	US=nengo.Ensemble(stim_N,1) #US is scalar valued
-	U=nengo.Ensemble(ens_N,1) #intermediary
-	R=nengo.Ensemble(ens_N,1) #excited by stim_US through U, recurrent inhibition to dampen
-
+	U=nengo.Ensemble(ens_N,ens_dim) #intermediary#
+    #difference between US and appropriate resopnse (freezing), 0-1 to prevent extinction learning
+	Error_ON=nengo.Ensemble(ens_N, ens_dim, encoders=Choice([[1]]), eval_points=Uniform(0, 1))
+	M=nengo.Ensemble(stim_N,stim_dim) #indicates movement or freezing
+	Heart=nengo.Ensemble(stim_N,stim_dim) #indicates heart rate
+	
 	#Amygdala subpopulations
 	LA=nengo.Ensemble(ens_N,ens_dim) #lateral amygdala, learns associations
 	BA_fear=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala activated by fear
 	BA_extinct=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala cells activated by extinction
-	BA_int1=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala interneuron
-	BA_int2=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala interneuron
-	ITCd=nengo.Ensemble(ens_N,ens_dim) #intercalated neurons between LA and Ce
-	ITCv=nengo.Ensemble(ens_N,ens_dim) #intercalated neurons between LA and Ce
+	BA_int1=nengo.Ensemble(ens_N,ens_dim,
+	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron
+	BA_int2=nengo.Ensemble(ens_N,ens_dim,
+	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron
+	ITCd=nengo.Ensemble(ens_N,ens_dim,
+        	encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
+	ITCv=nengo.Ensemble(ens_N,ens_dim,
+        	encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
 	CeL_ON=nengo.Ensemble(ens_N,ens_dim) #ON cells in the lateral central amygdala
 	CeL_OFF=nengo.Ensemble(ens_N,ens_dim) #ON cells in the lateral central amygdala
 	CeM=nengo.Ensemble(ens_N,ens_dim) #medial central amygdala, outputs fear responses
 	CeM_DVC=nengo.Ensemble(ens_N,ens_dim) #controlls output to heart
 
-	#Cortex subpopulations
-	CS=nengo.Ensemble(stim_N,stim_dim) #excited by stim_CS through C
+	#Cortex/Thalamus subpopulations
+	C=nengo.Ensemble(stim_N,stim_dim) #excited by stim_CS
 
 	#Hippocampus subpopulations
-	C=nengo.Ensemble(stim_N,stim_dim) #intermediary
-	
-	#Motor population
-	M=nengo.Ensemble(stim_N,stim_dim) #indicates movement or freezing
-	Heart=nengo.Ensemble(stim_N,stim_dim) #indicates heart rate
+	Context=nengo.Ensemble(stim_N,stim_dim) #excited by stim_CS
+	Error_OFF=nengo.Ensemble(ens_N, ens_dim, encoders=Choice([[1]]), eval_points=Uniform(0,1)) #no evidence
 
 	#CONNECTIONS ####################################
 
 	#Connections between stimuli and ensembles
-	nengo.Connection(stim_US,US,synapse=tau_stim)
-	nengo.Connection(stim_CS,CS,synapse=tau_stim)
+	nengo.Connection(stim_US,U,synapse=tau_stim)
+	nengo.Connection(stim_CS,C,synapse=tau_stim)
+	nengo.Connection(stim_Context,Context,synapse=tau_stim)
 	nengo.Connection(stim_motor,M,synapse=tau_stim) #move by default
 	nengo.Connection(stim_motor,Heart,synapse=tau_stim) #heartbeat by default
-	nengo.Connection(stim_oxy,CeL_OFF,transform=5,synapse=tau_drug)
-	nengo.Connection(stim_GABA,CeM,synapse=tau_drug)
-	nengo.Connection(stim_GABA,CeM_DVC,synapse=tau_drug)
-	
-	#intermediate connections
-	nengo.Connection(CS,C,synapse=tau_Glut)
-	nengo.Connection(US,U,synapse=tau_Glut)
-	nengo.Connection(U,R,synapse=tau_Glut)
+	nengo.Connection(stim_oxy,CeL_OFF,synapse=tau_drug)
+	nengo.Connection(stim_GABA,CeL_OFF,synapse=tau_drug)
+	nengo.Connection(stim_GABA,CeL_ON,synapse=tau_drug)
 	
 	#Amygdala connections
-	nengo.Connection(LA,BA_fear,synapse=tau_Glut) #normal fear circuit
-	nengo.Connection(BA_fear,CeM,synapse=tau_Glut)
+	nengo.Connection(LA,BA_fear,synapse=ens_syn) #LA pathway: normal fear circuit
+	nengo.Connection(BA_fear,CeM,synapse=ens_syn)
 	
-	nengo.Connection(LA,ITCd,synapse=tau_Glut) #CeL pathway
-	nengo.Connection(ITCd,CeL_OFF,transform=-1,synapse=tau_GABA)
-	nengo.Connection(LA,CeL_ON,synapse=tau_Glut)
-	nengo.Connection(CeL_ON,CeL_OFF,transform=-1,synapse=tau_GABA) #OFF cells inhibit M
-	nengo.Connection(CeL_ON,CeM,synapse=tau_GABA) #ON cells excite M and Heart
+	nengo.Connection(LA,ITCd,synapse=ens_syn) #CeL pathway: oxytocin modulated
+	nengo.Connection(ITCd,CeL_OFF,transform=-1,synapse=ens_syn)
+	nengo.Connection(LA,CeL_ON,synapse=ens_syn)
+	nengo.Connection(CeL_ON,CeL_OFF,transform=-1,synapse=ens_syn)
 	nengo.Connection(CeL_ON,CeM_DVC,synapse=tau_GABA)
-	nengo.Connection(CeL_OFF,CeM,transform=-2) #2x stronger than BA pathway
+	nengo.Connection(CeL_OFF,CeM,transform=-1)
 	
-	nengo.Connection(LA,BA_int1,synapse=tau_Glut) #BA pathway
-	nengo.Connection(BA_int1,BA_extinct,transform=-0.9,synapse=tau_GABA)
-	nengo.Connection(BA_extinct,ITCv,synapse=tau_Glut)
-	nengo.Connection(ITCv,CeM,transform=-1,synapse=tau_GABA)
-	nengo.Connection(BA_fear,BA_int1,synapse=tau_Glut)
-	nengo.Connection(BA_extinct,BA_int2,synapse=tau_Glut)
-	nengo.Connection(BA_int2,BA_fear,transform=-0.9,synapse=tau_GABA)
-	nengo.Connection(ITCd,ITCv,transform=-1,synapse=tau_GABA)
+	nengo.Connection(LA,BA_int1,synapse=ens_syn) #BA pathway: extinction circuit
+	nengo.Connection(BA_int1,BA_extinct,transform=-1,synapse=ens_syn)
+	nengo.Connection(BA_extinct,ITCv,synapse=ens_syn)
+	nengo.Connection(ITCv,CeM,transform=-1,synapse=ens_syn)
+	nengo.Connection(BA_fear,BA_int1,synapse=ens_syn)
+	nengo.Connection(BA_extinct,BA_int2,synapse=ens_syn)
+	nengo.Connection(BA_int2,BA_fear,transform=-1,synapse=ens_syn)
+	nengo.Connection(ITCd,ITCv,transform=-1,synapse=ens_syn)
 	
-	#context into the BA pathway
-
-	#motor output (negative = freezing)
-	nengo.Connection(CeM,M,transform=-1,synapse=tau_GABA)
+	#motor output
+	nengo.Connection(CeM,M,transform=-1,synapse=ens_syn)
 	nengo.Connection(CeM_DVC,Heart,transform=-1,synapse=tau_GABA)
-
+	
 	#Learned connections
-	first_order = nengo.Connection(C,LA,synapse=learn_syn,learning_rule_type=nengo.PES())
+	conditioning=nengo.Connection(C,LA,function=lambda x: [0]*ens_dim,synapse=learn_syn)
+	extinction=nengo.Connection(Context,BA_extinct,function=lambda x: [0]*ens_dim,synapse=learn_syn)
+	conditioning.learning_rule_type=nengo.PES(learning_rate=condition_rate)
+	extinction.learning_rule_type=nengo.PES(learning_rate=extinction_rate)
+	
+	#Error calculations
+	nengo.Connection(Error_ON, conditioning.learning_rule, transform=-1)
+	nengo.Connection(U,Error_ON,transform=1,synapse=ens_syn)
+	nengo.Connection(CeM, Error_ON,transform=-1,synapse=learn_syn)
 
-	#PROBES ####################################
-	US_probe=nengo.Probe(US, synapse=0.01)
-	CS_probe=nengo.Probe(CS, synapse=0.01)
-	CeM_probe = nengo.Probe(CeM, synapse=0.01)
+	nengo.Connection(Error_OFF, extinction.learning_rule, transform=-1)
+	nengo.Connection(U, Error_OFF,transform=-1,synapse=learn_syn)
+	nengo.Connection(CeM, Error_OFF,transform=1,synapse=learn_syn)
+
+	nengo.Connection(stop_conditioning, Error_ON.neurons, transform=-10*np.ones((ens_N, ens_dim)))
+	nengo.Connection(stop_extinction, Error_OFF.neurons, transform=-10*np.ones((ens_N, ens_dim)))
