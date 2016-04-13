@@ -28,15 +28,15 @@ tau_Glut=0.01 #combination of AMPA and NMDA
 #stimuli
 t_train=20
 t_control=1
-t_oxy=20
+t_drug=20
 t_extinction=20
 dt=0.001
 stim_length=0.1
 
-def make_US_array():
+def make_US_array(): #1s sim time = 1min real time
 	rng=np.random.RandomState()
-	US_array=np.zeros((t_train/dt))
-	US_times=rng.randint(0,7.0/dt,7)
+	US_array=np.zeros((t_train/dt)) #10 minute training intervals (last 3 min no shock)
+	US_times=rng.randint(0,7.0/dt,7) #7 shocks randomly spaced in 7 minutes
 	US_times2=rng.randint(10.0/dt,17.0/dt,7)
 	for i in US_times:
 	    US_array[i:i+stim_length/dt]=1
@@ -62,11 +62,9 @@ def stop_extinction_function(t): #for testing
     return 0
     
 def oxy_function(t):
-    if t_train+t_control<t<t_train+t_control+t_oxy and subject=='experiment': 
+    if t_train+t_control<t<t_train+t_control+t_drug and subject=='experiment': 
     	return 0.7 #oxytocin application phase
     return 0
-
-
 
 
 
@@ -188,11 +186,11 @@ for i in range(n_trials):
 	subject='experiment'
 	print 'Running %s trial %s...' %(subject,i)
 	sim=nengo.Simulator(model)
-	sim.run(t_train+t_control+t_oxy+1+t_extinction)
+	sim.run(t_train+t_control+t_drug+1+t_extinction)
 
 	motor_value_control=sim.data[motor_probe][t_train/dt:(t_train+t_control)/dt]
-	motor_value_oxy=sim.data[motor_probe][(t_train+t_control)/dt:(t_train+t_control+t_oxy)/dt]
-	motor_value_extinct=sim.data[motor_probe][(t_train+t_control+t_oxy+1)/dt:(t_train+t_control+t_oxy+1+t_extinction)/dt]
+	motor_value_oxy=sim.data[motor_probe][(t_train+t_control)/dt:(t_train+t_control+t_drug)/dt]
+	motor_value_extinct=sim.data[motor_probe][(t_train+t_control+t_drug+1)/dt:(t_train+t_control+t_drug+1+t_extinction)/dt]
 
 	freezing_control_list.append(1.0-1.0*np.average(motor_value_control))
 	freezing_oxy_list.append(1.0-1.0*np.average(motor_value_oxy))
@@ -215,11 +213,11 @@ for i in range(n_trials):
 	subject='control'
 	print 'Running %s trial %s...' %(subject,i)
 	sim=nengo.Simulator(model)
-	sim.run(t_train+t_control+t_oxy+1+t_extinction)
+	sim.run(t_train+t_control+t_drug+1+t_extinction)
 
 	motor_value_control=sim.data[motor_probe][t_train/dt:(t_train+t_control)/dt]
-	motor_value_oxy=sim.data[motor_probe][(t_train+t_control)/dt:(t_train+t_control+t_oxy)/dt]
-	motor_value_extinct=sim.data[motor_probe][(t_train+t_control+t_oxy+1)/dt:(t_train+t_control+t_oxy+1+t_extinction)/dt]
+	motor_value_oxy=sim.data[motor_probe][(t_train+t_control)/dt:(t_train+t_control+t_drug)/dt]
+	motor_value_extinct=sim.data[motor_probe][(t_train+t_control+t_drug+1)/dt:(t_train+t_control+t_drug+1+t_extinction)/dt]
 
 	freezing_control_list_2.append(1.0-1.0*np.average(motor_value_control))
 	freezing_oxy_list_2.append(1.0-1.0*np.average(motor_value_oxy))

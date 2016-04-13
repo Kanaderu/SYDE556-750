@@ -26,46 +26,65 @@ tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
 
 #stimuli
-t_train=20
-t_control=1
-t_oxy=20
-t_extinction=20
 dt=0.001
-stim_length=0.1
+tt=10.0/60.0
+nt=9.5/60.0
+st=0.5/60.0
+wt=1.0
+t_train=int(5*(wt+tt)/dt)*dt
+t_test=t_train
+subject='saline-saline'
 
-def make_US_array():
+def make_US_CS_arrays(): #1s sim time = 1min (60s) real time
 	rng=np.random.RandomState()
-	US_array=np.zeros((t_train/dt))
-	US_times=rng.randint(0,7.0/dt,7)
-	US_times2=rng.randint(10.0/dt,17.0/dt,7)
-	for i in US_times:
-	    US_array[i:i+stim_length/dt]=1
-	for i in US_times2:
-	    US_array[i:i+stim_length/dt]=1
-	return US_array
+	CS_array=np.zeros((int(t_train/dt)))
+	US_array=np.zeros((int(t_train/dt)))
+	for i in range(5):
+		print i, i*(wt+tt)/dt, (i+1)*(tt)/dt
+		CS_array[i*(wt+tt)/dt : (i+1)*(tt)/dt]=1 #10 sec of tone
+		print CS_array[i*(wt+tt)/dt : (i+1)*(tt)/dt]
+		US_array[i*(wt+tt)/dt : (i+1)*(nt)/dt]=0 #9.5 sec of nothing
+		US_array[(i+1)*(nt)/dt : (i+1)*(tt)/dt]=1 #0.5 sec of shock
+		CS_array[(i+1)*(tt)/dt : (i+1)*(wt+tt)/dt]=0 #1 min delay
+		US_array[(i+1)*(tt)/dt : (i+1)*(wt+tt)/dt]=0 #1 min delay
+	print CS_array.sum()
+	return CS_array,US_array 
 
 def US_function(t):
-    if t<t_train: return US_array[int(t/dt)]
+    if t<t_train:
+    	return US_array[int(t/dt)]
     return 0
 
 def CS_function(t):
-    return 1
+    if t<t_train:
+    	return CS_array[int(t/dt)]
+    elif t_train<=t<t_train+t_test and experiment=='tone':
+    	return CS_array[int((t-t_train)/dt)]
+    return 0
 
 def Context_function(t):
-    return CS_function(t)
-    
-def stop_conditioning_function(t): #learning before testing phase
-    if 0<t<t_train: return 0
+    if t<t_train:
+    	return 1
+    elif t_train<=t<t_train+t_test and experiment=='context':
+    	return 1
     return 0
 
-def stop_extinction_function(t): #for testing
-    return 0
-    
-def oxy_function(t):
-    if t_train+t_control<t<t_train+t_control+t_oxy and subject=='experiment': 
-    	return 0.7 #oxytocin application phase
+def gaba_function(t):
+    if subject=='saline-saline': 
+    	return 0.0
+    elif subject=='muscimol-saline' and t<t_train:
+    	return 1.0
+    elif subject=='saline-muscimol' and t_train<=t<t_train+t_test:
+    	return 1.0    	
+    elif subject=='muscimol-muscimol':
+    	return 1.0   
     return 0
 
+def stop_conditioning_function(t):
+    return 0
+
+def stop_extinction_function(t):
+    return 0
 
 
 
@@ -76,17 +95,18 @@ def oxy_function(t):
 model=nengo.Network(label='Oxytocin Fear Conditioning')
 with model:
 
-	#STIMULI ####################################
-	US_array=make_US_array()
+	#STIMULI ########################################################################
+
+	CS_array,US_array=make_US_CS_arrays()
 	stim_US=nengo.Node(output=US_function)
 	stim_CS=nengo.Node(output=CS_function)
 	stim_Context=nengo.Node(output=Context_function)
-	stim_oxy=nengo.Node(output=oxy_function)
+	stim_gaba=nengo.Node(output=gaba_function)
 	stim_motor=nengo.Node(output=1)
 	stop_conditioning=nengo.Node(output=stop_conditioning_function)
 	stop_extinction=nengo.Node(output=stop_extinction_function)
 
-	#ENSEMBLES ####################################
+	#ENSEMBLES ########################################################################
 
 	#PAG subpopulations
 	U=nengo.Ensemble(ens_N,ens_dim) #intermediary#
@@ -99,9 +119,9 @@ with model:
 	BA_fear=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala activated by fear
 	BA_extinct=nengo.Ensemble(ens_N,ens_dim) #basolateral amygdala cells activated by extinction
 	BA_int1=nengo.Ensemble(ens_N,ens_dim,
-	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron
+	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 1
 	BA_int2=nengo.Ensemble(ens_N,ens_dim,
-	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron
+	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 2
 	ITCd=nengo.Ensemble(ens_N,ens_dim,
         	encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
 	ITCv=nengo.Ensemble(ens_N,ens_dim,
@@ -117,26 +137,28 @@ with model:
 	Context=nengo.Ensemble(stim_N,stim_dim) #excited by stim_CS
 	Error_OFF=nengo.Ensemble(ens_N, ens_dim, encoders=Choice([[1]]), eval_points=Uniform(0,1)) #no evidence
 
-	#CONNECTIONS ####################################
+	#CONNECTIONS ########################################################################
 
 	#Connections between stimuli and ensembles
 	nengo.Connection(stim_US,U,synapse=tau_stim)
 	nengo.Connection(stim_CS,C,synapse=tau_stim)
 	nengo.Connection(stim_Context,Context,synapse=tau_stim)
 	nengo.Connection(stim_motor,Motor,synapse=tau_stim) #move by default
-	nengo.Connection(stim_oxy,CeL_OFF,synapse=tau_drug)
+	#GABA application targets are local GABAergic interneurons in LA which control 
+	#excitability-dependent synaptic plasticity, and therefore fear conditioning
+	#(Duvarci and Pare 2014, Figure 1 Muller et al 1997)
+	nengo.Connection(stim_gaba,LA,transform=-1) #simple approximation; next try recurrent network?
+	# nengo.Connection(stim_gaba,CeM_DAG,synapse=tau_drug)
 	
 	#Amygdala connections
 	nengo.Connection(LA,BA_fear,synapse=ens_syn) #LA pathway: normal fear circuit
 	nengo.Connection(BA_fear,CeM_DAG,synapse=ens_syn)
-
-	nengo.Connection(LA,ITCd,synapse=ens_syn) #CeL pathway: oxytocin modulated
+	nengo.Connection(LA,ITCd,synapse=ens_syn) #CeL pathway
 	nengo.Connection(ITCd,CeL_OFF,transform=-1,synapse=ens_syn)
 	nengo.Connection(LA,CeL_ON,synapse=ens_syn)
 	nengo.Connection(CeL_ON,CeL_OFF,transform=-1,synapse=ens_syn)
 	nengo.Connection(CeL_ON,CeM_DAG,synapse=tau_GABA)
 	nengo.Connection(CeL_OFF,CeM_DAG,transform=-1)
-	
 	nengo.Connection(LA,BA_int1,synapse=ens_syn) #BA pathway: extinction circuit
 	nengo.Connection(BA_int1,BA_extinct,transform=-1,synapse=ens_syn)
 	nengo.Connection(BA_extinct,ITCv,synapse=ens_syn)
@@ -159,15 +181,14 @@ with model:
 	nengo.Connection(Error_ON, conditioning.learning_rule, transform=-1)
 	nengo.Connection(U,Error_ON,transform=1,synapse=ens_syn)
 	nengo.Connection(CeM_DAG, Error_ON,transform=-1,synapse=learn_syn)
-
 	nengo.Connection(Error_OFF, extinction.learning_rule, transform=-0.5)
 	nengo.Connection(U, Error_OFF,transform=-1,synapse=learn_syn)
 	nengo.Connection(CeM_DAG, Error_OFF,transform=1,synapse=learn_syn)
-
 	nengo.Connection(stop_conditioning, Error_ON.neurons, transform=-10*np.ones((ens_N, ens_dim)))
 	nengo.Connection(stop_extinction, Error_OFF.neurons, transform=-10*np.ones((ens_N, ens_dim)))
 
-	#PROBES ####################################
+	#PROBES ########################################################################
+
 	CeM_DAG_voltage=nengo.Probe(CeM_DAG.neurons,'voltage')
 	motor_probe=nengo.Probe(Motor,synapse=0.01)
 
@@ -177,75 +198,34 @@ with model:
 
 
 '''simulation and data plotting ###############################################
-Try to reproduce figure S2B from Viviani et al (2011)'''
+Try to reproduce figure 3 from Muller et al (2007)'''
 
-n_trials=10
-freezing_control_list=[]
-freezing_oxy_list=[]
-freezing_extinction_list=[]
-
+n_trials=2
+freezing=[]
 for i in range(n_trials):
-	subject='experiment'
-	print 'Running %s trial %s...' %(subject,i)
+	experiment='tone'
+	subject='saline-saline'
+	print 'Running group \"%s\" drug \"%s\" trial %s...' %(experiment,subject,i)
 	sim=nengo.Simulator(model)
-	sim.run(t_train+t_control+t_oxy+1+t_extinction)
-
-	motor_value_control=sim.data[motor_probe][t_train/dt:(t_train+t_control)/dt]
-	motor_value_oxy=sim.data[motor_probe][(t_train+t_control)/dt:(t_train+t_control+t_oxy)/dt]
-	motor_value_extinct=sim.data[motor_probe][(t_train+t_control+t_oxy+1)/dt:(t_train+t_control+t_oxy+1+t_extinction)/dt]
-
-	freezing_control_list.append(1.0-1.0*np.average(motor_value_control))
-	freezing_oxy_list.append(1.0-1.0*np.average(motor_value_oxy))
-	freezing_extinction_list.append(1.0-1.0*np.average(motor_value_extinct))
-
-avg_freezing_control=np.average(freezing_control_list)
-avg_freezing_oxy=np.average(freezing_oxy_list)
-avg_freezing_extinction=np.average(freezing_extinction_list)
-std_freezing_control=np.std(freezing_control_list)
-std_freezing_oxy=np.std(freezing_oxy_list)
-std_freezing_extinction=np.std(freezing_extinction_list)
-
-
-n_trials=10
-freezing_control_list_2=[]
-freezing_oxy_list_2=[]
-freezing_extinction_list_2=[]
-
-for i in range(n_trials):
-	subject='control'
-	print 'Running %s trial %s...' %(subject,i)
-	sim=nengo.Simulator(model)
-	sim.run(t_train+t_control+t_oxy+1+t_extinction)
-
-	motor_value_control=sim.data[motor_probe][t_train/dt:(t_train+t_control)/dt]
-	motor_value_oxy=sim.data[motor_probe][(t_train+t_control)/dt:(t_train+t_control+t_oxy)/dt]
-	motor_value_extinct=sim.data[motor_probe][(t_train+t_control+t_oxy+1)/dt:(t_train+t_control+t_oxy+1+t_extinction)/dt]
-
-	freezing_control_list_2.append(1.0-1.0*np.average(motor_value_control))
-	freezing_oxy_list_2.append(1.0-1.0*np.average(motor_value_oxy))
-	freezing_extinction_list_2.append(1.0-1.0*np.average(motor_value_extinct))
-
-avg_freezing_control_2=np.average(freezing_control_list_2)
-avg_freezing_oxy_2=np.average(freezing_oxy_list_2)
-avg_freezing_extinction_2=np.average(freezing_extinction_list_2)
-std_freezing_control_2=np.std(freezing_control_list_2)
-std_freezing_oxy_2=np.std(freezing_oxy_list_2)
-std_freezing_extinction_2=np.std(freezing_extinction_list_2)
+	sim.run(t_train+t_test)
+	motor_value=sim.data[motor_probe][int(t_train/dt):int((t_train+t_test)/dt)]
+	freezing.append(1.0-1.0*np.average(motor_value))
+avg_freezing=np.average(freezing)
+std_freezing=np.std(freezing)
 
 #Bar Plots
-height_freezing=[avg_freezing_control,avg_freezing_oxy,avg_freezing_extinction]
-std_freezing=[std_freezing_control,std_freezing_oxy,std_freezing_extinction]
-height_freezing_2=[avg_freezing_control_2,avg_freezing_oxy_2,avg_freezing_extinction_2]
-std_freezing_2=[std_freezing_control_2,std_freezing_oxy_2,std_freezing_extinction_2]
+height_freezing=[avg_freezing]
+std_freezing=[std_freezing]
 
 fig=plt.figure(figsize=(16,8))
 ax=fig.add_subplot(111)
-ax.bar(np.arange(len(height_freezing_2)),height_freezing_2,
+ax.bar(np.arange(len(height_freezing)),height_freezing,
 		width=0.33,yerr=std_freezing,label='control',color='b')
-ax.bar(np.arange(len(height_freezing))+0.33,height_freezing,
-		width=0.33,yerr=std_freezing,label='experiment',color='g')
+# ax.bar(np.arange(len(height_freezing))+0.33,height_freezing,
+# 		width=0.33,yerr=std_freezing,label='experiment',color='g')
 legend=ax.legend(loc='best',shadow=True)
-ax.set_xticks([.5,1.5,2.5])
-ax.set_xticklabels(('post-training', 'oxytocin applied', 'post-extinction'))
+ax.set_xticks([.5,1.5,2.5,3.5])
+ax.set_xticklabels(('sal-sal', 'musc-sal','sal-musc', 'musc-musc'))
 ax.set_ylabel('Freezing')
+plt.title('Tone')
 plt.show()
