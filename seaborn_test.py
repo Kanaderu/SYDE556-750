@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 n_trials=3
-freezing=pd.DataFrame({})
+freezing={}
 for exp in ['tone']:
 	print exp
 	freezing[exp]={}
@@ -15,8 +15,8 @@ for exp in ['tone']:
 		for i in range(n_trials):
 			freezing[exp][subj][i]=(np.random.uniform(0,1))
 			print freezing[exp][subj]
-
-
+data=pd.DataFrame(freezing)
+print data
 f, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 8), sharex=True)
 x="exp"
 y="freezing"

@@ -18,7 +18,7 @@ N=100 #neurons for ensembles
 dim=1 #dimensions for ensembles
 tau_stim=0.01 #synaptic time constant of stimuli to populations
 tau=0.01 #synaptic time constant between ensembles
-condition_rate = 5e-5 #first order conditioning learning rate
+condition_rate = 5e-4 #first order conditioning learning rate
 extinction_rate = 5e-7 #extinction learning rate
 tau_learn=0.01
 tau_drug=0.1
@@ -29,11 +29,11 @@ tau_LA_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of localit
 #stimuli
 dt=0.001 #timestep
 tt=10.0/60.0 #tone time
-nt=9.0/60.0 #nothing time #experimeng nt=9.5/60,st=0.5/60,n2t=0
-st=1.0/60.0 #shock time
+nt=7.0/60.0 #nothing time #experimeng nt=9.5/60,st=0.5/60,n2t=0
+st=3.0/60.0 #shock time
 n2t=0.0/60.0 #nothing time
 wt=1.0 #wait/delay time
-pairings=20
+pairings=10
 t_train=int(pairings*(wt+tt)/dt)*dt
 t_test=t_train
 subject='saline-saline'
