@@ -29,11 +29,12 @@ tau_LA_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of localit
 #stimuli
 dt=0.001 #timestep
 tt=10.0/60.0 #tone time
-nt=6.0/60.0 #nothing time #experimeng nt=9.5/60,st=0.5/60,n2t=0
-st=2.0/60.0 #shock time
-n2t=2.0/60.0 #nothing time
+nt=9.0/60.0 #nothing time #experimeng nt=9.5/60,st=0.5/60,n2t=0
+st=1.0/60.0 #shock time
+n2t=0.0/60.0 #nothing time
 wt=1.0 #wait/delay time
-t_train=int(5*(wt+tt)/dt)*dt
+pairings=20
+t_train=int(pairings*(wt+tt)/dt)*dt
 t_test=t_train
 subject='saline-saline'
 gaba_min=0.0
@@ -43,7 +44,7 @@ def make_US_CS_arrays(): #1s sim time = 1min (60s) real time
 	rng=np.random.RandomState()
 	CS_array=np.zeros((int(t_train/dt)))
 	US_array=np.zeros((int(t_train/dt)))
-	for i in range(5):
+	for i in range(pairings):
 		CS_array[i*(wt+tt)/dt : (i*(wt+tt)+tt)/dt]=1 # tone
 		US_array[i*(wt+tt)/dt : (i*(wt+tt)+nt)/dt]=0 # nothing
 		US_array[(i*(wt+tt)+nt)/dt : (i*(wt+tt)+nt+st)/dt]=2 # shock
@@ -88,7 +89,7 @@ def gaba_function(t): #activate GABA receptors in LA => inhibition of LA => no l
 def LA_recurrent(x):
 	state=x[:-1]
 	inhibit=x[-1]
-	feedback=min(0,state*(-1.0*inhibit))
+	feedback=state*(-1.0*inhibit)
 	return feedback
 
 
@@ -140,7 +141,7 @@ with model:
 
 	#Hippocampus subpopulations
 	Context=nengo.Ensemble(stim_N,stim_dim) #excited by stim_CS
-	Error_OFF=nengo.Ensemble(N, dim, encoders=Choice([[1]]), eval_points=Uniform(0,1)) #no evidence
+	# Error_OFF=nengo.Ensemble(N, dim, encoders=Choice([[1]]), eval_points=Uniform(0,1)) #no evidence
 
 	#CONNECTIONS ########################################################################
 
@@ -172,22 +173,22 @@ with model:
 	nengo.Connection(PV,BA_fear,transform=-1,synapse=tau)
 	nengo.Connection(ITCd,ITCv,transform=-1,synapse=tau)
 	
-	#motor output
-	nengo.Connection(CeM_DAG,Motor,transform=-1,synapse=tau)
+	#Motor output
+	nengo.Connection(CeM_DAG,Motor,transform=-1,synapse=tau) #high=movement
 
 	#Learned connections
 	conditioning=nengo.Connection(C,LA,function=lambda x: [0]*dim,synapse=tau_learn)
-	extinction=nengo.Connection(Context,BA_extinct,function=lambda x: [0]*dim,synapse=tau_learn)
+	# extinction=nengo.Connection(Context,BA_extinct,function=lambda x: [0]*dim,synapse=tau_learn)
 	conditioning.learning_rule_type=nengo.PES(learning_rate=condition_rate)
-	extinction.learning_rule_type=nengo.PES(learning_rate=extinction_rate)
+	# extinction.learning_rule_type=nengo.PES(learning_rate=extinction_rate)
 	
 	#Error calculations
 	nengo.Connection(Error_ON, conditioning.learning_rule, transform=-1)#, function=lambda x: max(x,0))
 	nengo.Connection(U,Error_ON,transform=1,synapse=tau)
 	nengo.Connection(CeM_DAG, Error_ON,transform=-1,synapse=tau_learn)
-	nengo.Connection(Error_OFF, extinction.learning_rule, transform=-1)
-	nengo.Connection(U, Error_OFF,transform=-1,synapse=tau_learn)
-	nengo.Connection(CeM_DAG, Error_OFF,transform=1,synapse=tau_learn)
+	# nengo.Connection(Error_OFF, extinction.learning_rule, transform=-1)
+	# nengo.Connection(U, Error_OFF,transform=-1,synapse=tau_learn)
+	# nengo.Connection(CeM_DAG, Error_OFF,transform=1,synapse=tau_learn)
 
 	#PROBES ########################################################################
 
@@ -201,7 +202,8 @@ with model:
 '''simulation and data plotting ###############################################
 Try to reproduce figure 3 from Muller et al (2007)'''
 
-n_trials=2
+n_trials=5
+
 avg_freezing={}
 std_freezing={}
 freezing={}
@@ -219,7 +221,7 @@ for exp in ['tone']:#,'context']:
 		freezing[subject]=[]
 		timeseries[subject]=[]
 		for i in range(n_trials):
-			print 'Running group \"%s\" drug \"%s\" trial %s...' %(experiment,subject,i)
+			print 'Running group \"%s\" drug \"%s\" trial %s...' %(experiment,subject,i+1)
 			sim=nengo.Simulator(model)
 			sim.run(t_train+t_test)
 			motor_values=sim.data[motor_probe][int(t_train/dt):int((t_train+t_test)/dt)]
@@ -252,7 +254,7 @@ x_range=sim.trange()[int(t_train/dt):int((t_train+t_test)/dt)]
 y1=np.array(avg_timeseries['tone']['saline-saline']).ravel()
 e1=np.array(std_timeseries['tone']['saline-saline']).ravel()
 ax2.plot(x_range,y1,label='saline-saline')
-ax2.fill_between(x_range,y1-e1,y1+e1,color='lightgray',interpolate=True)
+ax2.fill_between(x_range,y1-e1,y1+e1,color='lightgray')
 y2=np.array(avg_timeseries['tone']['muscimol-saline']).ravel()
 e2=np.array(std_timeseries['tone']['muscimol-saline']).ravel()
 ax2.plot(x_range,y2,label='muscimol-saline')
