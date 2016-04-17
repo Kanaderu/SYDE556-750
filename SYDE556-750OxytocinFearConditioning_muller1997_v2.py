@@ -38,7 +38,7 @@ t_test=t_train/pairings
 subject='saline-saline'
 gaba_min=0.0
 gaba_muscimol=1.0
-T_error=0.5
+T_error=0.25
 
 def make_US_CS_arrays(): #1s sim time = 1min (60s) real time
 	rng=np.random.RandomState()
@@ -234,7 +234,7 @@ with model:
 '''simulation and data plotting ###############################################
 Try to reproduce figure 3 from Muller et al (2007)'''
 
-n_trials=5
+n_trials=10
 
 avg_freezing={}
 std_freezing={}

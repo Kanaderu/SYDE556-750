@@ -9,6 +9,7 @@ import nengo_gui
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 import ipdb
 
 #ensemble parameters
@@ -16,10 +17,10 @@ N=100 #neurons for ensembles
 dim=1 #dimensions for ensembles
 tau_stim=0.01 #synaptic time constant of stimuli to populations
 tau=0.01 #synaptic time constant between ensembles
-condition_PES_rate = 5e-5 #first order conditioning learning rate
+condition_PES_rate = 5e-4 #first order conditioning learning rate
 condition_BCM_rate = 5e-10 #first order conditioning learning rate
 extinction_rate = 5e-7 #extinction learning rate
-tau_learn=0.002
+tau_learn=0.01
 tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
@@ -34,11 +35,11 @@ n2t=1.0/60.0 #nothing time
 wt=1.0 #wait/delay time
 pairings=10
 t_train=int(pairings*(wt+tt)/dt)*dt
-t_test=t_train
+t_test=t_train/pairings
 subject='saline-saline'
 gaba_min=0.0
-gaba_muscimol=2.5
-T_error=0.05
+gaba_muscimol=2.0
+T_error=0.4
 
 def make_US_CS_arrays(): #1s sim time = 1min (60s) real time
 	rng=np.random.RandomState()
@@ -85,30 +86,37 @@ def gaba_function(t): #activate GABA receptors in LA => inhibition of LA => no l
     	return gaba_muscimol
     return gaba_min
 
+def LA_recurrent_in(x):
+    cs=x[:dim]
+    us=x[dim:]
+    #need to make these discernable from noise, otherwise initial activation causes runaway learning
+    if abs(cs) < T_error*np.ones((dim)):
+        cs=np.zeros((dim))
+    if abs(us) < T_error*np.ones((dim)):
+        us=np.zeros((dim))
+    return [cs,us]
+    
 #difference between US and LA activity is used to train CS-LA connection w/o extinction 
 def LA_error(x):
     cs=x[:dim]
-    us=x[dim:2*dim]
+    us=x[dim:-1]
     inhibit=x[-1]
-    #need to make these discernable from noise, otherwise initial activation causes runaway learning
-    if cs < T_error*np.ones((dim)):
-        cs=np.zeros((dim))
-    if us < T_error*np.ones((dim)):
-        us=np.zeros((dim))
-    if inhibit < T_error*np.ones((dim)):
-        inhibit=np.zeros((dim))
-    error=np.minimum(np.zeros(dim),cs-(1+inhibit)*us)
+    error=np.maximum(np.zeros((dim)),us-cs)
     return error
 
 #inhibitory interneuron connections, directly onto LA neurons (bypass encoders)
-def LA_recurrent(x):
+def LA_recurrent_out(x):
 	cs=x[:dim] #response to CS, gets learned
 	us=x[dim:2*dim]
 	inhibit=x[-1]
 	feedback=(cs+us)*(-1.0*inhibit)
-	return 0*feedback
+	return feedback
 
-
+def error_out(x):
+    if x > T_error:
+        return -x
+    return 0
+    
 '''model definition #################################################'''
 
 model=nengo.Network(label='Oxytocin Fear Conditioning')
@@ -131,22 +139,19 @@ with model:
 
 	#Amygdala subpopulations
 	#lateral amygdala, learns associations b/w CS and US (no extinction)
-	LA=nengo.Ensemble(2*N,2*dim,radius=1) 
+	LA=nengo.Ensemble(4*N,2*dim,radius=2) 
 	#GABA application targets are local GABAergic interneurons in LA which control 
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	LA_inter=nengo.Ensemble(2*N,2*dim+1,radius=1)
+	LA_inter=nengo.Ensemble(4*N,2*dim+1,radius=2,n_eval_points=3000)
+	error_cond=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
 	BA_fear=nengo.Ensemble(N,dim) #basolateral amygdala activated by fear
 	BA_extinct=nengo.Ensemble(N,dim) #basolateral amygdala cells activated by extinction
-	CCK=nengo.Ensemble(N,dim,
-	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 1
-	PV=nengo.Ensemble(N,dim,
-	        encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 2
-	ITCd=nengo.Ensemble(N,dim,
-        	encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
-	ITCv=nengo.Ensemble(N,dim,
-        	encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
+	CCK=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 1
+	PV=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 2
+	ITCd=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
+	ITCv=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
 	CeL_ON=nengo.Ensemble(N,dim) #ON cells in the lateral central amygdala
 	CeL_OFF=nengo.Ensemble(N,dim) #ON cells in the lateral central amygdala
 	CeM_DAG=nengo.Ensemble(N,dim) #medial central amygdala, outputs fear responses
@@ -169,11 +174,12 @@ with model:
 	
 	#Amygdala connections
 	nengo.Connection(U,LA[dim:2*dim],synapse=tau) #error signal computed in LA, so it needs US info
-# 	nengo.Connection(U,LA[dim:2*dim],synapse=3*tau,transform=-1) #differentiator
-	nengo.Connection(LA[:dim],LA_inter[:dim],synapse=tau_LA_recurrent) #recurrent connection to interneurons
-	nengo.Connection(LA[dim:2*dim],LA_inter[dim:2*dim],synapse=tau_LA_recurrent) #recurrent connection to interneurons
+# 	nengo.Connection(U,LA[dim:2*dim],synapse=1.5*tau,transform=-2) #differentiator
+	nengo.Connection(LA,LA_inter[:2*dim],synapse=tau_LA_recurrent,
+            function=LA_recurrent_in) #recurrent connection to interneurons
+	nengo.Connection(LA_inter,error_cond,synapse=tau_LA_recurrent,function=LA_error)
 	nengo.Connection(LA_inter,LA.neurons,synapse=tau_LA_recurrent,
-            function=LA_recurrent,transform=np.ones((2*N,1))) #recurrent connection to interneurons
+            function=LA_recurrent_out,transform=np.ones((4*N,1))) #recurrent connection to interneurons
 	nengo.Connection(LA[:dim],BA_fear,synapse=tau) #LA pathway: normal fear circuit
 	nengo.Connection(BA_fear,CeM_DAG,synapse=tau)
 	nengo.Connection(LA[:dim],ITCd,synapse=tau) #CeL pathway
@@ -195,9 +201,11 @@ with model:
 	nengo.Connection(CeM_DAG,Motor,transform=-1,synapse=tau) #high=movement
 
 	#Learned connections
-	condition_PES=nengo.Connection(C,LA[:dim],synapse=tau_learn,
-	        function=lambda x: np.zeros(dim))
+	condition_PES=nengo.Connection(C,LA[:dim],synapse=tau_learn,transform=0)
 	condition_PES.learning_rule_type=nengo.PES(learning_rate=condition_PES_rate)
+# 	nengo.Connection(LA_inter,condition_PES.learning_rule,synapse=tau_learn,function=LA_error)
+	nengo.Connection(error_cond,condition_PES.learning_rule,synapse=tau_learn,function=error_out)
+
 # 	condition_BCM=nengo.Connection(C,LA[:dim],synapse=tau_learn,
 # 	        function=lambda x: x,
 #             solver=nengo.solvers.LstsqL2(weights=True))
@@ -211,7 +219,6 @@ with model:
 	# extinction.learning_rule_type=nengo.PES(learning_rate=extinction_rate)
 	
 	#Error calculations
-	nengo.Connection(LA_inter,condition_PES.learning_rule,synapse=tau_learn,function=LA_error)
 	# nengo.Connection(Error_OFF, extinction.learning_rule, transform=-1)
 	# nengo.Connection(U, Error_OFF,transform=-1,synapse=tau_learn)
 	# nengo.Connection(CeM_DAG, Error_OFF,transform=1,synapse=tau_learn)
@@ -228,88 +235,26 @@ with model:
 '''simulation and data plotting ###############################################
 Try to reproduce figure 3 from Muller et al (2007)'''
 
-n_trials=5
+n_trials=10
+columns=('value','trial','timepoint','experiment','drug')
+dataframe = pd.DataFrame(index=np.arange(0, n_trials), columns=columns)
 
-avg_freezing={}
-std_freezing={}
-freezing={}
-avg_timeseries={}
-std_timeseries={}
-timeseries={}
-for exp in ['tone']:#,'context']:
-	experiment=exp
-	avg_freezing[experiment]={}
-	std_freezing[experiment]={}
-	avg_timeseries[experiment]={}
-	std_timeseries[experiment]={}
-	for subj in ['saline-saline', 'muscimol-saline', 'saline-muscimol', 'muscimol-muscimol']:
-		subject=subj
-		freezing[subject]=[]
-		timeseries[subject]=[]
-		for i in range(n_trials):
-			print 'Running group \"%s\" drug \"%s\" trial %s...' %(experiment,subject,i+1)
+i=0
+for experiment in ['tone']:
+    for subject in ['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol']:
+        for n in range(n_trials):
+			print 'Running experiment \"%s\", drug \"%s\", trial %s...' %(experiment,subject,n+1)
 			sim=nengo.Simulator(model)
 			sim.run(t_train+t_test)
-			motor_values=sim.data[motor_probe][int(t_train/dt):int((t_train+t_test)/dt)]
-			timeseries[subject].append(motor_values)
-			freezing[subject].append(1.0-1.0*np.average(motor_values))
-		avg_timeseries[experiment][subject]=np.average(timeseries[subject],axis=0)
-		std_timeseries[experiment][subject]=np.std(timeseries[subject],axis=0)		
-		avg_freezing[experiment][subject]=np.average(freezing[subject])
-		std_freezing[experiment][subject]=np.std(freezing[subject])
+			for t in np.arange(int(t_train/dt),int((t_train+t_test)/dt)):
+				value=sim.data[motor_probe][t][0]
+				dataframe.loc[i]=[value,n,t*dt,experiment,subject]
+				i+=1
 
-#Bar Plots
-avg_tone=[avg_freezing['tone']['saline-saline'],avg_freezing['tone']['muscimol-saline'],
-	avg_freezing['tone']['saline-muscimol'],avg_freezing['tone']['muscimol-muscimol']]
-std_tone=[std_freezing['tone']['saline-saline'],std_freezing['tone']['muscimol-saline'],
-	std_freezing['tone']['saline-muscimol'],std_freezing['tone']['muscimol-muscimol']]
-# avg_context=[avg_freezing['context']['saline-saline'],avg_freezing['context']['muscimol-saline'],
-# 	avg_freezing['context']['saline-muscimol'],avg_freezing['context']['muscimol-muscimol']]
-# std_context=[std_freezing['context']['saline-saline'],std_freezing['context']['muscimol-saline'],
-# 	avg_freezing['context']['saline-muscimol'],avg_freezing['context']['muscimol-muscimol']]
-
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8)) #, sharex=True
-
-ax1.bar(np.arange(len(avg_tone))+0.25,avg_tone,
-		width=0.5,yerr=std_tone,label='tone') #,color='b',ecolor='k'
-ax1.set_xticks([0.5,1.5,2.5,3.5])
-ax1.set_xticklabels(('saline\nsaline', 'muscimol\nsaline','saline\nmuscimol', 'muscimol\nmuscimol'))
-ax1.set_ylabel('Freezing')
-
-x_range=sim.trange()[int(t_train/dt):int((t_train+t_test)/dt)]
-y1=np.array(avg_timeseries['tone']['saline-saline']).ravel()
-e1=np.array(std_timeseries['tone']['saline-saline']).ravel()
-ax2.plot(x_range,y1,label='saline-saline')
-ax2.fill_between(x_range,y1-e1,y1+e1,color='lightgray')
-y2=np.array(avg_timeseries['tone']['muscimol-saline']).ravel()
-e2=np.array(std_timeseries['tone']['muscimol-saline']).ravel()
-ax2.plot(x_range,y2,label='muscimol-saline')
-ax2.fill_between(x_range,y2-e2,y2+e2,color='lightgray')
-y3=np.array(avg_timeseries['tone']['saline-muscimol']).ravel()
-e3=np.array(std_timeseries['tone']['saline-muscimol']).ravel()
-ax2.plot(x_range,y3,label='saline-muscimol')
-ax2.fill_between(x_range,y3-e3,y3+e3,color='lightgray')
-y4=np.array(avg_timeseries['tone']['muscimol-muscimol']).ravel()
-e4=np.array(std_timeseries['tone']['muscimol-muscimol']).ravel()
-ax2.plot(x_range,y4,label='muscimol-muscimol')
-ax2.fill_between(x_range,y4-e4,y4+e4,color='lightgray')
-ax2.set_xlabel('time')
-ax2.set_ylabel('motor decoded value')
-legend=ax2.legend(loc='best',shadow=True)
-
-# ax2.plot(x_range,avg_timeseries['tone']['muscimol-saline'],
-# 	label='muscimol-saline',yerr=std_timeseries['tone']['muscimol-saline'])
-# ax2.plot(x_range,avg_timeseries['tone']['saline-muscimol'],
-# 	label='saline-muscimol',yerr=std_timeseries['tone']['saline-muscimol'])
-# ax2.plot(x_range,avg_timeseries['tone']['muscimol-muscimol'],
-# 	label='muscimol-muscimol',yerr=std_timeseries['tone']['muscimol-muscimol'])
-
-# ax=fig.add_subplot(122)
-# ax.bar(np.arange(len(avg_context))+0.25,avg_context,
-# 		width=0.5,yerr=std_context,label='tone',color='g',ecolor='k')
-# plt.title('Context')
-# ax.set_xticks([0.5,1.5,2.5,3.5])
-# ax.set_xticklabels(('saline\nsaline', 'muscimol\nsaline','saline\nmuscimol', 'muscimol\nmuscimol'))
-# ax.set_ylabel('Freezing')
-plt.tight_layout()
+f, (ax1, ax2) = plt.subplots(2, 1)
+sns.set(context='poster')
+sns.barplot(x="experiment",y="value",hue='drug',data=dataframe,ax=ax1)
+sns.tsplot(time="timepoint", value="value",
+				unit="trial", condition="drug",
+				data=dataframe,ax=ax2)
 plt.show()
