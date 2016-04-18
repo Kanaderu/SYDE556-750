@@ -22,10 +22,12 @@ dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 experiment='tone' #default, changed in simulation section
 drug='saline-saline' #default, changed with gaba_function(t)
-gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
-context_PES_rate = 1e-4 #conditioning learning rate to Context
-extinct_PES_rate = 5e-5 #extinction learning rate
+context_PES_rate = 1e-9 #conditioning learning rate to Context
+extinct_PES_rate = 5e-9 #extinction learning rate
+gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
+oxy=0.7
+
 
 #ensemble parameters
 N=100 #neurons for ensembles
@@ -36,11 +38,12 @@ tau_learn=0.01
 tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
-tau_LA_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
+tau_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
 thresh_error=0.2
 thresh_inter=0.3
 gaba_min=0.1
-scale_BA_inter=-0.2 #controls integration in BA_fear
+BA_inter_feedback_excite=1.0 #controls integration in BA_fear: -1=damp,0=none,1=integrate
+BA_inter_feedback_inhibit=-0.0 #controls mutual inhibition b/w BA_fear and BA_excite
 
 #stimuli
 tt=10.0/60.0 #tone time
@@ -71,7 +74,7 @@ params={
 	'tau_drug':tau_drug,
 	'tau_GABA':tau_GABA,
 	'tau_Glut':tau_Glut,
-	'tau_LA_recurrent':tau_LA_recurrent,
+	'tau_recurrent':tau_recurrent,
 	'thresh_error':thresh_error,
 	'thresh_inter':thresh_inter,
 	'gaba_min':gaba_min,
@@ -129,18 +132,10 @@ def gaba_function(t): #activate GABA receptors in LA => inhibition of LA => no l
     	return gaba_muscimol
     return gaba_min
 
-def LA_recurrent_in(x):
-    cs=x[:dim]
-    us=x[dim:]
-    return [cs,us]
-    
-#difference between US and LA activity is used to train CS-LA connection w/o extinction 
-def LA_error(x):
-    cs=x[:dim]
-    us=x[dim:-1]
-    inhibit=x[-1]
-    error=(1+inhibit)*(us-cs)
-    return error
+def oxy_function(t): #oxytocin activates GABAergic interneurons in CeL_Off
+    if drug=='oxytocin' and t_train<=t<t_train+t_test: 
+    	return oxy 
+    return 0
 
 #inhibitory interneuron connections, directly onto LA neurons (bypass encoders)
 def LA_recurrent_out(x):
@@ -149,8 +144,24 @@ def LA_recurrent_out(x):
 	inhibit=x[-1]
 	feedback=(cs+us)*(-1.0*inhibit)
 	return feedback
+	
+#difference between US and LA activity is used to train CS-LA connection w/o extinction 
+def LA_inter_error(x):
+    cs=x[:dim]
+    us=x[dim:-1]
+    inhibit=x[-1]
+    error=(1+inhibit)*(us-cs)
+    return error
+    
+#difference between US and LA activity is used to train CS-LA connection w/o extinction 
+def BA_inter_error(x):
+    context=x[:dim]
+    us=x[dim:2*dim]
+    inhibit=x[-3]
+    error=(1+inhibit)*(us-context)
+    return error
 
-#signal used to learn the 'condition' connection (CS-LA)
+#signal used to learn the conditioning, context, and extinction connections
 #threshold need to make signal discernable from noise,
 #otherwise initial activation causes runaway learning
 def error_out(x):
@@ -158,8 +169,6 @@ def error_out(x):
         return -x
     return 0
     
-def BA_inter_feedback(x):
-    return (1+scale_BA_inter)*x #controlled integrator
     
 '''model definition #################################################'''
 
@@ -173,42 +182,56 @@ with model:
 	stim_CS=nengo.Node(output=CS_function)
 	stim_Context=nengo.Node(output=Context_function)
 	stim_gaba=nengo.Node(output=gaba_function)
+	stim_oxy=nengo.Node(output=oxy_function)
 	stim_motor=nengo.Node(output=2)
 
 	#ENSEMBLES ########################################################################
 
-	#PAG subpopulations
+	#stimulus subpopulations
 	U=nengo.Ensemble(N,dim) #intermediary#
+	C=nengo.Ensemble(N,dim) #excited by stim_CS
+	Context=nengo.Ensemble(N,dim) #excited by stim_CS
 	Motor=nengo.Ensemble(N,dim) #indicates movement or freezing
 
-	#Amygdala subpopulations
+	#Lateral Amygdala subpopulations
 	#lateral amygdala, learns associations b/w CS and US (no extinction)
 	LA=nengo.Ensemble(4*N,2*dim,radius=2) 
 	#GABA application targets are local GABAergic interneurons in LA which control 
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000, #works
+	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000,
 	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
 	        eval_points=Uniform(thresh_inter,1))
-	BA_fear=nengo.Ensemble(N,dim) #basolateral amygdala activated by fear
-	BA_extinct=nengo.Ensemble(N,dim) #basolateral amygdala cells activated by extinction
-	CCK=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 1
-	PV=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 2
-	ITCd=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
-	ITCv=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #intercalated neurons between LA and Ce
+	        
+	#Intercalated Cells
+	ITCd=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) 
+	ITCv=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
+
+    #Central Lateral and Central Medial Amygdala subpopulations
 	CeL_ON=nengo.Ensemble(N,dim) #ON cells in the lateral central amygdala
 	CeL_OFF=nengo.Ensemble(N,dim) #ON cells in the lateral central amygdala
 	CeM_DAG=nengo.Ensemble(N,dim) #medial central amygdala, outputs fear responses
 
-	#Cortex/Thalamus subpopulations
-	C=nengo.Ensemble(N,dim) #excited by stim_CS
-	BA_inter=nengo.Ensemble(N,dim) #recurrently connected to BA_fear to sustain fear expression
-	Context=nengo.Ensemble(N,dim) #excited by stim_CS
-
+	#intra-BA/Cortex/Hippocampus subpopulations
+	BA_fear=nengo.Ensemble(N,dim) #basolateral amygdala activated by fear
+	BA_extinct=nengo.Ensemble(N,dim) #basolateral amygdala cells activated by extinction
+	#BA_inter represent several populations whose exact connections are unknown, and may exist
+	#within BA or in nearby hippocampus/cortex. The functions of this population are:
+	#(a) sustain activity of BA_fear and BA_extinct to produce elongated behavior (integrator->long freeze)
+	#(b) mutually inhibit BA_fear and BA_extinct (can't do both at once)
+	#(c) provide learning signal for context to BA_fear/BA_extinct populations
+	#(d) represent GABAergic activation to allow drug control of (a-c)
+	#representation: [context,US,inhibit,Fear_recurrent,Extinct_recurrent]
+	BA_inter=nengo.Ensemble(10*N,2*dim+3,radius=3,
+	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
+            # intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
+            eval_points=Uniform(thresh_inter, 1.1),n_eval_points=5000)
+	
 	#Error populations
-	error_on=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
-	error_off=nengo.Ensemble(N,dim, encoders=Choice([[-1]]), eval_points=Uniform(-1,0))
+	error_cond=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
+	error_context=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
+	error_extinct=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
 
 	#CONNECTIONS ########################################################################
 
@@ -218,71 +241,58 @@ with model:
 	nengo.Connection(stim_Context,Context,synapse=tau_stim)
 	nengo.Connection(stim_motor,Motor,synapse=tau_stim) #move by default
 	nengo.Connection(stim_gaba,LA_inter[-1],synapse=tau_stim) #stimulate the 'control' dimension
+	nengo.Connection(stim_oxy,CeL_OFF,synapse=tau_stim)
 	
-	#Amygdala connections
+	#Lateral Amygdala connections
+	conn_condition=nengo.Connection(C,LA[:dim],synapse=tau_learn,transform=0)
 	nengo.Connection(U,LA[dim:2*dim],synapse=tau) #error signal computed in LA, so it needs US info
-# 	nengo.Connection(U,LA[dim:2*dim],synapse=1.5*tau,transform=-2) #differentiator
-	nengo.Connection(LA,LA_inter[:2*dim],synapse=tau_LA_recurrent,
-            function=LA_recurrent_in) #recurrent connection to interneurons
-	nengo.Connection(LA_inter,error_on,synapse=tau_LA_recurrent,function=LA_error)
-	nengo.Connection(LA_inter,error_off,synapse=tau_LA_recurrent,function=LA_error)
-	nengo.Connection(LA_inter,LA.neurons,synapse=tau_LA_recurrent,
+	nengo.Connection(LA,LA_inter[:2*dim],synapse=tau_recurrent) #recurrent connection to interneurons
+	nengo.Connection(LA_inter,error_cond,synapse=tau_recurrent,function=LA_inter_error)
+	nengo.Connection(LA_inter,LA.neurons,synapse=tau_recurrent,
             function=LA_recurrent_out,transform=np.ones((4*N,1))) #recurrent connection to interneurons
-	nengo.Connection(LA[:dim],BA_fear,synapse=tau) #LA pathway: normal fear circuit
-	nengo.Connection(BA_fear,CeM_DAG,synapse=tau)
-	nengo.Connection(LA[:dim],ITCd,synapse=tau) #CeL pathway
-	nengo.Connection(ITCd,CeL_OFF,transform=-1,synapse=tau)
+            
+    #Basal Nuclei connections, includes possible Cortex/Hippocampus connections
+	nengo.Connection(LA[:dim],BA_fear,synapse=tau) #CS-fear circuit
+	conn_context=nengo.Connection(Context,BA_fear,synapse=tau,transform=0) #context-fear circuit
+	conn_extinct=nengo.Connection(Context,BA_extinct,synapse=tau,transform=0) #context-extinction circuit
+	nengo.Connection(Context,BA_inter[:dim],synapse=tau) #context for learning connections
+	nengo.Connection(U,BA_inter[dim:2*dim],synapse=tau_stim) #US for learning connections
+	nengo.Connection(stim_gaba,BA_inter[-3],synapse=tau_stim) #inhibition for gaba control of learn, recurrent
+	nengo.Connection(BA_fear,BA_inter[-2],synapse=tau) #corresponds to known LA to CCK connection
+	nengo.Connection(BA_extinct,BA_inter[-1],synapse=tau) #unknown
+	nengo.Connection(BA_inter[-2],BA_fear,synapse=tau_recurrent,transform=BA_inter_feedback_excite) #IL
+	nengo.Connection(BA_inter[-1],BA_extinct,synapse=tau_recurrent,transform=BA_inter_feedback_excite) #dne?
+	nengo.Connection(BA_inter[-2],BA_extinct,synapse=tau_recurrent,transform=BA_inter_feedback_inhibit) #CCK
+	nengo.Connection(BA_inter[-1],BA_fear,synapse=tau_recurrent,transform=BA_inter_feedback_inhibit) #PV
+	nengo.Connection(BA_inter,error_context,synapse=tau_recurrent,function=BA_inter_error)
+	nengo.Connection(BA_inter,error_extinct,synapse=tau_recurrent,transform=-1,function=BA_inter_error)
+	
+	#Intercalated Cells connections
 	nengo.Connection(LA[:dim],CeL_ON,synapse=tau)
+	nengo.Connection(LA[:dim],ITCd,synapse=tau) #CeL pathway
+	nengo.Connection(BA_extinct,ITCv,synapse=tau)
+	nengo.Connection(ITCd,ITCv,transform=-1,synapse=tau)
+
+	#Central Lateral and Central Medial Amygdala connections
+	nengo.Connection(BA_fear,CeM_DAG,synapse=tau)
+	nengo.Connection(ITCd,CeL_OFF,transform=-1,synapse=tau)	
+	nengo.Connection(ITCv,CeM_DAG,transform=-1,synapse=tau)
 	nengo.Connection(CeL_ON,CeL_OFF,transform=-1,synapse=tau)
 	nengo.Connection(CeL_ON,CeM_DAG,synapse=tau_GABA)
 	nengo.Connection(CeL_OFF,CeM_DAG,transform=-1)
-	nengo.Connection(LA[:dim],CCK,synapse=tau) #BA pathway: extinction circuit
-	nengo.Connection(CCK,BA_extinct,transform=-1,synapse=tau)
-	nengo.Connection(BA_extinct,ITCv,synapse=tau)
-	nengo.Connection(ITCv,CeM_DAG,transform=-1,synapse=tau)
-	nengo.Connection(BA_fear,CCK,synapse=tau)
-	nengo.Connection(BA_extinct,PV,synapse=tau)
-	nengo.Connection(PV,BA_fear,transform=-1,synapse=tau)
-	nengo.Connection(ITCd,ITCv,transform=-1,synapse=tau)
-	
-	#BA-cortex connectionss
-	nengo.Connection(BA_fear,BA_inter,synapse=tau)
-	nengo.Connection(BA_inter,BA_fear,synapse=tau,function=BA_inter_feedback)
+
+	#Learning connections
+	conn_condition.learning_rule_type=nengo.PES(learning_rate=condition_PES_rate)
+	nengo.Connection(error_cond,conn_condition.learning_rule,synapse=tau_learn,function=error_out)
+	conn_context.learning_rule_type=nengo.PES(learning_rate=context_PES_rate)
+	nengo.Connection(error_context,conn_context.learning_rule,synapse=tau_learn,function=error_out)
+	conn_extinct.learning_rule_type=nengo.PES(learning_rate=extinct_PES_rate)
+	nengo.Connection(error_extinct,conn_extinct.learning_rule,synapse=tau_learn,function=error_out)
 	
 	#Motor output
 	nengo.Connection(CeM_DAG,Motor,transform=-1,synapse=tau) #high=movement
-
-	#Learned connections
-	condition_PES=nengo.Connection(C,LA[:dim],synapse=tau_learn,transform=0)
-	condition_PES.learning_rule_type=nengo.PES(learning_rate=condition_PES_rate)
-	nengo.Connection(error_on,condition_PES.learning_rule,synapse=tau_learn,function=error_out)
-
-	context_PES=nengo.Connection(Context,BA_fear,synapse=tau_learn,transform=0)
-	context_PES.learning_rule_type=nengo.PES(learning_rate=context_PES_rate)
-	nengo.Connection(error_on,context_PES.learning_rule,synapse=tau_learn,function=error_out)
-
-	extinct_PES=nengo.Connection(Context,BA_extinct,synapse=tau_learn,transform=0)
-	extinct_PES.learning_rule_type=nengo.PES(learning_rate=extinct_PES_rate)
-	nengo.Connection(error_off,extinct_PES.learning_rule,synapse=tau_learn,
-	        transform=-1,function=error_out)
 	
-# 	condition_BCM=nengo.Connection(C,LA[:dim],synapse=tau_learn,
-# 	        function=lambda x: x,
-#             solver=nengo.solvers.LstsqL2(weights=True))
-# 	condition_BCM.learning_rule_type=nengo.BCM(learning_rate=condition_BCM_rate)
-# 	condition_both=nengo.Connection(C,LA[:dim],synapse=tau_learn,
-# 	        function=lambda x: np.random.random(dim),
-# 	        solver=nengo.solvers.LstsqL2(weights=True))
-# 	condition_both.learning_rule_type=[nengo.PES(learning_rate=condition_PES_rate),
-#         	nengo.BCM(learning_rate=condition_BCM_rate)]
-	# extinction=nengo.Connection(Context,BA_extinct,function=lambda x: [0]*dim,synapse=tau_learn)
-	# extinction.learning_rule_type=nengo.PES(learning_rate=extinction_rate)
 	
-	#Error calculations
-	# nengo.Connection(Error_OFF, extinction.learning_rule, transform=-1)
-	# nengo.Connection(U, Error_OFF,transform=-1,synapse=tau_learn)
-	# nengo.Connection(CeM_DAG, Error_OFF,transform=1,synapse=tau_learn)
-
 	#PROBES ########################################################################
 
 	motor_probe=nengo.Probe(Motor,synapse=0.01,sample_every=dt_sample)

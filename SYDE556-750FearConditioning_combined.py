@@ -22,10 +22,12 @@ dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 experiment='tone' #default, changed in simulation section
 drug='saline-saline' #default, changed with gaba_function(t)
-gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
 context_PES_rate = 1e-4 #conditioning learning rate to Context
 extinct_PES_rate = 5e-5 #extinction learning rate
+gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
+oxy=0.7
+
 
 #ensemble parameters
 N=100 #neurons for ensembles
@@ -129,6 +131,11 @@ def gaba_function(t): #activate GABA receptors in LA => inhibition of LA => no l
     	return gaba_muscimol
     return gaba_min
 
+def oxy_function(t): #oxytocin activates GABAergic interneurons in CeL_Off
+    if drug=='oxytocin' and t_train+t_control<t<t_train+t_control+t_test: 
+    	return oxy 
+    return 0
+
 def LA_recurrent_in(x):
     cs=x[:dim]
     us=x[dim:]
@@ -173,6 +180,7 @@ with model:
 	stim_CS=nengo.Node(output=CS_function)
 	stim_Context=nengo.Node(output=Context_function)
 	stim_gaba=nengo.Node(output=gaba_function)
+	stim_oxy=nengo.Node(output=oxy_function)
 	stim_motor=nengo.Node(output=2)
 
 	#ENSEMBLES ########################################################################
@@ -218,6 +226,7 @@ with model:
 	nengo.Connection(stim_Context,Context,synapse=tau_stim)
 	nengo.Connection(stim_motor,Motor,synapse=tau_stim) #move by default
 	nengo.Connection(stim_gaba,LA_inter[-1],synapse=tau_stim) #stimulate the 'control' dimension
+	nengo.Connection(stim_oxy,CeL_OFF,synapse=tau_stim)
 	
 	#Amygdala connections
 	nengo.Connection(U,LA[dim:2*dim],synapse=tau) #error signal computed in LA, so it needs US info
