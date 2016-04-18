@@ -14,23 +14,24 @@ import pandas as pd
 
 '''Parameters'''
 #simulation parameters
-filename='FearConditioningMullerV3pt7'
+filename='FearConditioningMullerV4'
 n_trials=10
 pairings_train=5
-tones_test=1
-drug='saline-saline' #default, changed with gaba_function(t)
-gaba_muscimol=1.1 #1.5 -> identical gaba responses, 1.0 -> muscimol saline = saline-saline
+tones_test=2
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
+experiment='tone' #default, changed in simulation section
+drug='saline-saline' #default, changed with gaba_function(t)
+gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
+condition_PES_rate = 5e-4 #conditioning learning rate to CS
+context_PES_rate = 5e-9 #conditioning learning rate to Context
+extinct_PES_rate = 1e-4 #extinction learning rate
 
 #ensemble parameters
 N=100 #neurons for ensembles
 dim=1 #dimensions for ensembles
 tau_stim=0.01 #synaptic time constant of stimuli to populations
 tau=0.01 #synaptic time constant between ensembles
-condition_PES_rate = 5e-4 #first order conditioning learning rate
-condition_BCM_rate = 5e-10 #first order conditioning learning rate
-extinction_rate = 5e-7 #extinction learning rate
 tau_learn=0.01
 tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
@@ -39,6 +40,7 @@ tau_LA_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of localit
 thresh_error=0.2
 thresh_inter=0.3
 gaba_min=0.1
+scale_PL=-0.2 #controls integration in BA_fear
 
 #stimuli
 tt=10.0/60.0 #tone time
@@ -63,8 +65,8 @@ params={
 	'tau_stim':tau_stim,
 	'tau':tau,
 	'condition_PES_rate':condition_PES_rate,
-	'condition_BCM_rate':condition_BCM_rate,
-	'extinction_rate':extinction_rate,
+	'context_PES_rate':context_PES_rate,
+	'extinct_PES_rate':extinct_PES_rate,
 	'tau_learn':tau_learn,
 	'tau_drug':tau_drug,
 	'tau_GABA':tau_GABA,
@@ -152,9 +154,12 @@ def LA_recurrent_out(x):
 #threshold need to make signal discernable from noise,
 #otherwise initial activation causes runaway learning
 def error_out(x):
-    if x > thresh_error:
+    if abs(x) > thresh_error:
         return -x
     return 0
+    
+def PL_feedback(x):
+    return (1+scale_PL)*x #controlled integrator
     
 '''model definition #################################################'''
 
@@ -198,13 +203,12 @@ with model:
 
 	#Cortex/Thalamus subpopulations
 	C=nengo.Ensemble(N,dim) #excited by stim_CS
-
-	#Hippocampus subpopulations
+	PL=nengo.Ensemble(N,dim) #recurrently connected to BA_fear to sustain fear response (expression)
 	Context=nengo.Ensemble(N,dim) #excited by stim_CS
 
 	#Error populations
 	error_on=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
-	# error_off=nengo.Ensemble(N, dim, encoders=Choice([[1]]), eval_points=Uniform(0,1))
+	error_off=nengo.Ensemble(N,dim, encoders=Choice([[-1]]), eval_points=Uniform(-1,0))
 
 	#CONNECTIONS ########################################################################
 
@@ -221,6 +225,7 @@ with model:
 	nengo.Connection(LA,LA_inter[:2*dim],synapse=tau_LA_recurrent,
             function=LA_recurrent_in) #recurrent connection to interneurons
 	nengo.Connection(LA_inter,error_on,synapse=tau_LA_recurrent,function=LA_error)
+	nengo.Connection(LA_inter,error_off,synapse=tau_LA_recurrent,function=LA_error)
 	nengo.Connection(LA_inter,LA.neurons,synapse=tau_LA_recurrent,
             function=LA_recurrent_out,transform=np.ones((4*N,1))) #recurrent connection to interneurons
 	nengo.Connection(LA[:dim],BA_fear,synapse=tau) #LA pathway: normal fear circuit
@@ -240,15 +245,27 @@ with model:
 	nengo.Connection(PV,BA_fear,transform=-1,synapse=tau)
 	nengo.Connection(ITCd,ITCv,transform=-1,synapse=tau)
 	
+	#BA-cortex connectionss
+	nengo.Connection(BA_fear,PL,synapse=tau)
+	nengo.Connection(PL,BA_fear,synapse=tau,function=PL_feedback)
+	
 	#Motor output
 	nengo.Connection(CeM_DAG,Motor,transform=-1,synapse=tau) #high=movement
 
 	#Learned connections
 	condition_PES=nengo.Connection(C,LA[:dim],synapse=tau_learn,transform=0)
 	condition_PES.learning_rule_type=nengo.PES(learning_rate=condition_PES_rate)
-# 	nengo.Connection(LA_inter,condition_PES.learning_rule,synapse=tau_learn,function=LA_error)
 	nengo.Connection(error_on,condition_PES.learning_rule,synapse=tau_learn,function=error_out)
 
+	context_PES=nengo.Connection(Context,BA_fear,synapse=tau_learn,transform=0)
+	context_PES.learning_rule_type=nengo.PES(learning_rate=context_PES_rate)
+	nengo.Connection(error_on,context_PES.learning_rule,synapse=tau_learn,function=error_out)
+
+	extinct_PES=nengo.Connection(Context,BA_extinct,synapse=tau_learn,transform=0)
+	extinct_PES.learning_rule_type=nengo.PES(learning_rate=extinct_PES_rate)
+	nengo.Connection(error_off,extinct_PES.learning_rule,synapse=tau_learn,
+	        transform=-1,function=error_out)
+	
 # 	condition_BCM=nengo.Connection(C,LA[:dim],synapse=tau_learn,
 # 	        function=lambda x: x,
 #             solver=nengo.solvers.LstsqL2(weights=True))
