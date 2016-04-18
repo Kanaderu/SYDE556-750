@@ -14,12 +14,12 @@ import pandas as pd
 
 '''Parameters'''
 #simulation parameters
-filename='FearConditioningMullerV3pt6'
-n_trials=2
+filename='FearConditioningMullerV3pt7'
+n_trials=10
 pairings_train=5
 tones_test=1
 drug='saline-saline' #default, changed with gaba_function(t)
-gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol saline = saline-saline
+gaba_muscimol=1.1 #1.5 -> identical gaba responses, 1.0 -> muscimol saline = saline-saline
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 
@@ -29,16 +29,16 @@ dim=1 #dimensions for ensembles
 tau_stim=0.01 #synaptic time constant of stimuli to populations
 tau=0.01 #synaptic time constant between ensembles
 condition_PES_rate = 5e-4 #first order conditioning learning rate
-# condition_BCM_rate = 5e-10 #first order conditioning learning rate
-# extinction_rate = 5e-7 #extinction learning rate
+condition_BCM_rate = 5e-10 #first order conditioning learning rate
+extinction_rate = 5e-7 #extinction learning rate
 tau_learn=0.01
 tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
 tau_LA_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
 thresh_error=0.2
-thresh_inter=0.2
-gaba_min=0.2
+thresh_inter=0.3
+gaba_min=0.1
 
 #stimuli
 tt=10.0/60.0 #tone time
@@ -49,6 +49,38 @@ wt=60.0/60.0 #wait/delay time
 t_train=int(pairings_train*(wt+tt)/dt)*dt
 t_test=t_train*tones_test/pairings_train #multiply by X/pairings for X tone presentations
 
+params={
+	'filename':'FearConditioningMullerV3pt7',
+	'n_trials':n_trials,
+	'pairings_train':pairings_train,
+	'tones_test':tones_test,
+	'drug':drug,
+	'gaba_muscimol':gaba_muscimol,
+	'dt':dt,
+	'dt_sample':dt_sample,
+	'N':N,
+	'dim':dim,
+	'tau_stim':tau_stim,
+	'tau':tau,
+	'condition_PES_rate':condition_PES_rate,
+	'condition_BCM_rate':condition_BCM_rate,
+	'extinction_rate':extinction_rate,
+	'tau_learn':tau_learn,
+	'tau_drug':tau_drug,
+	'tau_GABA':tau_GABA,
+	'tau_Glut':tau_Glut,
+	'tau_LA_recurrent':tau_LA_recurrent,
+	'thresh_error':thresh_error,
+	'thresh_inter':thresh_inter,
+	'gaba_min':gaba_min,
+	'tt':tt,
+	'nt':nt,
+	'st':st,
+	'n2t':n2t,
+	'wt':wt,
+	't_train':t_train,
+	't_test':t_test,
+}
 
 'Helper functions and transformations on ensemble connections ########################'''
 
@@ -151,13 +183,9 @@ with model:
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	# LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000, #works
-	#         encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-	#         eval_points=Uniform(0,1))
-	LA_inter=nengo.Ensemble(4*N, 2*dim+1,
-			encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-            intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
-            eval_points=Uniform(thresh_inter, 1.1), n_eval_points=5000)
+	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000, #works
+	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
+	        eval_points=Uniform(thresh_inter,1))
 	BA_fear=nengo.Ensemble(N,dim) #basolateral amygdala activated by fear
 	BA_extinct=nengo.Ensemble(N,dim) #basolateral amygdala cells activated by extinction
 	CCK=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 1
@@ -272,6 +300,8 @@ fname=filename+addon
 
 print 'Exporting Data...'
 dataframe.to_pickle(fname+'.pkl')
+param_df=pd.DataFrame([params])
+param_df.reset_index().to_json(fname+'_params.json',orient='records')
 
 print 'Plotting...'
 figure, (ax1, ax2) = plt.subplots(2, 1)
