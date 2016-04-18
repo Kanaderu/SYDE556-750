@@ -14,7 +14,8 @@ import pandas as pd
 
 '''Parameters'''
 #simulation parameters
-n_trials=2
+filename='FearConditioningMullerV3pt3'
+n_trials=10
 pairings_train=5
 tones_test=3
 drug='saline-saline' #default, changed with gaba_function(t)
@@ -35,7 +36,7 @@ tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
 tau_LA_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
-T_error=0.2
+thresh_error=0.2
 gaba_min=0.2
 
 #stimuli
@@ -115,10 +116,10 @@ def LA_recurrent_out(x):
 	return feedback
 
 #signal used to learn the 'condition' connection (CS-LA)
-#threshold need to make signal discernable from noise,
+#thresh_erroreshold need to make signal discernable from noise,
 #otherwise initial activation causes runaway learning
 def error_out(x):
-    if x > T_error:
+    if x > thresh_error:
         return -x
     return 0
     
@@ -149,9 +150,12 @@ with model:
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000,
-	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1],[1,1,1]]),
+	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=5000,
+	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
+			# intercepts=Exponential(scale=(1 - thresh_error) / 5.0, shift=thresh_error, high=1),
+	        # encoders=Choice([[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1],[1,1,1]]),
 	        eval_points=Uniform(0,1))
+
    	BA_fear=nengo.Ensemble(N,dim) #basolateral amygdala activated by fear
 	BA_extinct=nengo.Ensemble(N,dim) #basolateral amygdala cells activated by extinction
 	CCK=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 1
@@ -170,10 +174,12 @@ with model:
 
 	#Error populations
 	#either use an exponential or uniform evaluation of x-intercepts with positive encoders to 
-	#ensure the population can only represent po
-	# error_on = nengo.Ensemble(100, 1, encoders=Choice([[1]]), intercepts=Exponential(scale=(1 - thr) / 5.0, shift=thr, high=1),
- #            eval_points=Uniform(thr, 1.1), n_eval_points=5000)
-	error_on=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
+	#ensure the population can only represent positive values (Sean's parameters)
+	#can distribute x-intercepts either exponentially or uniformally
+	error_on = nengo.Ensemble(N, dim, encoders=Choice([[1]]),
+			intercepts=Exponential(scale=(1 - thresh_error) / 5.0, shift=thresh_error, high=1),
+            eval_points=Uniform(thresh_error, 1), n_eval_points=5000)
+	# error_on=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
 	# Error_OFF=nengo.Ensemble(N, dim, encoders=Choice([[1]]), eval_points=Uniform(0,1)) #no evidence
 
 	#CONNECTIONS ########################################################################
@@ -263,6 +269,9 @@ for experiment in exps:
 				realtime=(t*dt_sample-t_train)*60 #starts at 0 when training ends, units=realtime seconds
 				dataframe.loc[i]=[motor,n,realtime,experiment,drug]
 				i+=1
+
+print 'Exporting Data...'
+dataframe.to_pickle(filename+'.pkl')
 
 print 'Plotting...'
 f, (ax1, ax2) = plt.subplots(2, 1)

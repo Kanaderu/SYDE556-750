@@ -14,11 +14,12 @@ import pandas as pd
 
 '''Parameters'''
 #simulation parameters
+filename='FearConditioningMullerV3pt4'
 n_trials=2
 pairings_train=5
-tones_test=3
+tones_test=2
 drug='saline-saline' #default, changed with gaba_function(t)
-gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol saline = saline-saline
+gaba_muscimol=2.0 #1.5 -> identical gaba responses, 1.0 -> muscimol saline = saline-saline
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 
@@ -35,7 +36,6 @@ tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
 tau_LA_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
-T_error=0.2
 gaba_min=0.2
 
 #stimuli
@@ -111,16 +111,8 @@ def LA_recurrent_out(x):
 	cs=x[:dim] #response to CS, gets learned
 	us=x[dim:2*dim]
 	inhibit=x[-1]
-	feedback=(cs+us)*(-1.0*inhibit)
+	feedback=(cs+us)*(-2.0*inhibit)
 	return feedback
-
-#signal used to learn the 'condition' connection (CS-LA)
-#threshold need to make signal discernable from noise,
-#otherwise initial activation causes runaway learning
-def error_out(x):
-    if x > T_error:
-        return -x
-    return 0
     
 '''model definition #################################################'''
 
@@ -149,9 +141,11 @@ with model:
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000,
-	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1],[1,1,1]]),
-	        eval_points=Uniform(0,1))
+	LA_inter=nengo.Ensemble(4*N,2*dim+1,radius=2,n_eval_points=3000,
+	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
+	        # encoders=Choice([[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1],[1,1,1]]),
+	        eval_points=Uniform(0,1),
+	        intercepts=Uniform(0,1))
    	BA_fear=nengo.Ensemble(N,dim) #basolateral amygdala activated by fear
 	BA_extinct=nengo.Ensemble(N,dim) #basolateral amygdala cells activated by extinction
 	CCK=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1)) #basolateral amygdala interneuron 1
@@ -170,9 +164,12 @@ with model:
 
 	#Error populations
 	#either use an exponential or uniform evaluation of x-intercepts with positive encoders to 
-	#ensure the population can only represent po
-	# error_on = nengo.Ensemble(100, 1, encoders=Choice([[1]]), intercepts=Exponential(scale=(1 - thr) / 5.0, shift=thr, high=1),
- #            eval_points=Uniform(thr, 1.1), n_eval_points=5000)
+	#ensure the population can only represent positive values (Sean's parameters)
+	#can distribute x-intercepts either exponentially or uniformally
+	# error_on = nengo.Ensemble(N, dim, encoders=Choice([[1]]),
+	# 		intercepts=Exponential(scale=(1 - thresh_error) / 5.0, shift=thresh_error, high=1),
+ #            eval_points=Uniform(0,1), n_eval_points=5000)
+	# error_on=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
 	error_on=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
 	# Error_OFF=nengo.Ensemble(N, dim, encoders=Choice([[1]]), eval_points=Uniform(0,1)) #no evidence
 
@@ -188,6 +185,7 @@ with model:
 	#Amygdala connections
 	nengo.Connection(U,LA[dim:2*dim],synapse=tau) #error signal computed in LA, so it needs US info
 # 	nengo.Connection(U,LA[dim:2*dim],synapse=1.5*tau,transform=-2) #differentiator
+# 	nengo.Connection(LA,LA,transform=-1)
 	nengo.Connection(LA,LA_inter[:2*dim],synapse=tau_LA_recurrent,
             function=LA_recurrent_in) #recurrent connection to interneurons
 	nengo.Connection(LA_inter,error_on,synapse=tau_LA_recurrent,function=LA_error)
@@ -217,7 +215,7 @@ with model:
 	condition_PES=nengo.Connection(C,LA[:dim],synapse=tau_learn,transform=0)
 	condition_PES.learning_rule_type=nengo.PES(learning_rate=condition_PES_rate)
 # 	nengo.Connection(LA_inter,condition_PES.learning_rule,synapse=tau_learn,function=LA_error)
-	nengo.Connection(error_on,condition_PES.learning_rule,synapse=tau_learn)
+	nengo.Connection(error_on,condition_PES.learning_rule,synapse=tau_learn,transform=-1)
 
 # 	condition_BCM=nengo.Connection(C,LA[:dim],synapse=tau_learn,
 # 	        function=lambda x: x,
@@ -240,8 +238,7 @@ with model:
 
 	motor_probe=nengo.Probe(Motor,synapse=0.01,sample_every=dt_sample)
 
-'''simulation and data plotting ###############################################
-Try to reproduce figure 3 from Muller et al (2007)'''
+'''simulation ###############################################'''
 
 columns=('motor','trial','time','experiment','drug')
 exps=['tone']
@@ -256,7 +253,7 @@ for experiment in exps:
     for drug in drugs:
         for n in trials:
 			print 'Running experiment \"%s\", drug \"%s\", trial %s...' %(experiment,drug,n+1)
-			sim=nengo.Simulator(model,dt=dt)
+			sim=nengo.Simulator(model)
 			sim.run(t_train+t_test)
 			for t in timesteps:
 				motor=sim.data[motor_probe][t][0]
@@ -264,12 +261,21 @@ for experiment in exps:
 				dataframe.loc[i]=[motor,n,realtime,experiment,drug]
 				i+=1
 
+'''data analysis, plotting, exporting'''
+
+addon=str(np.random.randint(0,100000))
+fname=filename+addon
+
+print 'Exporting Data...'
+dataframe.to_pickle(fname+'.pkl')
+
 print 'Plotting...'
-f, (ax1, ax2) = plt.subplots(2, 1)
+figure, (ax1, ax2) = plt.subplots(2, 1)
 sns.set(context='paper')
 sns.barplot(x="experiment",y="motor",hue='drug',data=dataframe,ax=ax1)
 sns.tsplot(time="time", value="motor",
 				unit="trial", condition="drug",
 				data=dataframe,ax=ax2)
 ax2.set(xlabel='time (s)', ylabel='mean(motor)')
+figure.savefig(fname+'.png')
 plt.show()
