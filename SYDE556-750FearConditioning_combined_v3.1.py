@@ -25,7 +25,7 @@ dt_sample=0.01 #probe sample_every
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
 context_PES_rate = 5e-5 #conditioning learning rate to Context
 extinct_PES_rate = 5e-6 #extinction learning rate
-gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
+gaba_muscimol=1.0 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
 oxy=0.7
 
 #ensemble parameters
@@ -38,8 +38,8 @@ tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
 tau_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
-thresh_error=0.1
-thresh_inter=0.2
+thresh_error=0.2
+thresh_inter=0.4
 gaba_min=0.2
 BA_inter_feedback_excite=0.0 #controls integration in BA_fear: -1=damp,0=none,1=integrate
 BA_inter_feedback_inhibit=-1.0 #controls mutual inhibition b/w BA_fear and BA_excite
