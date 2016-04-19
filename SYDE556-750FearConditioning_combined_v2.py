@@ -14,20 +14,19 @@ import pandas as pd
 
 '''Parameters'''
 #simulation parameters
-filename='FearConditioningMullerV4'
+filename='FearConditioningMullerCombinedV2'
 n_trials=10
-pairings_train=5
+pairings_train=10
 tones_test=2
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 experiment='tone' #default, changed in simulation section
 drug='saline-saline' #default, changed with gaba_function(t)
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
-context_PES_rate = 1e-9 #conditioning learning rate to Context
-extinct_PES_rate = 5e-9 #extinction learning rate
+context_PES_rate = 5e-5 #conditioning learning rate to Context
+extinct_PES_rate = 5e-6 #extinction learning rate
 gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
 oxy=0.7
-
 
 #ensemble parameters
 N=100 #neurons for ensembles
@@ -41,9 +40,9 @@ tau_Glut=0.01 #combination of AMPA and NMDA
 tau_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
 thresh_error=0.2
 thresh_inter=0.3
-gaba_min=0.1
-BA_inter_feedback_excite=1.0 #controls integration in BA_fear: -1=damp,0=none,1=integrate
-BA_inter_feedback_inhibit=-0.0 #controls mutual inhibition b/w BA_fear and BA_excite
+gaba_min=0.2
+BA_inter_feedback_excite=0.0 #controls integration in BA_fear: -1=damp,0=none,1=integrate
+BA_inter_feedback_inhibit=-1.0 #controls mutual inhibition b/w BA_fear and BA_excite
 
 #stimuli
 tt=10.0/60.0 #tone time
@@ -61,6 +60,7 @@ params={
 	'tones_test':tones_test,
 	'drug':drug,
 	'gaba_muscimol':gaba_muscimol,
+	'oxy':oxy,
 	'dt':dt,
 	'dt_sample':dt_sample,
 	'N':N,
@@ -78,6 +78,8 @@ params={
 	'thresh_error':thresh_error,
 	'thresh_inter':thresh_inter,
 	'gaba_min':gaba_min,
+	'BA_inter_feedback_excite':BA_inter_feedback_excite,
+	'BA_inter_feedback_inhibit':BA_inter_feedback_inhibit,
 	'tt':tt,
 	'nt':nt,
 	'st':st,
@@ -142,7 +144,7 @@ def LA_recurrent_out(x):
 	cs=x[:dim] #response to CS, gets learned
 	us=x[dim:2*dim]
 	inhibit=x[-1]
-	feedback=(cs+us)*(-1.0*inhibit)
+	feedback=[cs*(-1.0*inhibit),us*(-1.0*inhibit)]
 	return feedback
 	
 #difference between US and LA activity is used to train CS-LA connection w/o extinction 
@@ -183,7 +185,7 @@ with model:
 	stim_Context=nengo.Node(output=Context_function)
 	stim_gaba=nengo.Node(output=gaba_function)
 	stim_oxy=nengo.Node(output=oxy_function)
-	stim_motor=nengo.Node(output=2)
+	stim_motor=nengo.Node(output=1)
 
 	#ENSEMBLES ########################################################################
 
@@ -225,7 +227,7 @@ with model:
 	#representation: [context,US,inhibit,Fear_recurrent,Extinct_recurrent]
 	BA_inter=nengo.Ensemble(10*N,2*dim+3,radius=3,
 	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-            # intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
+            intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
             eval_points=Uniform(thresh_inter, 1.1),n_eval_points=5000)
 	
 	#Error populations
@@ -248,8 +250,7 @@ with model:
 	nengo.Connection(U,LA[dim:2*dim],synapse=tau) #error signal computed in LA, so it needs US info
 	nengo.Connection(LA,LA_inter[:2*dim],synapse=tau_recurrent) #recurrent connection to interneurons
 	nengo.Connection(LA_inter,error_cond,synapse=tau_recurrent,function=LA_inter_error)
-	nengo.Connection(LA_inter,LA.neurons,synapse=tau_recurrent,
-            function=LA_recurrent_out,transform=np.ones((4*N,1))) #recurrent connection to interneurons
+	nengo.Connection(LA_inter,LA,synapse=tau_recurrent,function=LA_recurrent_out) #recurrent connection to interneurons
             
     #Basal Nuclei connections, includes possible Cortex/Hippocampus connections
 	nengo.Connection(LA[:dim],BA_fear,synapse=tau) #CS-fear circuit
@@ -300,7 +301,7 @@ with model:
 '''simulation ###############################################'''
 
 columns=('motor','trial','time','experiment','drug')
-exps=['context']
+exps=['context'] #tone, context
 drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol']
 trials=np.arange(n_trials)
 timesteps=np.arange(int(t_train/dt_sample),int((t_train+t_test)/dt_sample))
