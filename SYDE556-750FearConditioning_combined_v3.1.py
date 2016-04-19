@@ -14,12 +14,12 @@ import pandas as pd
 
 '''Parameters'''
 #simulation parameters
-filename='FearConditioningMullerCombinedV2'
-experiment='muller-context' #muller-tone, muller-context, viviani 
+filename='FearConditioningMullerCombinedV3pt1'
+experiment='muller-tone' #muller-tone, muller-context, viviani 
 drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol'] #['none','oxytocin'] #
 n_trials=2
 pairings_train=10
-tones_test=5
+tones_test=2
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
@@ -38,8 +38,8 @@ tau_drug=0.1
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
 tau_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
-thresh_error=0.2
-thresh_inter=0.3
+thresh_error=0.1
+thresh_inter=0.2
 gaba_min=0.2
 BA_inter_feedback_excite=0.0 #controls integration in BA_fear: -1=damp,0=none,1=integrate
 BA_inter_feedback_inhibit=-1.0 #controls mutual inhibition b/w BA_fear and BA_excite
@@ -208,13 +208,14 @@ with model:
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000,
+	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,
 	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-	        eval_points=Uniform(thresh_inter,1))
-	        
+	        # eval_points=Uniform(thresh_inter,1),n_eval_points=3000)
+	        intercepts=Uniform(thresh_inter, 1))
+
 	#Intercalated Cells
-	ITCd=nengo.Ensemble(N,dim,intercepts=Uniform(0, 1))
-	ITCv=nengo.Ensemble(N,dim,intercepts=Uniform(0, 1))
+	ITCd=nengo.Ensemble(N,dim)
+	ITCv=nengo.Ensemble(N,dim)
 
     #Central Lateral and Central Medial Amygdala subpopulations
 	CeL_ON=nengo.Ensemble(N,dim) #ON cells in the lateral central amygdala
@@ -232,14 +233,15 @@ with model:
 	#(d) represent GABAergic activation to allow drug control of (a-c)
 	#representation: [context,US,inhibit,Fear_recurrent,Extinct_recurrent]
 	BA_inter=nengo.Ensemble(10*N,2*dim+3,radius=3,
-	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-            intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
-            eval_points=Uniform(thresh_inter, 1.1),n_eval_points=5000)
+	       	encoders=Choice([[1,0,0,0,0],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]),
+            # intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
+            # eval_points=Uniform(thresh_inter, 1.1),n_eval_points=5000)
+	        intercepts=Uniform(thresh_inter, 1))
 	
 	#Error populations
-	error_cond=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
-	error_context=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
-	error_extinct=nengo.Ensemble(N,dim,encoders=Choice([[1]]), eval_points=Uniform(0, 1))
+	error_cond=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(thresh_error, 1))
+	error_context=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(thresh_error, 1))
+	error_extinct=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(thresh_error, 1))
 
 	#CONNECTIONS ########################################################################
 
@@ -306,7 +308,7 @@ with model:
 
 '''simulation ###############################################'''
 
-columns=('motor','trial','time','drug')
+columns=('freeze','trial','time','drug')
 trials=np.arange(n_trials)
 timesteps=np.arange(int(t_train/dt_sample),int((t_train+t_test)/dt_sample))
 dataframe = pd.DataFrame(index=np.arange(0, len(drugs)*len(trials)*len(timesteps)),
@@ -318,10 +320,11 @@ for drug in drugs:
 		print 'Running experiment \"%s\", drug \"%s\", trial %s...' %(experiment,drug,n+1)
 		sim=nengo.Simulator(model,dt=dt)
 		sim.run(t_train+t_test)
+		max_motor, min_motor=np.max(sim.data[motor_probe]),np.min(sim.data[motor_probe])
 		for t in timesteps:
-			motor=sim.data[motor_probe][t][0]
+			freeze=(sim.data[motor_probe][t][0]-max_motor)/(min_motor-max_motor)
 			realtime=(t*dt_sample-t_train)*60 #starts at 0 when training ends, units=realtime seconds
-			dataframe.loc[i]=[motor,n,realtime,drug]
+			dataframe.loc[i]=[freeze,n,realtime,drug]
 			i+=1
 
 '''data analysis, plotting, exporting ###############################################'''
@@ -335,20 +338,17 @@ param_df=pd.DataFrame([params])
 param_df.reset_index().to_json(fname+'_params.json',orient='records')
 
 print 'Plotting...'
+sns.set(context='paper')
 if experiment != 'viviani':
 	figure, (ax1, ax2) = plt.subplots(2, 1)
-	sns.set(context='paper')
-	sns.barplot(x="drug",y="motor",hue='drug',data=dataframe,ax=ax1)
-	sns.tsplot(time="time", value="motor",
+	sns.barplot(x="drug",y="freeze",data=dataframe,ax=ax1)
+	sns.tsplot(time="time", value="freeze",
 					unit="trial", condition="drug",
 					data=dataframe,ax=ax2)
-	ax2.set(xlabel='time (s)', ylabel='mean(motor)')
 else:
 	figure, ax1 = plt.subplots(1, 1)
-	sns.set(context='paper')
-	sns.tsplot(time="time", value="motor",
+	sns.tsplot(time="time", value="freeze",
 					unit="trial", condition="drug",
 					data=dataframe,ax=ax1)
-	ax1.set(xlabel='time (s)', ylabel='mean(motor)')
 figure.savefig(fname+'.png')
 plt.show()
