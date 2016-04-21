@@ -15,34 +15,34 @@ import pandas as pd
 '''Parameters'''
 #simulation parameters
 filename='FearConditioningMullerCombinedV3pt1'
-experiment='muller-tone' #muller-tone, muller-context, viviani 
-drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol'] #['none','oxytocin'] #
+experiment='muller-tone' #muller-tone, muller-context, viviani
+drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol']# ['none','oxytocin'] 
 n_trials=2
-pairings_train=10
-tones_test=2
+pairings_train=10 #how many CS-US pairs to train on
+tones_test=1
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
 context_PES_rate = 5e-5 #conditioning learning rate to Context
 extinct_PES_rate = 5e-6 #extinction learning rate
-gaba_muscimol=1.0 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
-oxy=0.7
+gaba_muscimol=1.5 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
+oxy=0.7 #magnitude of oxytocin stimulus
 
 #ensemble parameters
 N=100 #neurons for ensembles
 dim=1 #dimensions for ensembles
 tau_stim=0.01 #synaptic time constant of stimuli to populations
 tau=0.01 #synaptic time constant between ensembles
-tau_learn=0.01
-tau_drug=0.1
+tau_learn=0.01 #time constant for error populations onto learning rules
+tau_drug=0.1 #time constant for application of drugs
 tau_GABA=0.005 #synaptic time constant for GABAergic cells
 tau_Glut=0.01 #combination of AMPA and NMDA
-tau_recurrent=0.005 #same as GABAergic cells, could be shorter b/c of locality
-thresh_error=0.2
-thresh_inter=0.4
-gaba_min=0.2
+tau_recurrent=0.005 #same as GABAergic cells
+thresh_error=0.2 #activity in error populations must exceed this value to have futher impact
+thresh_inter=0.3 #activity in inhibitory populations must exceed this value to have futher impact
+gaba_min=0.2 #minimum amount of inhibition
 BA_inter_feedback_excite=0.0 #controls integration in BA_fear: -1=damp,0=none,1=integrate
-BA_inter_feedback_inhibit=-1.0 #controls mutual inhibition b/w BA_fear and BA_excite
+BA_inter_feedback_inhibit=-0.0 #controls mutual inhibition b/w BA_fear and BA_excite
 
 #stimuli
 tt=10.0/60.0 #tone time
@@ -54,7 +54,7 @@ t_train=int(pairings_train*(wt+tt)/dt)*dt
 t_test=t_train*tones_test/pairings_train #multiply by X/pairings for X tone presentations
 
 params={
-	'filename':'FearConditioningMullerV3pt7',
+	'filename':'FearConditioningCombinedV3',
 	'experiment':experiment,
 	'drugs':drugs,
 	'n_trials':n_trials,
@@ -168,15 +168,7 @@ def BA_inter_error(x):
     inhibit=x[-3]
     error=(1+inhibit)*(us-context)
     return error
-
-#signal used to learn the conditioning, context, and extinction connections
-#threshold need to make signal discernable from noise,
-#otherwise initial activation causes runaway learning
-def error_out(x):
-    if abs(x) > thresh_error:
-        return -x
-    return 0
-    
+   
     
 '''model definition #################################################'''
 
@@ -208,14 +200,13 @@ with model:
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,
-	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-	        # eval_points=Uniform(thresh_inter,1),n_eval_points=3000)
-	        intercepts=Uniform(thresh_inter, 1))
-
+	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000)
+	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
+	       # eval_points=Uniform(thresh_inter,1))
+	        
 	#Intercalated Cells
-	ITCd=nengo.Ensemble(N,dim)
-	ITCv=nengo.Ensemble(N,dim)
+	ITCd=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1)) 
+	ITCv=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
 
     #Central Lateral and Central Medial Amygdala subpopulations
 	CeL_ON=nengo.Ensemble(N,dim) #ON cells in the lateral central amygdala
@@ -232,16 +223,15 @@ with model:
 	#(c) provide learning signal for context to BA_fear/BA_extinct populations
 	#(d) represent GABAergic activation to allow drug control of (a-c)
 	#representation: [context,US,inhibit,Fear_recurrent,Extinct_recurrent]
-	BA_inter=nengo.Ensemble(10*N,2*dim+3,radius=3,
-	       	encoders=Choice([[1,0,0,0,0],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]),
+	BA_inter=nengo.Ensemble(10*N,2*dim+3,radius=3)
+	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
             # intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
             # eval_points=Uniform(thresh_inter, 1.1),n_eval_points=5000)
-	        intercepts=Uniform(thresh_inter, 1))
 	
 	#Error populations
-	error_cond=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(thresh_error, 1))
-	error_context=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(thresh_error, 1))
-	error_extinct=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(thresh_error, 1))
+	error_cond=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
+	error_context=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
+	error_extinct=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
 
 	#CONNECTIONS ########################################################################
 
@@ -254,7 +244,7 @@ with model:
 	nengo.Connection(stim_oxy,CeL_OFF,synapse=tau_stim)
 	
 	#Lateral Amygdala connections
-	conn_condition=nengo.Connection(C,LA[:dim],synapse=tau_learn,transform=0)
+	conn_condition=nengo.Connection(C,LA[:dim],synapse=tau_learn,transform=0) #primary learned connection CS-freeze
 	nengo.Connection(U,LA[dim:2*dim],synapse=tau) #error signal computed in LA, so it needs US info
 	nengo.Connection(LA,LA_inter[:2*dim],synapse=tau_recurrent) #recurrent connection to interneurons
 	nengo.Connection(LA_inter,error_cond,synapse=tau_recurrent,function=LA_inter_error)
@@ -292,11 +282,11 @@ with model:
 
 	#Learning connections
 	conn_condition.learning_rule_type=nengo.PES(learning_rate=condition_PES_rate)
-	nengo.Connection(error_cond,conn_condition.learning_rule,synapse=tau_learn,function=error_out)
+	nengo.Connection(error_cond,conn_condition.learning_rule,synapse=tau_learn,transform=-1)
 	conn_context.learning_rule_type=nengo.PES(learning_rate=context_PES_rate)
-	nengo.Connection(error_context,conn_context.learning_rule,synapse=tau_learn,function=error_out)
+	nengo.Connection(error_context,conn_context.learning_rule,synapse=tau_learn,transform=-1)
 	conn_extinct.learning_rule_type=nengo.PES(learning_rate=extinct_PES_rate)
-	nengo.Connection(error_extinct,conn_extinct.learning_rule,synapse=tau_learn,function=error_out)
+	nengo.Connection(error_extinct,conn_extinct.learning_rule,synapse=tau_learn,transform=-1)
 	
 	#Motor output
 	nengo.Connection(CeM_DAG,Motor,transform=-1,synapse=tau) #high=movement
@@ -338,17 +328,21 @@ param_df=pd.DataFrame([params])
 param_df.reset_index().to_json(fname+'_params.json',orient='records')
 
 print 'Plotting...'
-sns.set(context='paper')
 if experiment != 'viviani':
 	figure, (ax1, ax2) = plt.subplots(2, 1)
+	sns.set(context='paper')
 	sns.barplot(x="drug",y="freeze",data=dataframe,ax=ax1)
 	sns.tsplot(time="time", value="freeze",
 					unit="trial", condition="drug",
 					data=dataframe,ax=ax2)
+	ax1.set(ylabel='freezing (%)', ylim=(0.0,1.0))
+	ax2.set(xlabel='time (s)', ylabel='freezing (%)', ylim=(0.0,1.0))
 else:
 	figure, ax1 = plt.subplots(1, 1)
+	sns.set(context='paper')
 	sns.tsplot(time="time", value="freeze",
 					unit="trial", condition="drug",
 					data=dataframe,ax=ax1)
+	ax1.set(xlabel='time (s)', ylabel='mean(freeze) (%)', ylim=(0.0,1.0))
 figure.savefig(fname+'.png')
 plt.show()

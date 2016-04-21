@@ -14,10 +14,10 @@ import pandas as pd
 
 '''Parameters'''
 #simulation parameters
-filename='FearConditioningMullerCombinedV3'
+filename='FearConditioningMullerCombinedV3pt2'
 experiment='muller-tone' #muller-tone, muller-context, viviani
 drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol']# ['none','oxytocin'] 
-n_trials=2
+n_trials=10
 pairings_train=5 #how many CS-US pairs to train on
 tones_test=1
 dt=0.001 #timestep
@@ -25,7 +25,7 @@ dt_sample=0.01 #probe sample_every
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
 context_PES_rate = 5e-5 #conditioning learning rate to Context
 extinct_PES_rate = 5e-6 #extinction learning rate
-gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
+gaba_muscimol=1.0 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
 oxy=0.7 #magnitude of oxytocin stimulus
 
 #ensemble parameters
@@ -41,8 +41,10 @@ tau_recurrent=0.005 #same as GABAergic cells
 thresh_error=0.2 #activity in error populations must exceed this value to have futher impact
 thresh_inter=0.3 #activity in inhibitory populations must exceed this value to have futher impact
 gaba_min=0.2 #minimum amount of inhibition
-BA_inter_feedback_excite=0.8 #controls integration in BA_fear: -1=damp,0=none,1=integrate
-BA_inter_feedback_inhibit=-0.2 #controls mutual inhibition b/w BA_fear and BA_excite
+BA_inter_feedback_F_to_F=0.0 #controls recurrent excitation in BA_fear
+BA_inter_feedback_E_to_E=0.0 #controls recurrent excitation in BA_extinct
+BA_inter_feedback_F_to_E=-1.0 #controls mutual inhibition b/w BA_fear and BA_extinct
+BA_inter_feedback_E_to_F=-1.0 #controls mutual inhibition b/w  BA_extinct and BA_fear
 
 #stimuli
 tt=10.0/60.0 #tone time
@@ -80,8 +82,10 @@ params={
 	'thresh_error':thresh_error,
 	'thresh_inter':thresh_inter,
 	'gaba_min':gaba_min,
-	'BA_inter_feedback_excite':BA_inter_feedback_excite,
-	'BA_inter_feedback_inhibit':BA_inter_feedback_inhibit,
+    'BA_inter_feedback_F_to_F':BA_inter_feedback_F_to_F,
+    'BA_inter_feedback_E_to_E':BA_inter_feedback_E_to_E,
+    'BA_inter_feedback_F_to_E':BA_inter_feedback_F_to_E,
+    'BA_inter_feedback_E_to_F':BA_inter_feedback_E_to_F,
 
 	'tt':tt,
 	'nt':nt,
@@ -145,7 +149,7 @@ def oxy_function(t): #oxytocin activates GABAergic interneurons in CeL_Off
     	return oxy 
     return 0
 
-#inhibitory interneuron connections, directly onto LA neurons (bypass encoders)
+#inhibitory interneuron connections out of LA_inter onto LA
 def LA_recurrent_out(x):
 	cs=x[:dim] #response to CS, gets learned
 	us=x[dim:2*dim]
@@ -158,15 +162,45 @@ def LA_inter_error(x):
     cs=x[:dim]
     us=x[dim:-1]
     inhibit=x[-1]
-    error=(1+inhibit)*(us-cs)
+    error=(us-cs)*max(0,(1-inhibit)) #error signal * inhibitory control, can't go double negative
     return error
-    
+
+#inhibitory interneuron connections out of BA_inter onto BA (through IL/PL/CCK/PV)
+def BS_recurrent_F_to_F(x):
+	inhibit=x[-3]
+	fear=x[-2]
+	extinct=x[-1]
+	feedback=fear*(BA_inter_feedback_F_to_F-inhibit) #mutual excitation minus gaba inhibition
+	return feedback
+
+def BS_recurrent_E_to_E(x):
+	inhibit=x[-3]
+	fear=x[-2]
+	extinct=x[-1]
+	feedback=extinct*(BA_inter_feedback_E_to_E-inhibit) #mutual excitation minus gaba inhibition
+	return feedback
+	
+def BS_recurrent_F_to_E(x):
+	inhibit=x[-3]
+	fear=x[-2]
+	extinct=x[-1]
+	feedback=fear*(BA_inter_feedback_F_to_E+inhibit) #mutual inhibition minus gaba inhibition
+	return feedback
+	
+def BS_recurrent_E_to_F(x):
+	inhibit=x[-3]
+	fear=x[-2]
+	extinct=x[-1]
+	feedback=extinct*(BA_inter_feedback_E_to_F+inhibit) #mutual inhibition minus gaba inhibition
+	return feedback
+	
+
 #difference between US and LA activity is used to train CS-LA connection w/o extinction 
 def BA_inter_error(x):
     context=x[:dim]
     us=x[dim:2*dim]
     inhibit=x[-3]
-    error=(1+inhibit)*(us-context)
+    error=(us-context)*max(0,(1-inhibit)) #error signal * inhibitory control, can't go double negative
     return error
    
     
@@ -200,9 +234,9 @@ with model:
 	#excitability-dependent synaptic plasticity, and therefore fear conditioning,
 	#as well as control activity of LA, reducing fear response
 	#This population has one extra dimension, "i", which is excited by the GABA stimulus
-	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000,
-	        encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-	        eval_points=Uniform(thresh_inter,1))
+	LA_inter=nengo.Ensemble(8*N,2*dim+1,radius=2,n_eval_points=3000)
+	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
+	       # eval_points=Uniform(thresh_inter,1))
 	        
 	#Intercalated Cells
 	ITCd=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1)) 
@@ -223,15 +257,15 @@ with model:
 	#(c) provide learning signal for context to BA_fear/BA_extinct populations
 	#(d) represent GABAergic activation to allow drug control of (a-c)
 	#representation: [context,US,inhibit,Fear_recurrent,Extinct_recurrent]
-	BA_inter=nengo.Ensemble(10*N,2*dim+3,radius=3,
+	BA_inter=nengo.Ensemble(10*N,2*dim+3,radius=3)
 	       # encoders=Choice([[1,0,0],[0,1,0],[0,0,1]]),
-            intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
-            eval_points=Uniform(thresh_inter, 1.1),n_eval_points=5000)
+            # intercepts=Exponential(scale=(1 - thresh_inter) / 5.0, shift=thresh_inter, high=1),
+            # eval_points=Uniform(thresh_inter, 1.1),n_eval_points=5000)
 	
 	#Error populations
-	error_cond=nengo.Ensemble(N,dim)
-	error_context=nengo.Ensemble(N,dim)
-	error_extinct=nengo.Ensemble(N,dim)
+	error_cond=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
+	error_context=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
+	error_extinct=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
 
 	#CONNECTIONS ########################################################################
 
@@ -259,10 +293,10 @@ with model:
 	nengo.Connection(stim_gaba,BA_inter[-3],synapse=tau_stim) #inhibition for gaba control of learn, recurrent
 	nengo.Connection(BA_fear,BA_inter[-2],synapse=tau) #corresponds to known LA to CCK connection
 	nengo.Connection(BA_extinct,BA_inter[-1],synapse=tau) #unknown
-	nengo.Connection(BA_inter[-2],BA_fear,synapse=tau_recurrent,transform=BA_inter_feedback_excite) #IL
-	nengo.Connection(BA_inter[-1],BA_extinct,synapse=tau_recurrent,transform=BA_inter_feedback_excite) #dne?
-	nengo.Connection(BA_inter[-2],BA_extinct,synapse=tau_recurrent,transform=BA_inter_feedback_inhibit) #CCK
-	nengo.Connection(BA_inter[-1],BA_fear,synapse=tau_recurrent,transform=BA_inter_feedback_inhibit) #PV
+	nengo.Connection(BA_inter,BA_fear,synapse=tau_recurrent,function=BS_recurrent_F_to_F) #IL
+	nengo.Connection(BA_inter,BA_extinct,synapse=tau_recurrent,function=BS_recurrent_E_to_E) #???
+	nengo.Connection(BA_inter,BA_extinct,synapse=tau_recurrent,function=BS_recurrent_F_to_E) #CCK
+	nengo.Connection(BA_inter,BA_fear,synapse=tau_recurrent,function=BS_recurrent_E_to_F) #PV
 	nengo.Connection(BA_inter,error_context,synapse=tau_recurrent,function=BA_inter_error)
 	nengo.Connection(BA_inter,error_extinct,synapse=tau_recurrent,transform=-1,function=BA_inter_error)
 	
