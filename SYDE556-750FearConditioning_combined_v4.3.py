@@ -10,24 +10,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import os
 # import ipdb
 
 '''Parameters'''
 #simulation parameters
-filename='FearConditioningMullerCombinedV4pt3'
+filename='FearConditioningCombinedV4pt3'
 experiment='muller-tone' #muller-tone, muller-context, viviani
-drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol']# ['none','oxytocin'] 
+if experiment == 'viviani':
+	drugs=['none','oxytocin']
+else:
+	drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol']
 n_trials=2
-pairings_train=10 #how many CS-US pairs to train on
+pairings_train=5 #how many CS-US pairs to train on
 tones_test=1
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
-context_PES_rate = 5e-4 #conditioning learning rate to Context
-extinct_PES_rate = 5e-7 #extinction learning rate
-gaba_muscimol=3.0 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
+context_PES_rate = 5e-5 #context learning rate
+extinct_PES_rate = 5e-6 #extinction learning rate
+gaba_muscimol=1.25 #1.5 -> identical gaba responses, 1.0 -> muscimol-saline = saline-saline
 gaba_min=0.2 #minimum amount of inhibition
-oxy=0.7 #magnitude of oxytocin stimulus
+oxy=1.0 #magnitude of oxytocin stimulus
 
 #ensemble parameters
 N=100 #neurons for ensembles
@@ -36,8 +40,6 @@ tau_stim=0.01 #synaptic time constant of stimuli to populations
 tau=0.01 #synaptic time constant between ensembles
 tau_learn=0.01 #time constant for error populations onto learning rules
 tau_drug=0.1 #time constant for application of drugs
-tau_GABA=0.005 #synaptic time constant for GABAergic cells
-tau_Glut=0.01 #combination of AMPA and NMDA
 tau_recurrent=0.005 #same as GABAergic cells
 LA_to_BA=0.5
 ITCd_to_ITCv=-0.25
@@ -82,8 +84,6 @@ params={
 	'tau':tau,
 	'tau_learn':tau_learn,
 	'tau_drug':tau_drug,
-	'tau_GABA':tau_GABA,
-	'tau_Glut':tau_Glut,
 	'tau_recurrent':tau_recurrent,
 	'LA_to_BA':LA_to_BA,
     'BA_fear_recurrent':BA_fear_recurrent,
@@ -364,6 +364,8 @@ for drug in drugs:
 
 '''data analysis, plotting, exporting ###############################################'''
 
+root=os.getcwd()
+os.chdir(root+'/data/')
 addon=str(np.random.randint(0,100000))
 fname=filename+addon
 
@@ -377,17 +379,17 @@ if experiment != 'viviani':
 	figure, (ax1, ax2) = plt.subplots(2, 1)
 	sns.set(context='paper')
 	sns.barplot(x="drug",y="freeze",data=dataframe,ax=ax1)
-	sns.tsplot(time="time", value="freeze",
-					unit="trial", condition="drug",
-					data=dataframe,ax=ax2)
-	ax1.set(ylabel='freezing (%)', ylim=(0.0,1.0))
+	sns.tsplot(time="time", value="freeze", data=dataframe,
+					unit="trial", condition="drug",ax=ax2)
+	ax1.set(xlabel='',ylabel='freezing (%)', ylim=(0.0,1.0), title=experiment)
 	ax2.set(xlabel='time (s)', ylabel='freezing (%)', ylim=(0.0,1.0))
 else:
 	figure, ax1 = plt.subplots(1, 1)
 	sns.set(context='paper')
-	sns.tsplot(time="time", value="freeze",
-					unit="trial", condition="drug",
-					data=dataframe,ax=ax1)
-	ax1.set(xlabel='time (s)', ylabel='mean(freeze) (%)', ylim=(0.0,1.0))
+	sns.tsplot(time="time", value="freeze",data=dataframe,
+					unit="trial", condition="drug",ax=ax1)
+	ax1.set(xlabel='time (s)', ylabel='freezing (%)', ylim=(0.0,1.0))
 figure.savefig(fname+'.png')
 plt.show()
+
+os.chdir(root)

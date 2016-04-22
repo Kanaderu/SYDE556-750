@@ -1,0 +1,1479 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass{article}
+
+    
+    
+    \usepackage{graphicx} % Used to insert images
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{color} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{ulem} % ulem is needed to support strikethroughs (\sout)
+    
+
+    
+    
+    \definecolor{orange}{cmyk}{0,0.4,0.8,0.2}
+    \definecolor{darkorange}{rgb}{.71,0.21,0.01}
+    \definecolor{darkgreen}{rgb}{.12,.54,.11}
+    \definecolor{myteal}{rgb}{.26, .44, .56}
+    \definecolor{gray}{gray}{0.45}
+    \definecolor{lightgray}{gray}{.95}
+    \definecolor{mediumgray}{gray}{.8}
+    \definecolor{inputbackground}{rgb}{.95, .95, .85}
+    \definecolor{outputbackground}{rgb}{.95, .95, .95}
+    \definecolor{traceback}{rgb}{1, .95, .95}
+    % ansi colors
+    \definecolor{red}{rgb}{.6,0,0}
+    \definecolor{green}{rgb}{0,.65,0}
+    \definecolor{brown}{rgb}{0.6,0.6,0}
+    \definecolor{blue}{rgb}{0,.145,.698}
+    \definecolor{purple}{rgb}{.698,.145,.698}
+    \definecolor{cyan}{rgb}{0,.698,.698}
+    \definecolor{lightgray}{gray}{0.5}
+    
+    % bright ansi colors
+    \definecolor{darkgray}{gray}{0.25}
+    \definecolor{lightred}{rgb}{1.0,0.39,0.28}
+    \definecolor{lightgreen}{rgb}{0.48,0.99,0.0}
+    \definecolor{lightblue}{rgb}{0.53,0.81,0.92}
+    \definecolor{lightpurple}{rgb}{0.87,0.63,0.87}
+    \definecolor{lightcyan}{rgb}{0.5,1.0,0.83}
+    
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{SYDE 556-750 Assignment 1}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=blue,
+      linkcolor=darkorange,
+      citecolor=darkgreen,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \section{Peter Duggins}\label{peter-duggins}
+
+\section{SYDE 556/750}\label{syde-556750}
+
+\section{Jan 25, 2015}\label{jan-25-2015}
+
+\section{Assignment 1}\label{assignment-1}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}130}]:} \PY{o}{\PYZpc{}}\PY{k}{pylab} inline
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Populating the interactive namespace from numpy and matplotlib
+    \end{Verbatim}
+
+    \subparagraph{SYDE556/750 Assignment 1: Representation in Populations of
+Neurons}\label{syde556750-assignment-1-representation-in-populations-of-neurons}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Due Date: January 25th at midnight
+\item
+  Total marks: 20 (20\% of final grade)
+\item
+  Late penalty: 1 mark per day
+\item
+  It is recommended that you use a language with a matrix library and
+  graphing capabilities. Two main suggestions are Python and MATLAB.
+\item
+  \emph{Do not use any code from Nengo}
+\end{itemize}
+
+    \subsection{1) Representation of
+Scalars}\label{representation-of-scalars}
+
+    \subsubsection{1.1) Basic encoding and
+decoding}\label{basic-encoding-and-decoding}
+
+Write a program that implements a neural representation of a scalar
+value $x$. For the neuron model, use a rectified linear neuron model
+($a=max(J,0)$). Choose the maximum firing rates randomly (uniformly
+distributed between 100Hz and 200Hz at x=1), and choose the x-intercepts
+randomly (uniformly distributed between -0.95 and 0.95). Use those
+values to compute the corresponding $\alpha$ and $J^{bias}$ parameters
+for each neuron. The encoders $e$ are randomly chosen and are either +1
+or -1 for each neuron.
+
+    \subsection{Below are the general purpose classes and methods required
+for the assignment as a whole. This cell should be run before the
+subsequent blocks, which contain the code for each part of each
+question, including parameter setting and
+plotting.}\label{below-are-the-general-purpose-classes-and-methods-required-for-the-assignment-as-a-whole.-this-cell-should-be-run-before-the-subsequent-blocks-which-contain-the-code-for-each-part-of-each-question-including-parameter-setting-and-plotting.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}131}]:} \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k+kn}{as} \PY{n+nn}{np}
+          \PY{k+kn}{import} \PY{n+nn}{matplotlib.pyplot} \PY{k+kn}{as} \PY{n+nn}{plt}
+          \PY{k+kn}{from} \PY{n+nn}{mpl\PYZus{}toolkits.mplot3d} \PY{k+kn}{import} \PY{n}{Axes3D}
+          \PY{k+kn}{from} \PY{n+nn}{scipy.optimize} \PY{k+kn}{import} \PY{n}{curve\PYZus{}fit}
+          
+          \PY{k}{class} \PY{n+nc}{ReLUneuron}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+          
+              \PY{k}{def} \PY{n+nf}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}intercept}\PY{p}{,}\PY{n}{max\PYZus{}firing\PYZus{}rate}\PY{p}{,}\PY{n}{encoder}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{xintercept}\PY{o}{=}\PY{n}{x\PYZus{}intercept}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{maxrate}\PY{o}{=}\PY{n}{max\PYZus{}firing\PYZus{}rate}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{o}{=}\PY{n}{encoder}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{maxrate}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{1} \PY{o}{\PYZhy{}} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{xintercept}\PY{p}{)}    \PY{c}{\PYZsh{}alpha=slope=(y2\PYZhy{}y1)/(x2\PYZhy{}x1)}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{maxrate}\PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{J}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}\PY{p}{)}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{J}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{eta}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{n}{J}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}\PY{p}{)}
+                      \PY{k}{if} \PY{n}{noise} \PY{o}{!=}\PY{l+m+mi}{0}\PY{p}{:}
+                          \PY{n}{eta}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{n}{noise}\PY{p}{)}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{J}\PY{p}{)}\PY{o}{+}\PY{n}{eta}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{J}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}\PY{p}{)}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{J}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}custom\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{eta}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{n}{J}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}\PY{p}{)}
+                      \PY{k}{if} \PY{n}{noise} \PY{o}{!=}\PY{l+m+mi}{0}\PY{p}{:}
+                          \PY{n}{eta}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{n}{noise}\PY{p}{)}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{J}\PY{p}{)}\PY{o}{+}\PY{n}{eta}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}custom\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}
+          
+          \PY{k}{class} \PY{n+nc}{LIFneuron}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+          
+              \PY{k}{def} \PY{n+nf}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}intercept}\PY{p}{,}\PY{n}{max\PYZus{}firing\PYZus{}rate}\PY{p}{,}\PY{n}{encoder}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{xintercept}\PY{o}{=}\PY{n}{x\PYZus{}intercept}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{maxrate}\PY{o}{=}\PY{n}{max\PYZus{}firing\PYZus{}rate}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{o}{=}\PY{n}{encoder}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{xintercept}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref}\PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{maxrate}\PY{o}{*}\PY{o}{*}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{xintercept}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{J}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}
+                      \PY{k}{if} \PY{n}{J}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref}\PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+                      \PY{k}{else}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{rate}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{eta}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{n}{J}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}
+                      \PY{k}{if} \PY{n}{J}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref} \PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+                      \PY{k}{else}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{k}{if} \PY{n}{noise} \PY{o}{!=}\PY{l+m+mi}{0}\PY{p}{:}
+                          \PY{n}{eta}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{n}{noise}\PY{p}{)}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{rate}\PY{o}{+}\PY{n}{eta}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{J}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}
+                      \PY{k}{if} \PY{n}{J}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref}\PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+                      \PY{k}{else}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{rate}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{set\PYZus{}custom\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                  \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                      \PY{n}{eta}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{n}{J}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}
+                      \PY{k}{if} \PY{n}{J}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref} \PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+                      \PY{k}{else}\PY{p}{:}
+                          \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{k}{if} \PY{n}{noise} \PY{o}{!=}\PY{l+m+mi}{0}\PY{p}{:}
+                          \PY{n}{eta}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{n}{noise}\PY{p}{)}
+                      \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{rate}\PY{o}{+}\PY{n}{eta}\PY{p}{)}\PY{p}{)}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates}
+          
+              \PY{k}{def} \PY{n+nf}{get\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{custom\PYZus{}rates\PYZus{}noisy}
+          
+          \PY{k}{def} \PY{n+nf}{ReLUneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+          
+              \PY{n}{neurons}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+              \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{)}\PY{p}{:}
+                  \PY{n}{n}\PY{o}{=}\PY{n}{ReLUneuron}\PY{p}{(}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{encoders}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                  \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+                  \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+                  \PY{n}{neurons}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+              \PY{k}{return} \PY{n}{neurons}
+          
+          \PY{k}{def} \PY{n+nf}{LIFneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+          
+              \PY{n}{neurons}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+              \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{)}\PY{p}{:}
+                  \PY{n}{n}\PY{o}{=}\PY{n}{LIFneuron}\PY{p}{(}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{encoders}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{)}
+                  \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+                  \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+                  \PY{n}{neurons}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+              \PY{k}{return} \PY{n}{neurons}
+          
+          \PY{k}{def} \PY{n+nf}{neuron\PYZus{}responses}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+          
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+              \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{neurons}\PY{p}{:}
+                  \PY{k}{if} \PY{n}{noise} \PY{o}{!=} \PY{l+m+mi}{0}\PY{p}{:}
+                      \PY{n}{y}\PY{o}{=}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{p}{)}
+                  \PY{k}{else}\PY{p}{:}
+                      \PY{n}{y}\PY{o}{=}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{y}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate \PYZdl{}a\PYZdl{} (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+          
+          \PY{k}{def} \PY{n+nf}{get\PYZus{}optimal\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{)}\PY{p}{:}
+          
+              \PY{n}{A\PYZus{}T}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+              \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{neurons}\PY{p}{:}
+                  \PY{n}{A\PYZus{}T}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+              \PY{n}{A\PYZus{}T}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{A\PYZus{}T}\PY{p}{)}
+              \PY{n}{A}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{n}{A\PYZus{}T}\PY{p}{)}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+              \PY{n}{upsilon}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{x}\PY{o}{/}\PY{n}{S}
+              \PY{n}{gamma}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{A}\PY{o}{/}\PY{n}{S}
+              \PY{n}{d}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{pinv}\PY{p}{(}\PY{n}{gamma}\PY{p}{)}\PY{o}{*}\PY{n}{upsilon}
+              \PY{k}{return} \PY{n}{d}
+          
+          \PY{k}{def} \PY{n+nf}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+          
+              \PY{c}{\PYZsh{} Use A=matrix of activities (the firing of each neuron for each x value)}
+              \PY{n}{A\PYZus{}T}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+              \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{neurons}\PY{p}{:}
+                  \PY{n}{A\PYZus{}T}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+              \PY{n}{A\PYZus{}T}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{A\PYZus{}T}\PY{p}{)}
+              \PY{n}{A}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{n}{A\PYZus{}T}\PY{p}{)}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+              \PY{n}{upsilon}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{x}\PY{o}{/}\PY{n}{S}
+              \PY{n}{gamma}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{A}\PY{o}{/}\PY{n}{S} \PY{o}{+} \PY{n}{np}\PY{o}{.}\PY{n}{identity}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{neurons}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{n}{noise}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}
+              \PY{n}{d}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{inv}\PY{p}{(}\PY{n}{gamma}\PY{p}{)}\PY{o}{*}\PY{n}{upsilon}
+              \PY{k}{return} \PY{n}{d}
+          
+          \PY{k}{def} \PY{n+nf}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+          
+              \PY{c}{\PYZsh{}check if the state to be estimated is equivalent to any of the stored firing}
+              \PY{c}{\PYZsh{}rate distributions held in the neuron class. If it is, there\PYZsq{}s no need to }
+              \PY{c}{\PYZsh{}recompute the firing rates.}
+              \PY{n}{xhat}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+              \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{all}\PY{p}{(}\PY{n}{x} \PY{o}{==} \PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                      \PY{n}{xhat\PYZus{}i}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{neurons}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                          \PY{k}{if} \PY{n}{noise} \PY{o}{!=} \PY{l+m+mi}{0}\PY{p}{:}
+                              \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                              \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                              \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                          \PY{k}{else}\PY{p}{:}
+                              \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                              \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                              \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                      \PY{n}{xhat}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{xhat\PYZus{}i}\PY{p}{)}
+                  \PY{n}{xhat}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{xhat}\PY{p}{)}
+          
+              \PY{k}{elif} \PY{n}{np}\PY{o}{.}\PY{n}{all}\PY{p}{(}\PY{n}{x} \PY{o}{==} \PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                      \PY{n}{xhat\PYZus{}i}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{neurons}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                          \PY{k}{if} \PY{n}{noise} \PY{o}{!=} \PY{l+m+mi}{0}\PY{p}{:}
+                              \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                              \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                              \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                          \PY{k}{else}\PY{p}{:}
+                              \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                              \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                              \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                      \PY{n}{xhat}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{xhat\PYZus{}i}\PY{p}{)}
+                  \PY{n}{xhat}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{xhat}\PY{p}{)}
+          
+              \PY{k}{else}\PY{p}{:}
+                  \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{neurons}\PY{p}{:}
+                      \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+                      \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}custom\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+                      \PY{n}{n}\PY{o}{.}\PY{n}{custom\PYZus{}x}\PY{o}{=}\PY{n}{x}
+                  \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                      \PY{n}{xhat\PYZus{}i}\PY{o}{=}\PY{l+m+mi}{0}
+                      \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{neurons}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                          \PY{k}{if} \PY{n}{noise} \PY{o}{!=} \PY{l+m+mi}{0}\PY{p}{:}
+                              \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                              \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                              \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                          \PY{k}{else}\PY{p}{:}
+                              \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}custom\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                              \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                              \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                      \PY{n}{xhat}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{xhat\PYZus{}i}\PY{p}{)}
+                  \PY{n}{xhat}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{xhat}\PY{p}{)}
+          
+              \PY{k}{return} \PY{n}{xhat}
+          
+          \PY{k}{def} \PY{n+nf}{error\PYZus{}vs\PYZus{}neurons}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise\PYZus{}mag}\PY{p}{,}\PY{n}{averages}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{n\PYZus{}type}\PY{p}{)}\PY{p}{:}
+          
+              \PY{n}{E\PYZus{}dist}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+              \PY{n}{E\PYZus{}noise}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+              \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{N\PYZus{}list}\PY{p}{:}
+                  \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{n}{n}
+                  \PY{n}{E\PYZus{}dist\PYZus{}n}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{n}{E\PYZus{}noise\PYZus{}n}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{averages}\PY{p}{)}\PY{p}{:}
+                      \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+                      \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.95}\PY{p}{,}\PY{l+m+mf}{0.95}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+                      \PY{n}{encoders}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+                      \PY{n}{noise}\PY{o}{=}\PY{n}{noise\PYZus{}mag}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{)}
+                      \PY{k}{if} \PY{n}{n\PYZus{}type} \PY{o}{==} \PY{l+s}{\PYZsq{}}\PY{l+s}{ReLU}\PY{l+s}{\PYZsq{}}\PY{p}{:}
+                          \PY{n}{neurons}\PY{o}{=}\PY{n}{ReLUneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+                      \PY{k}{if} \PY{n}{n\PYZus{}type} \PY{o}{==} \PY{l+s}{\PYZsq{}}\PY{l+s}{LIF}\PY{l+s}{\PYZsq{}}\PY{p}{:}
+                          \PY{n}{neurons}\PY{o}{=}\PY{n}{LIFneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+                      \PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy optimization with noisy rates}
+                      \PY{n}{E\PYZus{}dist\PYZus{}n}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{get\PYZus{}e\PYZus{}dist}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{)}    \PY{c}{\PYZsh{}no noise}
+                      \PY{n}{E\PYZus{}noise\PYZus{}n}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{get\PYZus{}e\PYZus{}noise}\PY{p}{(}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+                  \PY{n}{E\PYZus{}dist}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{E\PYZus{}dist\PYZus{}n}\PY{p}{)}\PY{p}{)}
+                  \PY{n}{E\PYZus{}noise}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{E\PYZus{}noise\PYZus{}n}\PY{p}{)}\PY{p}{)}
+              \PY{k}{return} \PY{n}{E\PYZus{}dist}\PY{p}{,}\PY{n}{E\PYZus{}noise}
+          
+          \PY{k}{def} \PY{n+nf}{get\PYZus{}e\PYZus{}dist}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+          
+              \PY{n}{xhat}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{E\PYZus{}dist}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{square}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat}\PY{p}{)}\PY{p}{)}
+              \PY{k}{return} \PY{n}{E\PYZus{}dist}
+          
+          \PY{k}{def} \PY{n+nf}{get\PYZus{}e\PYZus{}noise}\PY{p}{(}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+              \PY{n}{E\PYZus{}noise}\PY{o}{=}\PY{n}{noise}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{square}\PY{p}{(}\PY{n}{d}\PY{p}{)}\PY{p}{)}
+              \PY{k}{return} \PY{n}{E\PYZus{}noise}
+\end{Verbatim}
+
+    \subsubsection{First, solve for the gains $\alpha_i$ and biases
+$J_i^{bias}$. Two conditions are necessary: the maximum firing rate
+occurs at the maximum $J_i$, and the maximum $J_i$ occurs at the maximum
+value of $x=1$; and firing rate drops to zero at the x-intercept. These
+can be formulated into two
+equations:}\label{first-solve-for-the-gains-alphaux5fi-and-biases-jux5fibias.-two-conditions-are-necessary-the-maximum-firing-rate-occurs-at-the-maximum-jux5fi-and-the-maximum-jux5fi-occurs-at-the-maximum-value-of-x1-and-firing-rate-drops-to-zero-at-the-x-intercept.-these-can-be-formulated-into-two-equations}
+
+\[
+a_{max} = \alpha_i * x_{max} \dot{} e_i + J_i^{bias} = \alpha_i + J_i^{bias} \\
+0 = \alpha_i * x_{int} + J_i^{bias}
+\]
+
+Solving this system yields the desired quantities as a funciton of the
+known quantities
+
+\[
+\alpha_i = {a_{max} \over {(1-x_{int})}} \\
+J_i^{bias} = a_{max} - \alpha_i
+\]
+
+Now we can construct the ReLU neurons with $x_{int}$ and $a_{max}$ as
+inputs
+
+    {[}1 mark{]} Plot the neuron responses $a_i$ for 16 randomly generated
+neurons. (See Figure 2.4 in the book for an example, but with a
+different neuron model and a different range of maximum firing rates).
+Since you can't compute this for every possible $x$ value between -1 and
+1, sample the x-axis with $dx=0.05$. Use this sampling throughout this
+question)
+
+{[}1 mark{]} Compute the optimal decoders $d_i$ for those 16 neurons (as
+shown in class). Report their values. The easiest way to compute $d$ is
+to use the matrix notation mentioned in the course notes. $A$ is the
+matrix of neuron activities (the same thing used to generate the plot in
+1.1a).
+
+{[}1 mark{]} Compute and plot $\hat{x}=\sum_i d_i a_i$. Overlay on the
+plot the line $y=x$. (See Figure 2.7 for an example). Make a separate
+plot of $x-\hat{x}$ to see what the error looks like. Report the Root
+Mean Squared Error value.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}132}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}pt\PYZus{}one\PYZus{}a\PYZus{}thru\PYZus{}c}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{c}{\PYZsh{}1.1a\PYZhy{}c}
+          	
+          	\PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{16}
+          	\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+          	\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+          	\PY{n}{min\PYZus{}x}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+          	\PY{n}{max\PYZus{}x}\PY{o}{=}\PY{l+m+mi}{1}
+          	\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+          	\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+          	\PY{n}{encoders}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+          	\PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+          	\PY{n}{noise}\PY{o}{=}\PY{l+m+mi}{0}
+          	\PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{dx}\PY{p}{)}\PY{p}{)}
+          
+          	\PY{n}{neurons}\PY{o}{=}\PY{n}{ReLUneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+          	\PY{n}{neuron\PYZus{}responses}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+          
+          	\PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+          	\PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{)}	\PY{c}{\PYZsh{}noiseless optimization with noiseless rates}
+          	\PY{k}{print} \PY{l+s}{\PYZsq{}}\PY{l+s}{decoders:}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{d}
+          	\PY{n}{xhat}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}	\PY{c}{\PYZsh{}noiseless rates}
+          
+          	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{xhat}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+          	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+          	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x \PYZhy{} }\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+          	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat)**2))],loc=\PYZsq{}best\PYZsq{}) 
+          	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}133}]:} \PY{n}{one\PYZus{}pt\PYZus{}one\PYZus{}a\PYZus{}thru\PYZus{}c}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_10_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+decoders: [[  1.06792827e-03]
+ [  5.22413209e-05]
+ [ -1.52881367e-04]
+ [  2.97897451e-05]
+ [  5.43898621e-05]
+ [ -2.42995131e-04]
+ [ -4.45024145e-05]
+ [ -1.04699023e-04]
+ [ -2.35745756e-04]
+ [ -3.39193563e-05]
+ [ -4.45101733e-03]
+ [ -1.31699412e-03]
+ [  3.66229024e-05]
+ [  1.21707659e-04]
+ [  7.55596443e-03]
+ [  6.75532565e-05]]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_10_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    {[}1 mark{]} Now try decoding under noise. Add random normally
+distributed noise to $a$ and decode again. The noise is a random
+variable with mean 0 and standard deviation of 0.2 times the maximum
+firing rate of all the neurons. Resample this variable for every
+different $x$ value for every different neuron. Create all the same
+plots as in part c). Report the Root Mean Squared Error value.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}134}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}pt\PYZus{}one\PYZus{}d}\PY{p}{(}\PY{p}{)}\PY{p}{:}    \PY{c}{\PYZsh{}1.1d}
+          
+              \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{16}
+              \PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+              \PY{n}{min\PYZus{}x}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}x}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{encoders}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{dx}\PY{p}{)}\PY{p}{)}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+          
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{)}
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{ReLUneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{neuron\PYZus{}responses}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{)}    \PY{c}{\PYZsh{}noiseless optimization with noisy rates}
+              \PY{c}{\PYZsh{} print d}
+              \PY{n}{xhat}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy rates}
+          
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{xhat}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x \PYZhy{} }\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat)**2))],loc=\PYZsq{}best\PYZsq{}) 
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}        
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}150}]:} \PY{n}{one\PYZus{}pt\PYZus{}one\PYZus{}d}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_13_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_13_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    {[}1 mark{]} Recompute the decoders $d_i$ taking noise into account (as
+shown in class). Show how these decoders behave when decoding both with
+and without noise added to $a$ by making the same plots as in c) and d).
+Report the RMSE for both cases. As in the previous question, $\sigma$ is
+0.2 times the maximum firing rate of all the neurons.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}136}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}pt\PYZus{}one\PYZus{}e}\PY{p}{(}\PY{p}{)}\PY{p}{:}    \PY{c}{\PYZsh{}1.1e}
+              
+              \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{16}
+              \PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+              \PY{n}{min\PYZus{}x}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}x}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{encoders}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mi}{0}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{dx}\PY{p}{)}\PY{p}{)}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+          
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{)}
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{ReLUneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{neuron\PYZus{}responses}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{d1}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{)}        \PY{c}{\PYZsh{}noiseless optimization with noisy rates}
+              \PY{n}{d2}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy optimization with noisy rates}
+              \PY{n}{xhat1}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d1}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy rates}
+              \PY{n}{xhat2}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d2}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy rates}
+          
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{xhat1}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{} d w/o noise}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x \PYZhy{} }\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat1)**2))],loc=\PYZsq{}best\PYZsq{})
+          
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{xhat2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{} d w/ noise}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat2}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x \PYZhy{} }\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat2)**2))],loc=\PYZsq{}best\PYZsq{}) 
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}137}]:} \PY{n}{one\PYZus{}pt\PYZus{}one\PYZus{}e}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_16_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_16_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_16_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    {[}1 mark{]} Show a 2x2 table of the four RMSE values reported in parts
+c), d), and e). This should show the effects of adding noise and whether
+or not the decoders $d$ are computed taking noise into account. Write a
+few sentences commenting on what the table shows.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}138}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}pt\PYZus{}one\PYZus{}f}\PY{p}{(}\PY{p}{)}\PY{p}{:}     \PY{c}{\PYZsh{}1.1f}
+          
+              \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{16}
+              \PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+              \PY{n}{min\PYZus{}x}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}x}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{encoders}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{dx}\PY{p}{)}\PY{p}{)}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+              \PY{c}{\PYZsh{}noisy activity is calculated when neurons are created, so I do that here, then call}
+              \PY{c}{\PYZsh{}either get\PYZus{}rates() or get\PYZus{}rates\PYZus{}noisy as appropriate}
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{)}
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{ReLUneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+          
+              \PY{c}{\PYZsh{}noiseless activity, noiseless decoding}
+              \PY{n}{d1}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{)}
+              \PY{n}{xhat1}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d1}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{)}
+              \PY{n}{rmse1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat1}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+              \PY{c}{\PYZsh{}noiseless activity, noisy decoding}
+              \PY{n}{d2}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{xhat2}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d2}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{)}
+              \PY{n}{rmse2}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat2}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+              \PY{c}{\PYZsh{}noisy activity, noiseless decoding}
+              \PY{n}{d3}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{)}
+              \PY{n}{xhat3}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d3}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{rmse3}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat3}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+              \PY{c}{\PYZsh{}noisy activity, noisy decoding}
+              \PY{n}{d4}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{xhat4}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d4}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{rmse4}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat4}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+          
+              \PY{n}{rmse\PYZus{}table\PYZus{}code}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{p}{[}
+                  \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{clean a, clean d}\PY{l+s}{\PYZsq{}}\PY{p}{,}
+                   \PY{l+s}{\PYZsq{}}\PY{l+s}{clean a, noisy d}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+                  \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{noisy a, clean d}\PY{l+s}{\PYZsq{}}\PY{p}{,}
+                   \PY{l+s}{\PYZsq{}}\PY{l+s}{noisy a, noisy d}\PY{l+s}{\PYZsq{}}\PY{p}{]}
+                  \PY{p}{]}\PY{p}{)}
+              \PY{n}{rmse\PYZus{}table}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{p}{[}\PY{p}{[}\PY{n}{rmse1}\PY{p}{,} \PY{n}{rmse2}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{n}{rmse3}\PY{p}{,} \PY{n}{rmse4}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+              \PY{k}{print} \PY{n}{rmse\PYZus{}table\PYZus{}code}
+              \PY{k}{print} \PY{n}{rmse\PYZus{}table}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}139}]:} \PY{n}{one\PYZus{}pt\PYZus{}one\PYZus{}f}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[['clean a, clean d' 'clean a, noisy d']
+ ['noisy a, clean d' 'noisy a, noisy d']]
+[[ 0.00069024  0.06421082]
+ [ 0.40976505  0.20133093]]
+    \end{Verbatim}
+
+    \subsubsection{The root mean squared error (RMSE) is a measure of the
+error between the original state $x$ and the estimated state $\hat{x}$.
+As we would expect, when the neurons representing the state have no
+noise added to them, and the decoders $d$ are calculated using the
+matrix of the neurons' noiseless activities $A$, the state can be
+estimated with very high precision, leading to the lowest RMSE. When
+noise is injected into $A$, and $d$ is computed on the noiseless $A$
+matrix, the decoders do not account for the fluctuating firing rates of
+the neurons, and hence do the worst job estimating the state (have the
+highest RMSE). When $d$ is calculated taking noise into account, it
+performs a far better estimation of the state: in the case of noiseless
+$A$, the noisy decoding introduces some suboptimal error into $\hat{x}$,
+producing an RMSE than is slighly higher than the noiseless decoding
+(second lowest). However, it improves the estimation of the noisy
+activity matrix a significant amount. This RMSE (second highest) is
+inevitably higher under noisy activities than with noiseless
+$A$.}\label{the-root-mean-squared-error-rmse-is-a-measure-of-the-error-between-the-original-state-x-and-the-estimated-state-hatx.-as-we-would-expect-when-the-neurons-representing-the-state-have-no-noise-added-to-them-and-the-decoders-d-are-calculated-using-the-matrix-of-the-neurons-noiseless-activities-a-the-state-can-be-estimated-with-very-high-precision-leading-to-the-lowest-rmse.-when-noise-is-injected-into-a-and-d-is-computed-on-the-noiseless-a-matrix-the-decoders-do-not-account-for-the-fluctuating-firing-rates-of-the-neurons-and-hence-do-the-worst-job-estimating-the-state-have-the-highest-rmse.-when-d-is-calculated-taking-noise-into-account-it-performs-a-far-better-estimation-of-the-state-in-the-case-of-noiseless-a-the-noisy-decoding-introduces-some-suboptimal-error-into-hatx-producing-an-rmse-than-is-slighly-higher-than-the-noiseless-decoding-second-lowest.-however-it-improves-the-estimation-of-the-noisy-activity-matrix-a-significant-amount.-this-rmse-second-highest-is-inevitably-higher-under-noisy-activities-than-with-noiseless-a.}
+
+    \subsubsection{1.2) Exploring sources of
+error}\label{exploring-sources-of-error}
+
+Use the program you wrote in 1.1 to examine the sources of error in the
+representation.
+
+    {[}2 marks{]} Plot the error due to distortion $E_{dist}$ and the error
+due to noise $E_{noise}$ as a function of $N$, the number of neurons.
+Use the equation with those two parts as your method (2.9 in the book).
+Generate two different loglog plots (one for each type of error) with
+$N$ values of {[}4, 8, 16, 32, 64, 128, 256, 512{]} (and more, if you
+would like). For each $N$ value, do at least 5 runs and average the
+results. For each run, different $\alpha$, $J^{bias}$, and $e$ values
+should be generated for each neuron. Compute $d$ under noise, with
+$\sigma$ equal to 0.1 times the maximum firing rate. Show visually that
+the errors are proportional to $1/N$ or $1/N^2$ (see figure 2.6 in the
+book).
+
+{[}1 mark{]} Repeat part a) with $\sigma$ equal to 0.01 times the
+maximum firing rate.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}140}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}pt\PYZus{}two}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{c}{\PYZsh{}1.2a\PYZhy{}b}
+          
+              \PY{n}{N\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{,}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{32}\PY{p}{,}\PY{l+m+mi}{64}\PY{p}{,}\PY{l+m+mi}{128}\PY{p}{,}\PY{l+m+mi}{256}\PY{p}{,}\PY{l+m+mi}{512}\PY{p}{]}
+              \PY{n}{averages}\PY{o}{=}\PY{l+m+mi}{20}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+              \PY{n}{min\PYZus{}x}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.95}
+              \PY{n}{max\PYZus{}x}\PY{o}{=}\PY{l+m+mf}{0.95}
+              \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+              \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{dx}\PY{p}{)}\PY{p}{)}
+          
+              \PY{n}{noise\PYZus{}mag}\PY{o}{=}\PY{l+m+mf}{0.1}
+              \PY{n}{E\PYZus{}dist1}\PY{p}{,}\PY{n}{E\PYZus{}noise1} \PY{o}{=} \PY{n}{error\PYZus{}vs\PYZus{}neurons}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise\PYZus{}mag}\PY{p}{,}\PY{n}{averages}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{ReLU}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{noise\PYZus{}mag}\PY{o}{=}\PY{l+m+mf}{0.01}
+              \PY{n}{E\PYZus{}dist2}\PY{p}{,}\PY{n}{E\PYZus{}noise2} \PY{o}{=} \PY{n}{error\PYZus{}vs\PYZus{}neurons}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise\PYZus{}mag}\PY{p}{,}\PY{n}{averages}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{ReLU}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+          
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{n}{E\PYZus{}dist1}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}E\PYZus{}\PYZob{}dist\PYZcb{}\PYZdl{}, \PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{sigma=0.1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{n}{E\PYZus{}dist2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{r}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}E\PYZus{}\PYZob{}dist\PYZcb{}\PYZdl{}, \PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{sigma=0.01\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{l+m+mf}{1.}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{square}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{)}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}1/n\PYZca{}2\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{neurons}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}E\PYZus{}\PYZob{}dist\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{n}{E\PYZus{}noise1}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}E\PYZus{}\PYZob{}noise\PYZcb{}\PYZdl{}, \PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{sigma=0.1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{n}{E\PYZus{}noise2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{r}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}E\PYZus{}\PYZob{}noise\PYZcb{}\PYZdl{}, \PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{sigma=0.01\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{,}\PY{l+m+mf}{1.}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{N\PYZus{}list}\PY{p}{)}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}1/n\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{neurons}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}E\PYZus{}\PYZob{}noise\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}141}]:} \PY{n}{one\PYZus{}pt\PYZus{}two}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_24_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    {[}1 mark{]} What does the difference between the graphs in a) and b)
+tell us about the sources of error in neural populations?
+
+    \subsubsection{$E_{dist}$, the error due to static distortion, is
+inherent in the representation of a state variable in a neural
+population. Plotting this error as a function of the number of neurons
+reprsenting the value, we see $E_{dist}$ falls as $1/n^2$. $E_{noise}$,
+the error due to noise, is inherent in the representation of a state
+variable in a neural population. Plotting this error as a function of
+the number of neurons in the population, we see $E_{noise}$ falls as
+$1/n$. While both these plots confirm our intuition that increasing
+neurons improves representational accuracy, the steeper slope of the
+$E_{dist}$ drop implies that as neuron numbers rise, the major source of
+error will be due to noise rather than static distortion. This result
+holds over the magnitude of injected noise $\sigma$: while decreasing
+this parameter shifts the curve downward towards less absolute error,
+the scaling remains the
+same.}\label{eux5fdist-the-error-due-to-static-distortion-is-inherent-in-the-representation-of-a-state-variable-in-a-neural-population.-plotting-this-error-as-a-function-of-the-number-of-neurons-reprsenting-the-value-we-see-eux5fdist-falls-as-1n2.-eux5fnoise-the-error-due-to-noise-is-inherent-in-the-representation-of-a-state-variable-in-a-neural-population.-plotting-this-error-as-a-function-of-the-number-of-neurons-in-the-population-we-see-eux5fnoise-falls-as-1n.-while-both-these-plots-confirm-our-intuition-that-increasing-neurons-improves-representational-accuracy-the-steeper-slope-of-the-eux5fdist-drop-implies-that-as-neuron-numbers-rise-the-major-source-of-error-will-be-due-to-noise-rather-than-static-distortion.-this-result-holds-over-the-magnitude-of-injected-noise-sigma-while-decreasing-this-parameter-shifts-the-curve-downward-towards-less-absolute-error-the-scaling-remains-the-same.}
+
+    \subsubsection{1.3) Leaky Integrate-and-Fire
+neurons}\label{leaky-integrate-and-fire-neurons}
+
+Change the code to use the LIF neuron model:
+
+\[
+a_i = \begin{cases}
+    {1 \over {\tau_{ref}-\tau_{RC}ln(1-{1 \over J})}} &\mbox{if } J>1 \\ 
+    0 &\mbox{otherwise} 
+    \end{cases}
+\]
+
+    {[}1 mark{]} Generate the same plot as 1.1a). Use $\tau_{ref}=0.002$s
+and $\tau_{RC}=0.02$s. You will need to compute new $\alpha$ and
+$J^{bias}$ values that will achieve the desired tuning curves (uniform
+distribution of x-intercepts between -1 and 1, and maximum firing rates
+between 100Hz and 200Hz). Since you know two points on the tuning curve
+(the x-intercept and the point where it hits maximum firing), this gives
+you 2 equations and 2 unknowns, so you can find $\alpha$ and $J^{bias}$
+by substituting and rearranging.
+
+    \subsubsection{Again, solve for the gains $\alpha_i$ and biases
+$J_i^{bias}$. The same two conditions are necessary: the maximum firing
+rate occurs at the maximum $J_i$, and the maximum $J_i$ occurs at the
+maximum value of $x=1$; and firing rate drops to zero at the
+x-intercept, which here occurs when $J_i=1$. These can be formulated
+into two
+equations:}\label{again-solve-for-the-gains-alphaux5fi-and-biases-jux5fibias.-the-same-two-conditions-are-necessary-the-maximum-firing-rate-occurs-at-the-maximum-jux5fi-and-the-maximum-jux5fi-occurs-at-the-maximum-value-of-x1-and-firing-rate-drops-to-zero-at-the-x-intercept-which-here-occurs-when-jux5fi1.-these-can-be-formulated-into-two-equations}
+
+\[
+a_{max} = {1 \over {\tau_{ref}-\tau_{RC}ln(1-{1 \over J_i})}} \\
+1 = \alpha_i * x_{int} + J_i^{bias}
+\]
+
+Solving this system yields the desired quantities as a funciton of the
+known quantities
+
+\[
+\alpha_i = {1 \over {1-x_{int}}} * (-1 + {1 \over {1-exp({a_{max}*\tau_{ref} - 1 \over {a_{max}*\tau_{rc}}})}}) \\
+J_i^{bias} = 1 - \alpha_i * x_{int}
+\]
+
+Now we can construct the ReLU neurons with $x_{int}$ and $a_{max}$ as
+inputs
+
+    {[}2 marks{]} Generate the same plots as 1.1e), and report the RMSE for
+both.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}151}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}pt\PYZus{}three}\PY{p}{(}\PY{p}{)}\PY{p}{:}    \PY{c}{\PYZsh{}1.3}
+          
+              \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{16}
+              \PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+              \PY{n}{min\PYZus{}x}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}x}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{encoders}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{min\PYZus{}x}\PY{p}{,}\PY{n}{max\PYZus{}x}\PY{p}{,}\PY{n}{dx}\PY{p}{)}\PY{p}{)}
+              \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+              \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.0}
+          
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{)}
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{LIFneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{neuron\PYZus{}responses}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{d1}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{)}        \PY{c}{\PYZsh{}noiseless optimization with noisy rates}
+              \PY{n}{d2}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy optimization with noisy rates}
+              \PY{n}{xhat1}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d1}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy rates}
+              \PY{n}{xhat2}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d2}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy rates}
+          
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{xhat1}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{} d w/o noise}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x \PYZhy{} }\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat1)**2))],loc=\PYZsq{}best\PYZsq{})
+          
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{xhat2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{} d w/ noise}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{n}{xhat2}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x \PYZhy{} }\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat2)**2))],loc=\PYZsq{}best\PYZsq{}) 
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}152}]:} \PY{n}{one\PYZus{}pt\PYZus{}three}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_32_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_32_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_32_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsection{2) Representation of
+Vectors}\label{representation-of-vectors}
+
+    \subsubsection{2.1) Vector tuning curves}\label{vector-tuning-curves}
+
+    {[}1 mark{]} Plot the tuning curve of an LIF neuron whose 2D preferred
+direction vector is at an angle of $\theta=-\pi/4$, has an x-intercept
+at the origin (0,0), and has a maximum firing rate of 100Hz.
+
+Remember that $J=\alpha e \cdot x + J^{bias}$, and both $x$ and $e$ are
+2D vectors.
+
+In the scalar case (that you did in question 1.1a), the maximum firing
+rate occurred when $x=1$ for neurons with $e=1$ and at $x=-1$ for
+neurons with $e=-1$. Of course, if the graph in 1.1a was extended to
+$x>1$ (or $x<-1$), neurons would start firing faster than their maximum
+firing rate. Similarly, here the ``maximum firing rate'' means the
+firing rate when $x=e$. This should allow you to reuse your code from
+1.3a) to compute $\alpha$ and $J^{bias}$ for a desired maximum firing
+rate and x-intercept.
+
+{[}1 mark{]} Plot the tuning curve for the same neuron as in a), but
+only considering the points around the unit circle. This will be similar
+to Figure 2.8b in the book. Fit a curve of the form $Acos(B\theta+C)+D$
+to the tuning curve and plot it as well. What makes a cosine a good
+choice for this? Why does it differ from the ideal curve?
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}144}]:} \PY{k}{def} \PY{n+nf}{two\PYZus{}pt\PYZus{}one}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+          
+              \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{p}{[}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{]}
+              \PY{n}{x1\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{x1\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{x2\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{x2\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}
+              \PY{n}{encoders}\PY{o}{=}\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}    \PY{c}{\PYZsh{}preferred direction theta=\PYZhy{}pi/4}
+              \PY{n}{encoders}\PY{o}{=}\PY{n}{encoders}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{encoders}\PY{p}{)}
+              \PY{c}{\PYZsh{} print encoders}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+              \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+              \PY{c}{\PYZsh{} S=len(x)}
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.0}
+          
+              \PY{n}{x1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x1\PYZus{}min}\PY{p}{,} \PY{n}{x1\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+              \PY{n}{x2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x2\PYZus{}min}\PY{p}{,} \PY{n}{x2\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{x2}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{LIFneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              
+              \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{,} \PY{n}{projection}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{3d}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x1}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                  \PY{n}{xs}\PY{o}{=}\PY{n}{x1}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+                  \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x2}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                      \PY{n}{ys}\PY{o}{=}\PY{n}{x2}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                      \PY{n}{zs} \PY{o}{=} \PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{i}\PY{o}{*}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x2}\PY{p}{)}\PY{o}{+}\PY{n}{j}\PY{p}{]}
+                      \PY{n}{ax}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{xs}\PY{p}{,}\PY{n}{ys}\PY{p}{,}\PY{n}{zs}\PY{p}{)}
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+          
+              \PY{n}{angles}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{,}\PY{l+m+mi}{100}\PY{p}{)}
+              \PY{n}{x}\PY{o}{=}\PY{p}{[}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{a}\PY{p}{)}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{a}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n}{angles}\PY{p}{]}
+          
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{LIFneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{y}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}
+              \PY{k}{def} \PY{n+nf}{fit\PYZus{}cos}\PY{p}{(}\PY{n}{theta}\PY{p}{,} \PY{n}{A}\PY{p}{,}\PY{n}{B}\PY{p}{,}\PY{n}{C}\PY{p}{,}\PY{n}{D}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n}{A}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{B}\PY{o}{*}\PY{n}{theta}\PY{o}{+}\PY{n}{C}\PY{p}{)}\PY{o}{+}\PY{n}{D}     \PY{c}{\PYZsh{}fitted cosine}
+              \PY{k}{def} \PY{n+nf}{fit\PYZus{}rec\PYZus{}cos}\PY{p}{(}\PY{n}{theta}\PY{p}{,} \PY{n}{A}\PY{p}{,}\PY{n}{B}\PY{p}{,}\PY{n}{C}\PY{p}{,}\PY{n}{D}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{return} \PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{n}{A}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{B}\PY{o}{*}\PY{n}{theta}\PY{o}{+}\PY{n}{C}\PY{p}{)}\PY{o}{+}\PY{n}{D}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{)}     \PY{c}{\PYZsh{}fitted rectified cosine}
+              \PY{n}{popt}\PY{p}{,}\PY{n}{pconv} \PY{o}{=} \PY{n}{curve\PYZus{}fit}\PY{p}{(}\PY{n}{fit\PYZus{}cos}\PY{p}{,}\PY{n}{angles}\PY{p}{,}\PY{n}{y}\PY{p}{)}
+              \PY{n}{popt\PYZus{}rec}\PY{p}{,}\PY{n}{pconv\PYZus{}rec} \PY{o}{=} \PY{n}{curve\PYZus{}fit}\PY{p}{(}\PY{n}{fit\PYZus{}rec\PYZus{}cos}\PY{p}{,}\PY{n}{angles}\PY{p}{,}\PY{n}{y}\PY{p}{)}
+              \PY{n}{y\PYZus{}fit}\PY{o}{=}\PY{n}{fit\PYZus{}cos}\PY{p}{(}\PY{n}{angles}\PY{p}{,}\PY{o}{*}\PY{n}{popt}\PY{p}{)}
+              \PY{n}{y\PYZus{}fit\PYZus{}rec}\PY{o}{=}\PY{n}{fit\PYZus{}rec\PYZus{}cos}\PY{p}{(}\PY{n}{angles}\PY{p}{,}\PY{o}{*}\PY{n}{popt\PYZus{}rec}\PY{p}{)}
+          
+              \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{theta\PYZdl{} (radians)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{angles}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{)}\PY{p}{,}\PY{n}{y}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{Neural Responses}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{angles}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{)}\PY{p}{,}\PY{n}{y\PYZus{}fit}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{Fitted Cosine}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{angles}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{)}\PY{p}{,}\PY{n}{y\PYZus{}fit\PYZus{}rec}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{Fitted Rectified Cosine}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}145}]:} \PY{n}{two\PYZus{}pt\PYZus{}one}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_37_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_37_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{Cosine is a good choice of function to fit the neural
+response becaues it traces out the unit circle, the same sweep as is
+made by changing the angle $\theta$. It is not ideal becaues the LIF
+neurons drop to zero activity when the state $x$ points in the direction
+opposite their preferred direction (the endocoder $(-1,1)$), creating a
+region of zero activity. The fit can be improves by fitting a rectified
+cosine function, as I have done above (thanks Xuan for
+suggesting).}\label{cosine-is-a-good-choice-of-function-to-fit-the-neural-response-becaues-it-traces-out-the-unit-circle-the-same-sweep-as-is-made-by-changing-the-angle-theta.-it-is-not-ideal-becaues-the-lif-neurons-drop-to-zero-activity-when-the-state-x-points-in-the-direction-opposite-their-preferred-direction-the-endocoder--11-creating-a-region-of-zero-activity.-the-fit-can-be-improves-by-fitting-a-rectified-cosine-function-as-i-have-done-above-thanks-xuan-for-suggesting.}
+
+    \subsubsection{2.2 Vector representation}\label{vector-representation}
+
+    {[}1 mark{]} Generate a set of 100 random unit vectors uniformly
+distributed around the unit circle. These will be the encoders $e$ for
+100 neurons. Plot these vectors.
+
+{[}1 mark{]} Compute the optimal decoders. Use LIF neurons with the same
+properties as in question 1.3. When computing the decoders, take into
+account noise with $\sigma$ as 0.2 times the maximum firing rate. Plot
+the decoders. How do these decoding vectors compare to the encoding
+vectors? Note that the decoders will also be 2D vectors. In the scalar
+case, you used $x$ values between -1 and 1, with $dx=0.05$. In this
+case, you can regularly tile the 2D $x$ values ({[}1, 1{]}, {[}1,
+0.95{]}, \ldots{} {[}-1, -0.95{]}, {[}-1, 1{]}). Alternatively, you can
+just randomly choose 1600 different $x$ values to sample.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}146}]:} \PY{k}{def} \PY{n+nf}{two\PYZus{}pt\PYZus{}two\PYZus{}a\PYZus{}thru\PYZus{}b}\PY{p}{(}\PY{p}{)}\PY{p}{:}     \PY{c}{\PYZsh{}2.2a\PYZhy{}b}
+          
+              \PY{n}{points}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{angles}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{encoders}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{a}\PY{p}{)}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{a}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n}{angles}\PY{p}{]}\PY{p}{)}
+          
+              \PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+              \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{x1\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{x1\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{x2\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{x2\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{p}{[}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{x1\PYZus{}min}\PY{p}{,}\PY{n}{x1\PYZus{}max}\PY{p}{)}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{x2\PYZus{}min}\PY{p}{,}\PY{n}{x2\PYZus{}max}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{)}\PY{p}{]}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{x1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x1\PYZus{}min}\PY{p}{,} \PY{n}{x1\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+              \PY{n}{x2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x2\PYZus{}min}\PY{p}{,} \PY{n}{x2\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{x2}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+              \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+              \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{)}
+          
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{LIFneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy optimization with noisy rates}
+          
+              \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{k}{for} \PY{n}{e} \PY{o+ow}{in} \PY{n}{encoders}\PY{p}{:}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{e}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{e}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{encoders}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{k}{for} \PY{n}{di} \PY{o+ow}{in} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{)}\PY{p}{:}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{di}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{di}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{decoders}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \subsubsection{Make the jump to light
+speed.}\label{make-the-jump-to-light-speed.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}147}]:} \PY{n}{two\PYZus{}pt\PYZus{}two\PYZus{}a\PYZus{}thru\PYZus{}b}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_43_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{The decoding vectors point in the same direction as the
+encoding vectors, but are scaled downwards by some
+amount.}\label{the-decoding-vectors-point-in-the-same-direction-as-the-encoding-vectors-but-are-scaled-downwards-by-some-amount.}
+
+    {[}1 mark{]} Generate 20 random $x$ values over the unit circle
+(i.e.~with different directions and radiuses). For each $x$ value,
+determine the neural activity $a$ for each of the 100 neurons. Now
+decode these values (i.e.~compute $\hat{x}$) using the decoders from
+part b). Plot the original and decoded values on the same graph in
+different colours, and compute the RMSE.
+
+{[}2 marks{]} Repeat part c) but use the \emph{encoders} as decoders.
+This is what Georgopoulos used in his original approach to decoding
+information from populations of neurons. Plot the decoded values this
+way and compute the RMSE. In addition, recompute the RMSE in both cases,
+but ignoring the magnitude of the decoded vector. What are the relative
+merits of these two approaches to decoding?
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}148}]:} \PY{k}{def} \PY{n+nf}{two\PYZus{}pt\PYZus{}two\PYZus{}c\PYZus{}thru\PYZus{}d}\PY{p}{(}\PY{p}{)}\PY{p}{:}     \PY{c}{\PYZsh{}2.2c}
+          
+              \PY{n}{points}\PY{o}{=}\PY{l+m+mi}{20}
+              \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{100}
+              \PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{o}{=}\PY{l+m+mi}{200}
+              \PY{n}{x1\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{x1\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{x2\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+              \PY{n}{x2\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+              \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+              \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+              \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+              \PY{n}{x1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x1\PYZus{}min}\PY{p}{,} \PY{n}{x1\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+              \PY{n}{x2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x2\PYZus{}min}\PY{p}{,} \PY{n}{x2\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+              \PY{n}{x\PYZus{}sample}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{x2}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+              \PY{n}{max\PYZus{}rate\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{min\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{max\PYZus{}fire\PYZus{}rate}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+              \PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{o}{=}\PY{p}{[}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{x1\PYZus{}min}\PY{p}{,}\PY{n}{x1\PYZus{}max}\PY{p}{)}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{x2\PYZus{}min}\PY{p}{,}\PY{n}{x2\PYZus{}max}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{)}\PY{p}{]}
+              \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{)}
+          
+              \PY{n}{angles}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{,}\PY{n}{points}\PY{p}{)}     \PY{c}{\PYZsh{}note: does not distribute uniformally over the unit circle}
+              \PY{n}{radii}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{points}\PY{p}{)}     \PY{c}{\PYZsh{}but creates a high density of points near the center}
+              \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{radii}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{angles}\PY{p}{)}\PY{p}{,}\PY{n}{radii}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{angles}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+          
+              \PY{n}{angles\PYZus{}enc}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}     \PY{c}{\PYZsh{}note: does not distribute uniformally over the unit circle}
+              \PY{n}{encoders}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{a}\PY{p}{)}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{a}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n}{angles\PYZus{}enc}\PY{p}{]}\PY{p}{)}
+              \PY{n}{S}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+          
+              \PY{n}{neurons}\PY{o}{=}\PY{n}{LIFneurons}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}intercept\PYZus{}array}\PY{p}{,}\PY{n}{max\PYZus{}rate\PYZus{}array}\PY{p}{,}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}optimal\PYZus{}decoders\PYZus{}noisy}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{S}\PY{p}{,}\PY{n}{noise}\PY{p}{)}    \PY{c}{\PYZsh{}noisy optimization with noisy rates}
+              \PY{n}{xhat}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              
+              \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{k}{for} \PY{n}{xi} \PY{o+ow}{in} \PY{n}{x}\PY{p}{:}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xi}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xi}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{k}{for} \PY{n}{xhati} \PY{o+ow}{in} \PY{n}{xhat}\PY{p}{:}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xhati}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xhati}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}, RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat)**2))],loc=\PYZsq{}best\PYZsq{},shadow=True)
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+          
+              \PY{c}{\PYZsh{}2.2d}
+              \PY{n}{xhat2}\PY{o}{=}\PY{n}{get\PYZus{}state\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{x}\PY{p}{,}\PY{n}{encoders}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+              \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{k}{for} \PY{n}{xi} \PY{o+ow}{in} \PY{n}{xhat2}\PY{p}{:}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xi}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xi}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{} w/ encoders, RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat2)**2))],loc=\PYZsq{}best\PYZsq{},shadow=True)
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+          
+              
+              \PY{n}{xhat3}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{xi}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{xi}\PY{p}{)} \PY{k}{for} \PY{n}{xi} \PY{o+ow}{in} \PY{n}{xhat}\PY{p}{]}\PY{p}{)}        
+              \PY{n}{xhat4}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{xi}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{xi}\PY{p}{)} \PY{k}{for} \PY{n}{xi} \PY{o+ow}{in} \PY{n}{xhat2}\PY{p}{]}\PY{p}{)}
+              
+              \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+              \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+              \PY{k}{for} \PY{n}{xhat3i} \PY{o+ow}{in} \PY{n}{xhat3}\PY{p}{:}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xhat3i}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xhat3i}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{b}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{k}{for} \PY{n}{xhat4i} \PY{o+ow}{in} \PY{n}{xhat4}\PY{p}{:}
+                  \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xhat4i}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{xhat4i}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{g}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+              \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}
+                  \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{} w/ decoders, normalized, RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat3)**2)),
+                  \PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{} w/ encoders, normalized, RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZhy{}xhat4)**2))],
+                  \PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)} 
+              \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}149}]:} \PY{n}{two\PYZus{}pt\PYZus{}two\PYZus{}c\PYZus{}thru\PYZus{}d}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_47_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_47_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE 556-750 Assignment 1_files/SYDE 556-750 Assignment 1_47_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{The first approach requires that the decoders be computed
+using the NEF, which can be a computationally intensive operation.
+However, it produces much lower RMSE than using the approach of
+Georgopoulos, which has the primary problem that it only decodes angle
+and not radius (hence the huge and variable length of his vectors). Even
+when both the resulting estimates are normalized to the unit circle, the
+decoders produce a smaller
+RMSE.}\label{the-first-approach-requires-that-the-decoders-be-computed-using-the-nef-which-can-be-a-computationally-intensive-operation.-however-it-produces-much-lower-rmse-than-using-the-approach-of-georgopoulos-which-has-the-primary-problem-that-it-only-decodes-angle-and-not-radius-hence-the-huge-and-variable-length-of-his-vectors.-even-when-both-the-resulting-estimates-are-normalized-to-the-unit-circle-the-decoders-produce-a-smaller-rmse.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} 
+\end{Verbatim}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}

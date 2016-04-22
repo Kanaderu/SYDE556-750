@@ -1,0 +1,1129 @@
+\documentclass{article}
+    \usepackage{graphicx} % Used to insert images
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{color} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{ulem} % ulem is needed to support strikethroughs (\sout)
+    
+    \definecolor{orange}{cmyk}{0,0.4,0.8,0.2}
+    \definecolor{darkorange}{rgb}{.71,0.21,0.01}
+    \definecolor{darkgreen}{rgb}{.12,.54,.11}
+    \definecolor{myteal}{rgb}{.26, .44, .56}
+    \definecolor{gray}{gray}{0.45}
+    \definecolor{lightgray}{gray}{.95}
+    \definecolor{mediumgray}{gray}{.8}
+    \definecolor{inputbackground}{rgb}{.95, .95, .85}
+    \definecolor{outputbackground}{rgb}{.95, .95, .95}
+    \definecolor{traceback}{rgb}{1, .95, .95}
+    % ansi colors
+    \definecolor{red}{rgb}{.6,0,0}
+    \definecolor{green}{rgb}{0,.65,0}
+    \definecolor{brown}{rgb}{0.6,0.6,0}
+    \definecolor{blue}{rgb}{0,.145,.698}
+    \definecolor{purple}{rgb}{.698,.145,.698}
+    \definecolor{cyan}{rgb}{0,.698,.698}
+    \definecolor{lightgray}{gray}{0.5}
+    
+    % bright ansi colors
+    \definecolor{darkgray}{gray}{0.25}
+    \definecolor{lightred}{rgb}{1.0,0.39,0.28}
+    \definecolor{lightgreen}{rgb}{0.48,0.99,0.0}
+    \definecolor{lightblue}{rgb}{0.53,0.81,0.92}
+    \definecolor{lightpurple}{rgb}{0.87,0.63,0.87}
+    \definecolor{lightcyan}{rgb}{0.5,1.0,0.83}
+    
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=blue,
+      linkcolor=darkorange,
+      citecolor=darkgreen,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+\title{SYDE 556-750 Assignment 4}
+\author{Peter Duggins, Studend ID 20610432}
+\date{\today}
+
+\begin{document}
+    
+    
+\maketitle
+
+\section*{SYDE556/750 Assignment 4: Nengo and Dynamics}
+
+\begin{itemize}
+\item
+  Due Date: March 14th (midnight)
+\item
+  Total marks: 10 (10\% of final grade)
+\item
+  Late penalty: 1 mark per day
+\item
+  For this assignment, you must use Nengo and/or Nengo GUI
+\end{itemize}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{o}{\PYZpc{}}\PY{k}{pylab} inline
+        
+        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k+kn}{as} \PY{n+nn}{np}
+        \PY{k+kn}{import} \PY{n+nn}{scipy.integrate} \PY{k+kn}{as} \PY{n+nn}{integrate}
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib.pyplot} \PY{k+kn}{as} \PY{n+nn}{plt}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{lines.linewidth}\PY{l+s}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{4}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{font.size}\PY{l+s}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{18}
+        
+        \PY{k+kn}{import} \PY{n+nn}{nengo}
+        \PY{k+kn}{from} \PY{n+nn}{nengo.utils.ensemble} \PY{k+kn}{import} \PY{n}{tuning\PYZus{}curves}
+        \PY{k+kn}{from} \PY{n+nn}{nengo.dists} \PY{k+kn}{import} \PY{n}{Uniform}
+        \PY{k+kn}{from} \PY{n+nn}{nengo.solvers} \PY{k+kn}{import} \PY{n}{LstsqNoise}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Populating the interactive namespace from numpy and matplotlib
+    \end{Verbatim}
+
+\section{Building an ensemble of neurons}
+
+Make a new model and inside that model make an ensemble of neurons. It should have 100 neurons, and represent a 1-dimensional space. The intercepts should be between -1 and 1, and the maximum firing rates should be between 100Hz and 200Hz. $\tau_{RC}$ should be 0.02s and $\tau_{ref}$ should be 0.002s.
+
+\subsection{Plot the tuning curves. Plot and the representation accuracy plot ($x$ and $\hat{x}$ on the same plot). Compute and report the RMSE.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}a}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+        
+        	\PY{c}{\PYZsh{}ensemble parameters}
+        	\PY{n}{N}\PY{o}{=}\PY{l+m+mi}{100}
+        	\PY{n}{dimensions}\PY{o}{=}\PY{l+m+mi}{1}
+        	\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+        	\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+        	\PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}
+        	\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIF}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}\PY{p}{)}
+        
+        	\PY{c}{\PYZsh{}model definition}
+        	\PY{n}{model} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Network}\PY{p}{(}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{1D Ensemble of LIF Neurons}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        	\PY{k}{with} \PY{n}{model}\PY{p}{:}
+        		\PY{n}{ens\PYZus{}1d} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+        				\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{)}\PY{p}{,}
+        				\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+        				\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+        
+        		\PY{c}{\PYZsh{}generate the decoders}
+        		\PY{n}{connection} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{ens\PYZus{}1d}\PY{p}{,}
+        				\PY{n}{solver}\PY{o}{=}\PY{n}{LstsqNoise}\PY{p}{(}\PY{n}{noise}\PY{o}{=}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+        
+        	\PY{c}{\PYZsh{}create the simulator}
+        	\PY{n}{sim} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Simulator}\PY{p}{(}\PY{n}{model}\PY{p}{)}
+        
+        	\PY{c}{\PYZsh{}retrieve evaluation points, activities, and decoders}
+        	\PY{n}{eval\PYZus{}points}\PY{p}{,} \PY{n}{activities} \PY{o}{=} \PY{n}{tuning\PYZus{}curves}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{sim}\PY{p}{)}
+        	\PY{n}{decoders} \PY{o}{=} \PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{connection}\PY{p}{]}\PY{o}{.}\PY{n}{weights}\PY{o}{.}\PY{n}{T}
+        
+        	\PY{c}{\PYZsh{}calculate the state estimate}
+        	\PY{n}{xhat} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{activities}\PY{p}{,}\PY{n}{decoders}\PY{p}{)}
+        
+        	\PY{c}{\PYZsh{}plot tuning curves}
+        	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{p}{,}\PY{n}{activities}\PY{p}{)}
+        	\PY{c}{\PYZsh{} ax.set\PYZus{}xlabel(\PYZsq{}\PYZdl{}x\PYZdl{}\PYZsq{})}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate \PYZdl{}a\PYZdl{} (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        
+        	\PY{c}{\PYZsh{}plot representational accuracy}
+        	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{p}{,}\PY{n}{eval\PYZus{}points}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{p}{,}\PY{n}{xhat}\PY{p}{,}
+        		\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((eval\PYZus{}points\PYZhy{}xhat)**2)))
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+        	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+            
+        \PY{n}{one\PYZus{}a}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_4_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+\subsection{What happens to the RMSE as the radius increases? Why? Provide four example points (i.e., RMSE at various radiuses).}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}b}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+        
+        	\PY{c}{\PYZsh{}ensemble parameters}
+        	\PY{n}{N}\PY{o}{=}\PY{l+m+mi}{100}
+        	\PY{n}{dimensions}\PY{o}{=}\PY{l+m+mi}{1}
+        	\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+        	\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+        	\PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}
+        	\PY{n}{averages}\PY{o}{=}\PY{l+m+mi}{5}
+        	\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+        
+        	\PY{c}{\PYZsh{}objects and lists}
+        	\PY{n}{radii}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}
+        	\PY{n}{RMSE\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+        	\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+        
+        	\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{radii}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        
+        		\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+        		\PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{averages}\PY{p}{)}\PY{p}{:}
+        
+        			\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}\PY{o}{+}\PY{n}{a}\PY{o}{+}\PY{n}{i}\PY{o}{*}\PY{n+nb}{len}\PY{p}{(}\PY{n}{radii}\PY{p}{)}
+        			\PY{n}{rng1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+        			\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIF}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}\PY{p}{)}
+        
+        			\PY{c}{\PYZsh{}model definition}
+        			\PY{n}{model} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Network}\PY{p}{(}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{1D LIF Ensemble}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+        			\PY{k}{with} \PY{n}{model}\PY{p}{:}
+        				\PY{n}{ens\PYZus{}1d} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+        						\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{)}\PY{p}{,}
+        						\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+        						\PY{n}{radius}\PY{o}{=}\PY{n}{radii}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}
+        						\PY{c}{\PYZsh{}encoders=encoders,}
+        						\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+        
+        				\PY{c}{\PYZsh{}generate the decoders}
+        				\PY{n}{connection} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{ens\PYZus{}1d}\PY{p}{,}
+        						\PY{n}{solver}\PY{o}{=}\PY{n}{LstsqNoise}\PY{p}{(}\PY{n}{noise}\PY{o}{=}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+        
+        			\PY{c}{\PYZsh{}create the simulator}
+        			\PY{n}{sim} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Simulator}\PY{p}{(}\PY{n}{model}\PY{p}{)}
+        
+        			\PY{c}{\PYZsh{}retrieve evaluation points, activities, and decoders}
+        			\PY{n}{eval\PYZus{}points}\PY{p}{,} \PY{n}{activities} \PY{o}{=} \PY{n}{tuning\PYZus{}curves}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{sim}\PY{p}{)}
+        			\PY{n}{decoders} \PY{o}{=} \PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{connection}\PY{p}{]}\PY{o}{.}\PY{n}{weights}\PY{o}{.}\PY{n}{T}
+        
+        			\PY{c}{\PYZsh{}calculate the state estimate}
+        			\PY{n}{xhat} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{activities}\PY{p}{,}\PY{n}{decoders}\PY{p}{)}
+        
+        			\PY{c}{\PYZsh{}calculate RMSE}
+        			\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{o}{\PYZhy{}}\PY{n}{xhat}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+        
+        		\PY{n}{RMSE\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{p}{)}\PY{p}{)}
+        		\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{p}{)}\PY{p}{)}
+        
+        	\PY{c}{\PYZsh{}plot RMSE vs radius}
+        	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{radii}\PY{p}{,}\PY{n}{RMSE\PYZus{}list}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{radii}\PY{p}{,}
+        				\PY{n}{np}\PY{o}{.}\PY{n}{subtract}\PY{p}{(}\PY{n}{RMSE\PYZus{}list}\PY{p}{,}\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{p}{)}\PY{p}{,}
+        				\PY{n}{np}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{RMSE\PYZus{}list}\PY{p}{,}\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{p}{)}\PY{p}{,}
+        				\PY{n}{color}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{lightgray}\PY{l+s}{\PYZsq{}}\PY{p}{)} \PY{c}{\PYZsh{}error is too small to see here}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{radius}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+                
+        \PY{n}{one\PYZus{}b}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_6_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+RMSE increases linearly with radius, a parameter which specifies the interval (-radius,radius) spanned by the evaluation points when calculating the decoders. As radius increases, the neurons must cover a larger area of state space: a fixed number of neurons will represent this space with greater error. The reason is not immediately obvious, because nengo.Ensemble() calculates the $\alpha$s and $J^{bias}$s for each neuron in the ensemble based on the radius of the space to be represented. It distributes them across the space, with a fixed number of evaluation points, so the size of the space is irrelevant for the tuning curve shape. However, the larger scale of the axis means that any deviations between the decoded value and the original value, $x - \hat{x}$, at the evaluation points will also be scaled, increasing the RMSE.
+
+\subsection{What happens to the RMSE and the tuning curves as $\tau_{ref}$ changes? Why?}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}22}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}c}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{c}{\PYZsh{}ensemble parameters}
+         	\PY{n}{N}\PY{o}{=}\PY{l+m+mi}{100}
+         	\PY{n}{dimensions}\PY{o}{=}\PY{l+m+mi}{1}
+         	\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+         	\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+         	\PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}
+         	\PY{n}{averages}\PY{o}{=}\PY{l+m+mi}{10}
+         	\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+         
+         	\PY{c}{\PYZsh{}objects and lists}
+         	\PY{n}{tau\PYZus{}refs}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{logspace}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{3}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mf}{2.31}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}
+         	\PY{c}{\PYZsh{} tau\PYZus{}refs=np.linspace(0.0002,0.0049,10)}
+         	\PY{n}{RMSE\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         	\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         	\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         	\PY{n}{activities\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         
+         	\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{tau\PYZus{}refs}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+         
+         		\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         		\PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{averages}\PY{p}{)}\PY{p}{:}
+         
+         			\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}\PY{o}{+}\PY{n}{a}\PY{o}{+}\PY{n}{i}\PY{o}{*}\PY{n+nb}{len}\PY{p}{(}\PY{n}{tau\PYZus{}refs}\PY{p}{)} \PY{c}{\PYZsh{}unique seed for each iteration}
+         			\PY{n}{rng1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+         			\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIF}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}refs}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}model definition}
+         			\PY{n}{model} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Network}\PY{p}{(}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{1D LIF Ensemble}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+         			\PY{k}{with} \PY{n}{model}\PY{p}{:}
+         				\PY{n}{ens\PYZus{}1d} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+         						\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{)}\PY{p}{,}
+         						\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+         						\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+         
+         				\PY{c}{\PYZsh{}generate the decoders}
+         				\PY{n}{connection} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{ens\PYZus{}1d}\PY{p}{,}
+         						\PY{n}{solver}\PY{o}{=}\PY{n}{LstsqNoise}\PY{p}{(}\PY{n}{noise}\PY{o}{=}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}create the simulator}
+         			\PY{n}{sim} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Simulator}\PY{p}{(}\PY{n}{model}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}retrieve evaluation points, activities, and decoders}
+         			\PY{n}{eval\PYZus{}points}\PY{p}{,} \PY{n}{activities} \PY{o}{=} \PY{n}{tuning\PYZus{}curves}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{sim}\PY{p}{)}
+         			\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{p}{)}
+         			\PY{n}{activities\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{activities}\PY{p}{)}
+         			\PY{n}{decoders} \PY{o}{=} \PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{connection}\PY{p}{]}\PY{o}{.}\PY{n}{decoders}\PY{o}{.}\PY{n}{T}
+         
+         			\PY{c}{\PYZsh{}calculate the state estimate}
+         			\PY{n}{xhat} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{activities}\PY{p}{,}\PY{n}{decoders}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}calculate RMSE}
+         			\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{o}{\PYZhy{}}\PY{n}{xhat}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+         		\PY{n}{RMSE\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{p}{)}\PY{p}{)}
+         		\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{p}{)}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{} plot tuning curves}
+         	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{16}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}\PY{n}{activities\PYZus{}list}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{tau\PYZus{}\PYZob{}ref\PYZcb{}=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{tau\PYZus{}refs}[0])
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}xlabel(\PYZsq{}\PYZdl{}x\PYZdl{}\PYZsq{})}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate \PYZdl{}a\PYZdl{} (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}\PY{n}{activities\PYZus{}list}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{tau\PYZus{}\PYZob{}ref\PYZcb{}=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{tau\PYZus{}refs}[\PYZhy{}1])
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate \PYZdl{}a\PYZdl{} (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{}plot RMSE vs radius}
+         	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{log10}\PY{p}{(}\PY{n}{tau\PYZus{}refs}\PY{p}{)}\PY{p}{,}\PY{n}{RMSE\PYZus{}list}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{log10}\PY{p}{(}\PY{n}{tau\PYZus{}refs}\PY{p}{)}\PY{p}{,}
+         				\PY{n}{np}\PY{o}{.}\PY{n}{subtract}\PY{p}{(}\PY{n}{RMSE\PYZus{}list}\PY{p}{,}\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{p}{)}\PY{p}{,}
+         				\PY{n}{np}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{RMSE\PYZus{}list}\PY{p}{,}\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{p}{)}\PY{p}{,}
+         				\PY{n}{color}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{lightgray}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{log(\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{tau\PYZus{}\PYZob{}ref\PYZcb{}\PYZdl{})}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{one\PYZus{}c}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_9_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_9_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+The neurons' tunning curves change shape as expected given Figure 4.3 in the NEF book (small $\tau_{ref}$ causes a continuous change in firing in response to changes in stimulus value, while large $\tau_{ref}$ causes a discontinuous change). The result that increasing $\tau_{ref}$ increases RMSE can be understood in reference to the function we are trying to represent, $y=x$. Because this function is linear, its value changes continuously with stimulus magnitude. The best representation of this function will result from neurons whose firing rates change continuously with stimulus magnitude, as is the case with small $\tau_{ref}$. If we wanted to represent a function which changed sharply with stimulus value (such as a step function), a more discontinuous tuning curve would be the better choice, and large $\tau_{ref}$ would be most appropriate.
+
+\subsection{What happens to the RMSE and the tuning curves as $\tau_{RC}$ changes? Why?}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}23}]:} \PY{k}{def} \PY{n+nf}{one\PYZus{}d}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{c}{\PYZsh{}ensemble parameters}
+         	\PY{n}{N}\PY{o}{=}\PY{l+m+mi}{100}
+         	\PY{n}{dimensions}\PY{o}{=}\PY{l+m+mi}{1}
+         	\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+         	\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+         	\PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}
+         	\PY{n}{averages}\PY{o}{=}\PY{l+m+mi}{5}
+         	\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+         
+         	\PY{c}{\PYZsh{}objects and lists}
+         	\PY{n}{tau\PYZus{}rcs}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{logspace}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}
+         	\PY{n}{RMSE\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         	\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         	\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         	\PY{n}{activities\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         
+         	\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{tau\PYZus{}rcs}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+         
+         		\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         		\PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{averages}\PY{p}{)}\PY{p}{:}
+         
+         			\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}\PY{o}{+}\PY{n}{a}\PY{o}{+}\PY{n}{i}\PY{o}{*}\PY{n+nb}{len}\PY{p}{(}\PY{n}{tau\PYZus{}rcs}\PY{p}{)} \PY{c}{\PYZsh{}unique seed for each iteration}
+         			\PY{n}{rng1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+         			\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIF}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rcs}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}model definition}
+         			\PY{n}{model} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Network}\PY{p}{(}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{1D LIF Ensemble}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+         			\PY{k}{with} \PY{n}{model}\PY{p}{:}
+         				\PY{n}{ens\PYZus{}1d} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+         						\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{)}\PY{p}{,}
+         						\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+         						\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+         
+         				\PY{c}{\PYZsh{}generate the decoders}
+         				\PY{n}{connection} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{ens\PYZus{}1d}\PY{p}{,}
+         						\PY{n}{solver}\PY{o}{=}\PY{n}{LstsqNoise}\PY{p}{(}\PY{n}{noise}\PY{o}{=}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}create the simulator}
+         			\PY{n}{sim} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Simulator}\PY{p}{(}\PY{n}{model}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}retrieve evaluation points, activities, and decoders}
+         			\PY{n}{eval\PYZus{}points}\PY{p}{,} \PY{n}{activities} \PY{o}{=} \PY{n}{tuning\PYZus{}curves}\PY{p}{(}\PY{n}{ens\PYZus{}1d}\PY{p}{,}\PY{n}{sim}\PY{p}{)}
+         			\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{p}{)}
+         			\PY{n}{activities\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{activities}\PY{p}{)}
+         			\PY{n}{decoders} \PY{o}{=} \PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{connection}\PY{p}{]}\PY{o}{.}\PY{n}{weights}\PY{o}{.}\PY{n}{T}
+         
+         			\PY{c}{\PYZsh{}calculate the state estimate}
+         			\PY{n}{xhat} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{activities}\PY{p}{,}\PY{n}{decoders}\PY{p}{)}
+         
+         			\PY{c}{\PYZsh{}calculate RMSE}
+         			\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{eval\PYZus{}points}\PY{o}{\PYZhy{}}\PY{n}{xhat}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+         		\PY{n}{RMSE\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{p}{)}\PY{p}{)}
+         		\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{RMSE\PYZus{}list\PYZus{}i}\PY{p}{)}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{} plot tuning curves}
+         	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{16}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}\PY{n}{activities\PYZus{}list}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{tau\PYZus{}\PYZob{}RC\PYZcb{}=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{tau\PYZus{}rcs}[0])
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}xlabel(\PYZsq{}\PYZdl{}x\PYZdl{}\PYZsq{})}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate \PYZdl{}a\PYZdl{} (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{eval\PYZus{}points\PYZus{}list}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}\PY{n}{activities\PYZus{}list}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{tau\PYZus{}\PYZob{}RC\PYZcb{}=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{tau\PYZus{}rcs}[\PYZhy{}1])
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate \PYZdl{}a\PYZdl{} (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{}plot RMSE vs radius}
+         	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{log10}\PY{p}{(}\PY{n}{tau\PYZus{}rcs}\PY{p}{)}\PY{p}{,}\PY{n}{RMSE\PYZus{}list}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{log10}\PY{p}{(}\PY{n}{tau\PYZus{}rcs}\PY{p}{)}\PY{p}{,}
+         				\PY{n}{np}\PY{o}{.}\PY{n}{subtract}\PY{p}{(}\PY{n}{RMSE\PYZus{}list}\PY{p}{,}\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{p}{)}\PY{p}{,}
+         				\PY{n}{np}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{RMSE\PYZus{}list}\PY{p}{,}\PY{n}{RMSE\PYZus{}stddev\PYZus{}list}\PY{p}{)}\PY{p}{,}
+         				\PY{n}{color}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{lightgray}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{c}{\PYZsh{} ax.plot(tau\PYZus{}refs,RMSE\PYZus{}list)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{log(\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{tau\PYZus{}\PYZob{}RC\PYZcb{}\PYZdl{})}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{one\PYZus{}d}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_12_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_12_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+The neurons' tunning curves change shape as expected given Figure 4.3 in the NEF book (large $\tau_{RC}$ causes a continuous change in firing in response to changes in stimulus value, while small $\tau_{RC}$ causes a discontinuous change). The result that increasing $\tau_{RC}$ decreases RMSE can be understood in reference to the function we are trying to represent, $y=x$. Because this function is linear, its value changes continuously with stimulus magnitude. The best representation of this function will result from neurons whose firing rates change continuously with stimulus magnitude, as is the case with large $\tau_{RC}$. If we wanted to represent a function which changed sharply with stimulus value (such as a step function), a more discontinuous tuning curve would be the better choice, and small $\tau_{RC}$ would be most appropriate.
+
+\section{Connecting neurons}
+
+Make a second ensemble of neurons. It should have the same parameters as the first ensemble of neurons (from the first question), but have only 50 neurons in it. Connect the first ensemble to the second such that it computes the identity function, using a post-synaptic time constant of 0.01. Create an input that is a value of 1 for $0.1<t<0.4$ seconds, and otherwise is zero (you can use a lambda function).
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}25}]:} \PY{k}{def} \PY{n+nf}{two\PYZus{}template}\PY{p}{(}\PY{n}{channel\PYZus{}function}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{c}{\PYZsh{}ensemble parameters}
+         	\PY{n}{N}\PY{o}{=}\PY{l+m+mi}{50}
+         	\PY{n}{dimensions}\PY{o}{=}\PY{l+m+mi}{1}
+         	\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+         	\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+         	\PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}
+         	\PY{n}{T}\PY{o}{=}\PY{l+m+mf}{0.5}
+         	\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+         
+         	\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIF}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}\PY{p}{)}
+         
+         	\PY{n}{model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Network}\PY{p}{(}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{Communication Channel}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         
+         	\PY{k}{with} \PY{n}{model}\PY{p}{:}
+         		\PY{c}{\PYZsh{}stimulus 1 for 0.1\PYZlt{}t\PYZlt{}0.4 and zero otherwise}
+         		\PY{n}{stimulus}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Node}\PY{p}{(}\PY{n}{output}\PY{o}{=}\PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{l+m+mi}{0}\PY{o}{+} \PY{l+m+mf}{1.0}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{0.1}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{l+m+mf}{0.4}\PY{p}{)}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}create ensembles}
+         		\PY{n}{ensemble\PYZus{}1}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+         					\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+         		\PY{n}{ensemble\PYZus{}2}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+         					\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}connect stimulus to ensemble\PYZus{}1}
+         		\PY{n}{stimulation}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{stimulus}\PY{p}{,}\PY{n}{ensemble\PYZus{}1}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}create communication channel between ensemble 1 and 2}
+         		\PY{n}{channel}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{ensemble\PYZus{}1}\PY{p}{,}\PY{n}{ensemble\PYZus{}2}\PY{p}{,}
+         					\PY{n}{function}\PY{o}{=}\PY{n}{channel\PYZus{}function}\PY{p}{,} \PY{c}{\PYZsh{}identity}
+         					\PY{n}{synapse}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{,}  \PY{c}{\PYZsh{}10ms postsynaptic filter}
+         					\PY{n}{solver}\PY{o}{=}\PY{n}{LstsqNoise}\PY{p}{(}\PY{n}{noise}\PY{o}{=}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}calculate the }
+         		\PY{c}{\PYZsh{}probe the decoded values from the two ensembles}
+         		\PY{n}{probe\PYZus{}stim}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Probe}\PY{p}{(}\PY{n}{stimulus}\PY{p}{)}
+         		\PY{n}{probe\PYZus{}ensemble\PYZus{}1}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Probe}\PY{p}{(}\PY{n}{ensemble\PYZus{}1}\PY{p}{,} \PY{n}{synapse}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{)}
+         		\PY{n}{probe\PYZus{}ensemble\PYZus{}2}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Probe}\PY{p}{(}\PY{n}{ensemble\PYZus{}2}\PY{p}{,} \PY{n}{synapse}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{}run the model}
+         	\PY{n}{sim}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Simulator}\PY{p}{(}\PY{n}{model}\PY{p}{,}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+         	\PY{n}{sim}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{n}{T}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{}plot inputs and outputs}
+         	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{16}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{221}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{probe\PYZus{}stim}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{stimulus}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{output}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}ylim(0,1)}
+         	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{upper right}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{222}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{probe\PYZus{}ensemble\PYZus{}1}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{ensemble 1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{output}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}ylim(0,1)}
+         	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{upper right}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{223}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{probe\PYZus{}ensemble\PYZus{}2}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{ensemble 2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{output}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}ylim(0,1)}
+         	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{upper right}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+\subsection{Show the input value and the decoded values from the two ensembles in three separate plots. Run the simulation for 0.5 seconds.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}26}]:} \PY{k}{def} \PY{n+nf}{two\PYZus{}a}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{channel\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}
+         	\PY{n}{two\PYZus{}template}\PY{p}{(}\PY{n}{channel\PYZus{}function}\PY{p}{)}
+             
+         \PY{n}{two\PYZus{}a}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_17_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\subsection{Make a new version of the model where instead of computing the identity function, it computes \texttt{y=1-2*x}. Show the same graphs as in part (a).}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}27}]:} \PY{k}{def} \PY{n+nf}{two\PYZus{}b}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{channel\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mf}{1.0}\PY{o}{\PYZhy{}}\PY{l+m+mf}{2.0}\PY{o}{*}\PY{n}{x}
+         	\PY{n}{two\PYZus{}template}\PY{p}{(}\PY{n}{channel\PYZus{}function}\PY{p}{)}
+         
+         \PY{n}{two\PYZus{}b}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_19_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\section{Dynamics}
+
+Build a neural integrator. This consists of one ensemble, one input, a connection from the input to the ensemble, and a connection from the ensemble back to itself. The ensemble should have 200 neurons and the same parameters as in question 1. The post-synaptic time constant of the recurrent connection is 0.05, and the post-synaptic time constant of the input is 0.005.
+
+To be an integrator, the desired dynamical system is ${{dx} \over {dt}} = u$. To implement this with the NEF, we use the transformation discussed in class, so the feedback connection should compute $f'(x)=x$ and the input connection should compute $g'(x)=\tau u$, where $u$ is the input and $\tau$ is the post-synaptic time constant of the \emph{feedback} connection. So the feedback connection should compute the identity function and the input connection should compute 0.05 times the input.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}28}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}template}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{spike}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{c}{\PYZsh{}ensemble parameters}
+         	\PY{n}{N}\PY{o}{=}\PY{l+m+mi}{200}
+         	\PY{n}{dimensions}\PY{o}{=}\PY{l+m+mi}{1}
+         	\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+         	\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+         	\PY{n}{tau\PYZus{}feedback}\PY{o}{=}\PY{l+m+mf}{0.05}
+         	\PY{n}{tau\PYZus{}input}\PY{o}{=}\PY{l+m+mf}{0.005}
+         	\PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}
+         	\PY{n}{T}\PY{o}{=}\PY{l+m+mf}{1.5}
+         	\PY{n}{radius}\PY{o}{=}\PY{l+m+mi}{1}
+         	\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+         
+         	\PY{k}{if} \PY{n}{neuron\PYZus{}type} \PY{o}{==} \PY{l+s}{\PYZsq{}}\PY{l+s}{spike}\PY{l+s}{\PYZsq{}}\PY{p}{:}
+         		\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIF}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}\PY{p}{)}
+         	\PY{k}{elif} \PY{n}{neuron\PYZus{}type} \PY{o}{==} \PY{l+s}{\PYZsq{}}\PY{l+s}{rate}\PY{l+s}{\PYZsq{}}\PY{p}{:}
+         		\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIFRate}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}\PY{p}{)}
+         
+         	\PY{n}{model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Network}\PY{p}{(}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{Communication Channel}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         
+         	\PY{k}{with} \PY{n}{model}\PY{p}{:}
+         		\PY{n}{stimulus}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Node}\PY{p}{(}\PY{n}{output}\PY{o}{=}\PY{n}{stim\PYZus{}function}\PY{p}{)}
+         
+         		\PY{n}{integrator}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+         					\PY{n}{radius}\PY{o}{=}\PY{n}{radius}\PY{p}{,}                                  
+         					\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}define feedforward transformation \PYZlt{}=\PYZgt{} transform=tau}
+         		\PY{k}{def} \PY{n+nf}{feedforward}\PY{p}{(}\PY{n}{u}\PY{p}{)}\PY{p}{:}
+         			\PY{k}{return} \PY{n}{tau\PYZus{}feedback}\PY{o}{*}\PY{n}{u}
+         
+         		\PY{n}{stimulation}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{stimulus}\PY{p}{,}\PY{n}{integrator}\PY{p}{,}
+         					\PY{n}{function}\PY{o}{=}\PY{n}{feedforward}\PY{p}{,}
+         					\PY{c}{\PYZsh{} transform=tau\PYZus{}feedback,}
+         					\PY{n}{synapse}\PY{o}{=}\PY{n}{tau\PYZus{}input}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}define recurrent transformation}
+         		\PY{k}{def} \PY{n+nf}{recurrent}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{:}
+         			\PY{k}{return} \PY{l+m+mf}{1.0}\PY{o}{*}\PY{n}{x}
+         
+         		\PY{c}{\PYZsh{}create recurrent connection}
+         		\PY{n}{channel}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{integrator}\PY{p}{,}\PY{n}{integrator}\PY{p}{,}
+         					\PY{n}{function}\PY{o}{=}\PY{n}{recurrent}\PY{p}{,}
+         					\PY{n}{synapse}\PY{o}{=}\PY{n}{tau\PYZus{}feedback}\PY{p}{,}  
+         					\PY{n}{solver}\PY{o}{=}\PY{n}{LstsqNoise}\PY{p}{(}\PY{n}{noise}\PY{o}{=}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}probes}
+         		\PY{n}{probe\PYZus{}stimulus}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Probe}\PY{p}{(}\PY{n}{stimulus}\PY{p}{)}
+         		\PY{n}{probe\PYZus{}integrator}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Probe}\PY{p}{(}\PY{n}{integrator}\PY{p}{,}\PY{n}{synapse}\PY{o}{=}\PY{n}{tau\PYZus{}feedback}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{}run the model}
+         	\PY{n}{sim}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Simulator}\PY{p}{(}\PY{n}{model}\PY{p}{,}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+         	\PY{n}{sim}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{n}{T}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{}calculated expected (ideal) using scipy.integrate}
+         	\PY{n}{ideal}\PY{o}{=}\PY{p}{[}\PY{n}{integrate}\PY{o}{.}\PY{n}{quad}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{T}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} 
+         		\PY{k}{for} \PY{n}{T} \PY{o+ow}{in} \PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{]}
+         
+         	\PY{c}{\PYZsh{}plot input and integrator value}
+         	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{probe\PYZus{}stimulus}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{stimulus}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{probe\PYZus{}integrator}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{integrator}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{ideal}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{ideal}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}ylabel(\PYZsq{}value\PYZsq{})}
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}ylim(0,1)}
+         	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+\subsection{Show the input and the value represented by the ensemble when the input is a value of 0.9 from t=0.04 to t=1.0 (and 0 for other times). Run the simulation for 1.5 seconds. What is the expected ideal result (i.e.~if we just mathematically computed the integral of the input, what would we get?) How does the simulated output compare to that ideal?}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}29}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}a}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{stim\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{0.04}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{l+m+mf}{1.0}\PY{p}{)}
+         	\PY{n}{neuron\PYZus{}type} \PY{o}{=} \PY{l+s}{\PYZsq{}}\PY{l+s}{spike}\PY{l+s}{\PYZsq{}}
+         	\PY{n}{three\PYZus{}template}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{n}{neuron\PYZus{}type}\PY{p}{)}
+             
+         \PY{n}{three\PYZus{}a}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_23_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+The expected result (actually a close numerical approximation of it) is plotted in red. This value corresponds to finding the integral of the differential equation describing the value stored in the integrator ensemble over all time. The general form of this differential equation can be written using control theory:
+
+\begin{equation}
+\dot{x} = Ax + Bu
+\end{equation}
+
+
+where $x$ is the represented state variable, $u$ is the input, $A$ is the feedback matrix, and $B$ is the input matrix. In this case, $x$ and $u$ are one-dimensional, and the integrator merely accumulates the value of its input ($A=0$ as in the eye control example in Lecture 2), so this equation reduces to
+
+\begin{equation}
+\dot{x} = u = 
+  \begin{cases}
+  0.9 \quad &0.04<t<1.0 \\
+  0 &\mbox{otherwise}
+  \end{cases}
+\end{equation}
+
+
+Integrating to find x(t), we get
+
+\begin{equation}
+x(t) = \int_0^T u dt =
+\begin{cases}
+0 \quad &T<0.04 \\
+\int_{0.04}^{T} 0.9 dt = 0.9(T-0.04) &0.04<T<1.0 \\
+\int_{0.04}^{1.0} 0.9 dt = 0.864 &T>1.0
+\end{cases}
+\end{equation}
+
+The simulation slightly overestimates this value due to the differences between the synaptic time constant of the feedback connection, $\tau_{feedback}$, and the input connection, $\tau_{input}$. When $\tau_{input}$\textless{}$\tau_{feedback}$, as above, the stimulus is delivered on a shorter timescale than the recurrent input, leading to rapid accumulation and overestimation during the ramp. Once input is removed, the value stored in the integrator steadily moves towards $ideal=0.864$ (or to the nearest attractor in the neuron space). When the values are equal, the estimation during input is much more accurate; and when $\tau_{input}$\textgreater{}$\tau_{feedback}$, the large degree of smoothing causes less input to be delivered to the integrator than is `expected' by the reccurent connection, causing underestimation.
+
+\subsection{Change the neural simulation to rate mode. Re-run the simulation in rate mode. Show the resulting plots. How does this compare to the result in part (a)?}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}30}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}b}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{stim\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{0.04}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{l+m+mf}{1.0}\PY{p}{)}
+         	\PY{n}{neuron\PYZus{}type} \PY{o}{=} \PY{l+s}{\PYZsq{}}\PY{l+s}{rate}\PY{l+s}{\PYZsq{}}
+         	\PY{n}{three\PYZus{}template}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{n}{neuron\PYZus{}type}\PY{p}{)}
+             
+         \PY{n}{three\PYZus{}b}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_26_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+The accuracy with a LIFRate() model is slightly improved because noise is averaged by the firing rate calculation. Overall, though, the precision is comparable (no significant under- or over-estimation)
+
+\subsection{Returning to spiking mode, change the input to be a value of 0.9 from t=0.04 to 0.16. Show the same plots as before (the input and the value represented by the ensemble over 1.5 seconds). How does this compare to (a)? Why is it better or worse?}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}31}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}c}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{stim\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{0.04}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{l+m+mf}{0.16}\PY{p}{)}
+         	\PY{n}{neuron\PYZus{}type} \PY{o}{=} \PY{l+s}{\PYZsq{}}\PY{l+s}{spike}\PY{l+s}{\PYZsq{}}
+         	\PY{n}{three\PYZus{}template}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{n}{neuron\PYZus{}type}\PY{p}{)}
+             
+         \PY{n}{three\PYZus{}c}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_29_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+The behavior seems similar to (a), except that we see a larger time interval over which the integrator must maintain its value. This highlights the distortion error due to local attractors in the representation, as discussed in Lecture 6. The representation of the value in the integrator lies above and below the ideal value at various times/values (and for various seeds). Every other crossing of $\hat{x}$ with $x$ will produce a stable attractor, to which the representation will converge in the presence of noise. If the stable attractor at the final value of $x(t)$ is above the ideal value of $x(t)$, the estimate $\hat{x}(t)$ will stabilize at this attractor, systematically overestimating the state over time, as can be observed in the figure above.
+
+One other minor difference is the shorter stimulus interval, which limits the amount of noise that can accumulate through the recurrent connection in the integrator, which likely leads to less absolute error by the end of the simulation.
+
+\subsection{Change the input to a ramp input from 0 to 0.9 from t=0 to t=0.45 (and 0 for t$>$0.45). Show the same plots as in the previous parts of this question. What does the ensemble end up representing, and why? What is the (ideal) equation for the curve traced out by the ensemble?}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}34}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}d}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{stim\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{l+m+mf}{2.0}\PY{o}{*}\PY{n}{t}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{0.0}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mf}{0.45}\PY{p}{)}
+         	\PY{n}{neuron\PYZus{}type} \PY{o}{=} \PY{l+s}{\PYZsq{}}\PY{l+s}{spike}\PY{l+s}{\PYZsq{}}
+         	\PY{n}{three\PYZus{}template}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{n}{neuron\PYZus{}type}\PY{p}{)}
+         
+         \PY{n}{three\PYZus{}d}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_32_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+The ideal equation for the integrator to represent is
+
+\begin{equation}
+\dot{x} = u =
+\begin{cases}
+\int_{0}^{T} 2t dt = T^2 &0.<T<0.45 \\
+\int_{0}^{0.45} 2t dt = 0.2025 &T>0.45
+\end{cases}
+\end{equation}
+
+
+The ensemble represents the ideal value fairly accurately, given noise and limited number of neurons.
+
+\subsection{Change the input to $u=5sin(5t)$. What should the value represented by the ensemble be (write the equation)? How well does it do? What are the differences between the model's behaviour and the expected ideal behaviour?}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}35}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}e}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{stim\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{l+m+mf}{5.0}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{l+m+mf}{5.0}\PY{o}{*}\PY{n}{t}\PY{p}{)}
+         	\PY{n}{neuron\PYZus{}type} \PY{o}{=} \PY{l+s}{\PYZsq{}}\PY{l+s}{spike}\PY{l+s}{\PYZsq{}}
+         	\PY{n}{three\PYZus{}template}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{n}{neuron\PYZus{}type}\PY{p}{)}
+             
+         \PY{n}{three\PYZus{}e}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_35_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+The ideal equation for the integrator to represent is
+
+\begin{equation}
+\dot{x} = u = \int_{0}^{T} 5sin(5t) dt  = 1-cos(5T)
+\end{equation}
+
+The model does poorly in this case: it significantly underestimates the ideal value for $t>0.4$. In fact, it seems that the estimate follows the curve $\hat{x}(t)=-cos(5t)$ instead of $\hat{x}(t)=1-cos(5t)$. We obtained the value $1$ from stipulating the initial condition $x(0)=0$, which seems reasonable given that the neural activity begins at rest. However, while this ideal function is well approximated by the estimate initially, it seems the estimate converges to $\hat{x}(t)=-cos(5t)$ as $t$ increases. This discrepancy disappears either when the stimulus is phase shifted by $\pi/2$ or the radius of the ensemble is increased.
+
+These problems indicate that neurons are saturating when trying to reproduce the integrated sinusoid: when the ideal curve varies between -1 and 1 (as it does in the shifted case), the estimate is exact; and when the radius is increased, they can represent values from 0 to 2. The reason that the estimate appears to represent the curve $-cos(5t)$ is that it saturates when the ideal curve goes above 1. It maintains this value until the downswing of the ideal curve, during which time its value drops by 2, producing a sinusoid the varies between -1 and 1.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}36}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}e}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{n}{stim\PYZus{}function} \PY{o}{=} \PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{l+m+mf}{5.0}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{l+m+mf}{5.0}\PY{o}{*}\PY{p}{(}\PY{n}{t}\PY{o}{+}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{neuron\PYZus{}type} \PY{o}{=} \PY{l+s}{\PYZsq{}}\PY{l+s}{spike}\PY{l+s}{\PYZsq{}}
+         	\PY{n}{three\PYZus{}template}\PY{p}{(}\PY{n}{stim\PYZus{}function}\PY{p}{,}\PY{n}{neuron\PYZus{}type}\PY{p}{)}
+             
+         \PY{n}{three\PYZus{}e}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:01.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_37_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\subsection{Bonus: Implement a nonlinear dynamical system we have not seen in class, and demonstrate that it's working as expected.}
+
+Let's try making a double pendulum, borrowing differential equations from http://matplotlib.org/examples/animation/double\_pendulum\_animated.html
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}38}]:} \PY{k}{def} \PY{n+nf}{three\PYZus{}bonus}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         \PY{c}{\PYZsh{}ensemble parameters}
+         	\PY{n}{N}\PY{o}{=}\PY{l+m+mi}{2000}
+         	\PY{n}{dimensions}\PY{o}{=}\PY{l+m+mi}{4}
+         	\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+         	\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+         	\PY{n}{tau}\PY{o}{=}\PY{l+m+mf}{0.02}
+         	\PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.001}
+         	\PY{n}{T}\PY{o}{=}\PY{l+m+mf}{15.0}
+         	\PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+         
+         	\PY{c}{\PYZsh{}pendulum parameters}
+         	\PY{n}{G} \PY{o}{=} \PY{l+m+mf}{9.8}  \PY{c}{\PYZsh{} acceleration due to gravity, in m/s\PYZca{}2}
+         	\PY{n}{L1} \PY{o}{=} \PY{l+m+mf}{1.0}  \PY{c}{\PYZsh{} length of pendulum 1 in m}
+         	\PY{n}{L2} \PY{o}{=} \PY{l+m+mf}{1.0}  \PY{c}{\PYZsh{} length of pendulum 2 in m}
+         	\PY{n}{M1} \PY{o}{=} \PY{l+m+mf}{1.0}  \PY{c}{\PYZsh{} mass of pendulum 1 in kg}
+         	\PY{n}{M2} \PY{o}{=} \PY{l+m+mf}{1.0}  \PY{c}{\PYZsh{} mass of pendulum 2 in kg}
+             
+         	\PY{c}{\PYZsh{} th1 and th2 are the initial angles (degrees)}
+         	\PY{c}{\PYZsh{} w10 and w20 are the initial angular velocities (degrees per second)}
+         	\PY{n}{th1} \PY{o}{=} \PY{l+m+mf}{120.0}
+         	\PY{n}{w1} \PY{o}{=} \PY{l+m+mf}{0.0}
+         	\PY{n}{th2} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mf}{10.0}
+         	\PY{n}{w2} \PY{o}{=} \PY{l+m+mf}{0.0}
+         	\PY{n}{t\PYZus{}stim}\PY{o}{=}\PY{l+m+mf}{0.1}
+         
+         	\PY{c}{\PYZsh{} initial state to push the neurons towards}
+         	\PY{n}{state\PYZus{}init} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{radians}\PY{p}{(}\PY{p}{[}\PY{n}{th1}\PY{p}{,} \PY{n}{w1}\PY{p}{,} \PY{n}{th2}\PY{p}{,} \PY{n}{w2}\PY{p}{]}\PY{p}{)}
+             
+         	\PY{c}{\PYZsh{} normal spiking LIF neurons}
+         	\PY{n}{lif\PYZus{}model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{LIF}\PY{p}{(}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}\PY{p}{)}
+         
+         	\PY{n}{model}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Network}\PY{p}{(}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{Double Pendulum}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         
+         	\PY{k}{with} \PY{n}{model}\PY{p}{:}
+         
+         		\PY{c}{\PYZsh{}push the model into the initial state using stimulus noes}
+         		\PY{n}{stimulus\PYZus{}2}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Node}\PY{p}{(}\PY{n}{output}\PY{o}{=}\PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{n}{state\PYZus{}init}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{0}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{n}{t\PYZus{}stim}\PY{p}{)}\PY{p}{)}
+         		\PY{n}{stimulus\PYZus{}3}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Node}\PY{p}{(}\PY{n}{output}\PY{o}{=}\PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{n}{state\PYZus{}init}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{0}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{n}{t\PYZus{}stim}\PY{p}{)}\PY{p}{)}
+         		\PY{n}{stimulus\PYZus{}4}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Node}\PY{p}{(}\PY{n}{output}\PY{o}{=}\PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{n}{state\PYZus{}init}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{0}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{n}{t\PYZus{}stim}\PY{p}{)}\PY{p}{)}
+         		\PY{n}{stimulus\PYZus{}1}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Node}\PY{p}{(}\PY{n}{output}\PY{o}{=}\PY{k}{lambda} \PY{n}{t}\PY{p}{:} \PY{n}{state\PYZus{}init}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{0}\PY{o}{\PYZlt{}}\PY{n}{t}\PY{o}{\PYZlt{}}\PY{n}{t\PYZus{}stim}\PY{p}{)}\PY{p}{)}
+                 
+         		\PY{c}{\PYZsh{}create the ensemble}
+         		\PY{n}{ens1} \PY{o}{=} \PY{n}{nengo}\PY{o}{.}\PY{n}{Ensemble}\PY{p}{(}\PY{n}{N}\PY{p}{,}\PY{n}{dimensions}\PY{p}{,}
+         					\PY{n}{intercepts}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.0}\PY{o}{*}\PY{l+m+mf}{2.0}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{o}{*}\PY{l+m+mf}{2.0}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{max\PYZus{}rates}\PY{o}{=}\PY{n}{Uniform}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{)}\PY{p}{,}
+         					\PY{n}{neuron\PYZus{}type}\PY{o}{=}\PY{n}{lif\PYZus{}model}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}define recurrent transformation}
+         		\PY{k}{def} \PY{n+nf}{recurrent}\PY{p}{(}\PY{n}{state}\PY{p}{)}\PY{p}{:}
+         
+         			\PY{n}{dydx} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros\PYZus{}like}\PY{p}{(}\PY{n}{state}\PY{p}{)}
+         			\PY{n}{dydx}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{state}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+         
+         			\PY{n}{del\PYZus{}} \PY{o}{=} \PY{n}{state}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{state}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+         			\PY{n}{den1} \PY{o}{=} \PY{p}{(}\PY{n}{M1} \PY{o}{+} \PY{n}{M2}\PY{p}{)}\PY{o}{*}\PY{n}{L1} \PY{o}{\PYZhy{}} \PY{n}{M2}\PY{o}{*}\PY{n}{L1}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)}
+         			\PY{n}{dydx}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{M2}\PY{o}{*}\PY{n}{L1}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)} \PY{o}{+}
+         				\PY{n}{M2}\PY{o}{*}\PY{n}{G}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)} \PY{o}{+}
+         				\PY{n}{M2}\PY{o}{*}\PY{n}{L2}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)} \PY{o}{\PYZhy{}}
+         				\PY{p}{(}\PY{n}{M1} \PY{o}{+} \PY{n}{M2}\PY{p}{)}\PY{o}{*}\PY{n}{G}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{den1}
+         
+         			\PY{n}{dydx}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{state}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}
+         
+         			\PY{n}{den2} \PY{o}{=} \PY{p}{(}\PY{n}{L2}\PY{o}{/}\PY{n}{L1}\PY{p}{)}\PY{o}{*}\PY{n}{den1}
+         			\PY{n}{dydx}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{M2}\PY{o}{*}\PY{n}{L2}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)} \PY{o}{+}
+         				\PY{p}{(}\PY{n}{M1} \PY{o}{+} \PY{n}{M2}\PY{p}{)}\PY{o}{*}\PY{n}{G}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)} \PY{o}{\PYZhy{}}
+         				\PY{p}{(}\PY{n}{M1} \PY{o}{+} \PY{n}{M2}\PY{p}{)}\PY{o}{*}\PY{n}{L1}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{*}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{del\PYZus{}}\PY{p}{)} \PY{o}{\PYZhy{}}
+         				\PY{p}{(}\PY{n}{M1} \PY{o}{+} \PY{n}{M2}\PY{p}{)}\PY{o}{*}\PY{n}{G}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{state}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{den2}
+         
+         			\PY{k}{return} \PY{n}{dydx}
+         
+         		\PY{c}{\PYZsh{}stimulate the ensemble}
+         		\PY{n}{stim1}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{stimulus\PYZus{}1}\PY{p}{,}\PY{n}{ens1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}\PY{n}{transform}\PY{o}{=}\PY{n}{tau}\PY{p}{,}\PY{n}{synapse}\PY{o}{=}\PY{n}{tau}\PY{p}{)}
+         		\PY{n}{stim2}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{stimulus\PYZus{}2}\PY{p}{,}\PY{n}{ens1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}\PY{n}{transform}\PY{o}{=}\PY{n}{tau}\PY{p}{,}\PY{n}{synapse}\PY{o}{=}\PY{n}{tau}\PY{p}{)}
+         		\PY{n}{stim3}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{stimulus\PYZus{}3}\PY{p}{,}\PY{n}{ens1}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{,}\PY{n}{transform}\PY{o}{=}\PY{n}{tau}\PY{p}{,}\PY{n}{synapse}\PY{o}{=}\PY{n}{tau}\PY{p}{)}
+         		\PY{n}{stim4}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{stimulus\PYZus{}4}\PY{p}{,}\PY{n}{ens1}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{p}{,}\PY{n}{transform}\PY{o}{=}\PY{n}{tau}\PY{p}{,}\PY{n}{synapse}\PY{o}{=}\PY{n}{tau}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}create recurrent connection}
+         		\PY{n}{channel}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Connection}\PY{p}{(}\PY{n}{ens1}\PY{p}{,}\PY{n}{ens1}\PY{p}{,}
+         					\PY{n}{function}\PY{o}{=}\PY{n}{recurrent}\PY{p}{,}
+         					\PY{n}{synapse}\PY{o}{=}\PY{n}{tau}\PY{p}{,}  
+         					\PY{n}{solver}\PY{o}{=}\PY{n}{LstsqNoise}\PY{p}{(}\PY{n}{noise}\PY{o}{=}\PY{n}{noise}\PY{p}{)}\PY{p}{)}
+         
+         		\PY{c}{\PYZsh{}le probing man}
+         		\PY{n}{probe\PYZus{}pendulum}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Probe}\PY{p}{(}\PY{n}{ens1}\PY{p}{,}\PY{n}{synapse}\PY{o}{=}\PY{n}{tau}\PY{p}{)}
+         
+         	\PY{c}{\PYZsh{}run the model}
+         	\PY{n}{sim}\PY{o}{=}\PY{n}{nengo}\PY{o}{.}\PY{n}{Simulator}\PY{p}{(}\PY{n}{model}\PY{p}{,}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+         	\PY{n}{sim}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{n}{T}\PY{p}{)}
+         
+         	\PY{n}{data}\PY{o}{=}\PY{n}{sim}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{n}{probe\PYZus{}pendulum}\PY{p}{]}
+         
+         	\PY{n}{theta1}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}
+         	\PY{n}{p1}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}
+         	\PY{n}{theta2}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]}
+         	\PY{n}{p2}\PY{o}{=}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{]}
+         
+         	\PY{c}{\PYZsh{}transform into x\PYZhy{}y coordinates of the respective masses}
+         	\PY{n}{x1} \PY{o}{=} \PY{n}{L1}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+         	\PY{n}{y1} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{L1}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+         	\PY{n}{x2} \PY{o}{=} \PY{n}{L2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)} \PY{o}{+} \PY{n}{x1}
+         	\PY{n}{y2} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{L2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)} \PY{o}{+} \PY{n}{y1}
+         
+         	\PY{c}{\PYZsh{}debugging}
+         	\PY{c}{\PYZsh{} print theta1}
+         
+         	\PY{c}{\PYZsh{}plot input and integrator value}
+         	\PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{211}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{theta1}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{theta\PYZus{}1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{p1}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}p\PYZus{}1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{theta2}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{theta\PYZus{}2\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{sim}\PY{o}{.}\PY{n}{trange}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{p2}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}p\PYZus{}2\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{212}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x1}\PY{p}{,}\PY{n}{y1}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{mass 1}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x2}\PY{p}{,}\PY{n}{y2}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{mass 2}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{y}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+         	\PY{c}{\PYZsh{} ax.set\PYZus{}ylim(0,1)}
+         	\PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         	\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{three\PYZus{}bonus}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Simulation finished in 0:00:08.
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE556-750Assignment4_files/SYDE556-750Assignment4_40_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+This is totally wrong. Turns out it's difficult to implement a nonlinear system, because you can't just define an $A$ matrix for a recurrent connection! This almost worked in this case, but the $sin$ and $cos$ terms in the derivative equations make a linear solution impossible. I looked in the NEF book and the notes, but couldn't find any examples of nonlinear systems which did anything except multiply, so I'm at a loss for how to how to combine multiple states into a single population in a manner that would allow these nonlinear operations. I could try a Taylor Approximation for these expresesions, but with only the first derivative available, the linear range of these approximations would be much smaller than the ranges necessary to simulate the system.
+
+\end{document}

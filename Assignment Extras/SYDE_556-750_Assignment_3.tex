@@ -1,0 +1,1422 @@
+% Default to the notebook output style
+% Inherit from the specified cell style.
+    
+\documentclass{article}
+
+    \usepackage{graphicx} % Used to insert images
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{color} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{ulem} % ulem is needed to support strikethroughs (\sout)
+   
+    
+    \definecolor{orange}{cmyk}{0,0.4,0.8,0.2}
+    \definecolor{darkorange}{rgb}{.71,0.21,0.01}
+    \definecolor{darkgreen}{rgb}{.12,.54,.11}
+    \definecolor{myteal}{rgb}{.26, .44, .56}
+    \definecolor{gray}{gray}{0.45}
+    \definecolor{lightgray}{gray}{.95}
+    \definecolor{mediumgray}{gray}{.8}
+    \definecolor{inputbackground}{rgb}{.95, .95, .85}
+    \definecolor{outputbackground}{rgb}{.95, .95, .95}
+    \definecolor{traceback}{rgb}{1, .95, .95}
+    % ansi colors
+    \definecolor{red}{rgb}{.6,0,0}
+    \definecolor{green}{rgb}{0,.65,0}
+    \definecolor{brown}{rgb}{0.6,0.6,0}
+    \definecolor{blue}{rgb}{0,.145,.698}
+    \definecolor{purple}{rgb}{.698,.145,.698}
+    \definecolor{cyan}{rgb}{0,.698,.698}
+    \definecolor{lightgray}{gray}{0.5}
+    
+    % bright ansi colors
+    \definecolor{darkgray}{gray}{0.25}
+    \definecolor{lightred}{rgb}{1.0,0.39,0.28}
+    \definecolor{lightgreen}{rgb}{0.48,0.99,0.0}
+    \definecolor{lightblue}{rgb}{0.53,0.81,0.92}
+    \definecolor{lightpurple}{rgb}{0.87,0.63,0.87}
+    \definecolor{lightcyan}{rgb}{0.5,1.0,0.83}
+    
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{SYDE 556-750 Assignment 3}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=blue,
+      linkcolor=darkorange,
+      citecolor=darkgreen,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+\title{SYDE 556-750 Assignment 3}
+\author{Peter Duggins, Student ID 20610432}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Assignment 2 Details}\label{syde556750-assignment-3-connecting-neurons}
+
+\begin{itemize}
+\item
+  Due Date: March 3rd
+\item
+  Total marks: 10 (10\% of final grade)
+\item
+  Late penalty: 1 mark per day
+\item
+  It is recommended that you use a language with a matrix library and
+  graphing capabilities. Two main suggestions are Python and MATLAB.
+\item
+  \emph{Do not use any code from Nengo}
+\end{itemize}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{o}{\PYZpc{}}\PY{k}{pylab} inline
+        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k+kn}{as} \PY{n+nn}{np}
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib.pyplot} \PY{k+kn}{as} \PY{n+nn}{plt}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{lines.linewidth}\PY{l+s}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{4}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{font.size}\PY{l+s}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{24}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Populating the interactive namespace from numpy and matplotlib
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{k}{class} \PY{n+nc}{LIF\PYZus{}neuron}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{k}{def} \PY{n+nf}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{e}\PY{p}{,}\PY{n}{alpha}\PY{p}{,}\PY{n}{Jbias}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{)}\PY{p}{:}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{o}{=}\PY{n}{e}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{n}{tau\PYZus{}ref}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{n}{tau\PYZus{}rc}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}\PY{o}{=}\PY{n}{Jbias}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{=}\PY{n}{alpha}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V}\PY{o}{=}\PY{l+m+mf}{0.0}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dVdt}\PY{o}{=}\PY{l+m+mf}{0.0}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{stimulus}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{spikes}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Vhistory}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         
+             \PY{k}{def} \PY{n+nf}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{)}\PY{p}{:}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                 \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                     \PY{n}{J}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}
+                     \PY{k}{if} \PY{n}{J}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{:}
+                         \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref}\PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+                     \PY{k}{else}\PY{p}{:}
+                         \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{0}
+                     \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{rate}\PY{p}{)}\PY{p}{)}
+                 \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}
+         
+             \PY{k}{def} \PY{n+nf}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{x\PYZus{}vals}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{rng}\PY{p}{)}\PY{p}{:}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{o}{=}\PY{n}{x\PYZus{}vals}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                 \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{x\PYZus{}vals}\PY{p}{:}
+                     \PY{n}{eta}\PY{o}{=}\PY{l+m+mi}{0}
+                     \PY{n}{J}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)}\PY{o}{+}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}
+                     \PY{k}{if} \PY{n}{J}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{:}
+                         \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref} \PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+                     \PY{k}{else}\PY{p}{:}
+                         \PY{n}{rate}\PY{o}{=}\PY{l+m+mi}{0}
+                     \PY{k}{if} \PY{n}{noise} \PY{o}{!=}\PY{l+m+mi}{0}\PY{p}{:}
+                         \PY{n}{eta}\PY{o}{=}\PY{n}{rng}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{n}{noise}\PY{p}{)}
+                     \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{rate}\PY{o}{+}\PY{n}{eta}\PY{p}{)}\PY{p}{)}
+                 \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}
+         
+             \PY{k}{def} \PY{n+nf}{set\PYZus{}spikes}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,}\PY{n}{stimulus}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{)}\PY{p}{:}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{stimulus}\PY{o}{=}\PY{n}{stimulus} \PY{c}{\PYZsh{}an array}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{spikes}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                 \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Vhistory}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                 \PY{n}{ref\PYZus{}window}\PY{o}{=}\PY{n+nb}{int}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}ref}\PY{o}{/}\PY{n}{dt}\PY{p}{)} \PY{c}{\PYZsh{}number of timesteps in refractory period}
+                 \PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{stimulus}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                     \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{J}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{stimulus}\PY{p}{[}\PY{n}{t}\PY{p}{]}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{e}\PY{p}{)} \PY{o}{+} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Jbias}
+                     \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dVdt}\PY{o}{=}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{tau\PYZus{}rc}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{J}\PY{o}{\PYZhy{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V}\PY{p}{)}\PY{p}{)}
+                     \PY{c}{\PYZsh{}check if there have been spikes in the last tau\PYZus{}rc seconds}
+                     \PY{k}{for} \PY{n}{h} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{ref\PYZus{}window}\PY{p}{)}\PY{p}{:}   
+                         \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{spikes}\PY{p}{)} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{n}{ref\PYZus{}window} \PY{o+ow}{and} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{spikes}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{p}{(}\PY{n}{h}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{]} \PY{o}{==} \PY{l+m+mi}{1}\PY{p}{:}
+                             \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dVdt}\PY{o}{=}\PY{l+m+mi}{0}     \PY{c}{\PYZsh{}if so, voltage isn\PYZsq{}t allowed to change}
+                     \PY{c}{\PYZsh{}Euler\PYZsq{}s Method Approximation V(t+1) = V(t) + dt *dV(t)/dt}
+                     \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V}\PY{o}{=}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V}\PY{o}{+}\PY{n}{dt}\PY{o}{*}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dVdt}  
+                     \PY{k}{if} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{l+m+mf}{1.0}\PY{p}{:}
+                         \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{spikes}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}   \PY{c}{\PYZsh{}a spike}
+                         \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V}\PY{o}{=}\PY{l+m+mf}{0.0}    \PY{c}{\PYZsh{}reset}
+                     \PY{k}{else}\PY{p}{:}
+                         \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{spikes}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}   \PY{c}{\PYZsh{}not a spike}
+                         \PY{k}{if} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V} \PY{o}{\PYZlt{}} \PY{l+m+mf}{0.0}\PY{p}{:} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V}\PY{o}{=}\PY{l+m+mf}{0.0}
+                     \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Vhistory}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{V}\PY{p}{)}
+             \PY{k}{def} \PY{n+nf}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                 \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates}
+         
+             \PY{k}{def} \PY{n+nf}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                 \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{sample\PYZus{}rates\PYZus{}noisy}
+         
+             \PY{k}{def} \PY{n+nf}{get\PYZus{}spikes}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+                 \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{spikes}
+         
+         \PY{k}{def} \PY{n+nf}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}create sample points}
+             \PY{n}{rng1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)} \PY{c}{\PYZsh{}for neuron parameters}
+             \PY{n}{a\PYZus{}max\PYZus{}array}\PY{o}{=}\PY{n}{rng1}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+             \PY{n}{x\PYZus{}int\PYZus{}array}\PY{o}{=}\PY{n}{rng1}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+             \PY{n}{e\PYZus{}array}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{rng1}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{size}\PY{o}{=}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+             \PY{n}{x\PYZus{}sample}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{)}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create neurons, rate neurons for decoders, spiking neurons for estimate}
+             \PY{n}{neurons}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{n}{spikes}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{)}\PY{p}{:}
+                 \PY{n}{alpha}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x\PYZus{}int\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PYZbs{}
+                         \PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{p}{(}\PY{n}{tau\PYZus{}ref}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{a\PYZus{}max\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{n}{tau\PYZus{}rc}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+                 \PY{n}{Jbias}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{alpha}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x\PYZus{}int\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+                 \PY{n}{n}\PY{o}{=}\PY{n}{LIF\PYZus{}neuron}\PY{p}{(}\PY{n}{e\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{alpha}\PY{p}{,}\PY{n}{Jbias}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{)}
+                 \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{)}
+                 \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{rng1}\PY{p}{)}
+                 \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}spikes}\PY{p}{(}\PY{n}{stimulus}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{)}
+                 \PY{n}{neurons}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+                 \PY{n}{spikes}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}spikes}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         
+             \PY{k}{return} \PY{n}{neurons}\PY{p}{,} \PY{n}{spikes}
+         
+         \PY{k}{def} \PY{n+nf}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{p}{)}\PY{p}{:}
+         
+             \PY{n}{dimension}\PY{o}{=}\PY{l+m+mi}{2}
+             \PY{n}{rng1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)} \PY{c}{\PYZsh{}for neuron parameters}
+             \PY{n}{a\PYZus{}max\PYZus{}array}\PY{o}{=}\PY{n}{rng1}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}generate encoders over an n\PYZhy{}dimensional hypersphere (not evenly distributed)}
+             \PY{n}{angles}\PY{o}{=}\PY{n}{rng1}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{p}{,}\PY{n}{n\PYZus{}neurons}\PY{p}{)}     
+             \PY{n}{e\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{angles}\PY{p}{)}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{angles}\PY{p}{)}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)} 
+                             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{angles}\PY{p}{)}\PY{p}{)}\PY{p}{]}\PY{p}{)} \PY{c}{\PYZsh{}on unit circle}
+         
+             \PY{c}{\PYZsh{}create sample points}
+             \PY{n}{x\PYZus{}int\PYZus{}array}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{rng1}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{)}\PY{o}{*}\PY{n}{e\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+                             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{e\PYZus{}array}\PY{p}{)}\PY{p}{)}\PY{p}{]}\PY{p}{)}  \PY{c}{\PYZsh{}along encoders}
+         
+             \PY{n}{x1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x\PYZus{}min}\PY{p}{,} \PY{n}{x\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+             \PY{n}{x2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{x\PYZus{}min}\PY{p}{,} \PY{n}{x\PYZus{}max}\PY{p}{,} \PY{n}{dx}\PY{p}{)}
+             \PY{n}{x\PYZus{}mesh}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{x2}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+         
+             \PY{c}{\PYZsh{}create neurons, rate neurons for decoders, spiking neurons for estimate}
+             \PY{n}{neurons}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{n}{spikes}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{)}\PY{p}{:}
+                 \PY{c}{\PYZsh{}assume e=[1...1] (len dimensions) when calculating alpha, Jbias}
+                 \PY{n}{x\PYZus{}max\PYZus{}D}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{)}
+                 \PY{n}{x\PYZus{}max\PYZus{}dot\PYZus{}1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x\PYZus{}max\PYZus{}D}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{dimension}
+                 \PY{n}{x\PYZus{}int\PYZus{}dot\PYZus{}1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{x\PYZus{}int\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{dimension}
+                 \PY{n}{alpha}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n}{x\PYZus{}max\PYZus{}dot\PYZus{}1}\PY{o}{\PYZhy{}}\PY{n}{x\PYZus{}int\PYZus{}dot\PYZus{}1}\PY{p}{)}\PY{o}{*}\PYZbs{}
+                         \PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{+}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{p}{(}\PY{n}{tau\PYZus{}ref}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{a\PYZus{}max\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{n}{tau\PYZus{}rc}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+                 \PY{n}{Jbias}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{alpha}\PY{o}{*}\PY{n}{x\PYZus{}int\PYZus{}dot\PYZus{}1}
+                 \PY{n}{n}\PY{o}{=}\PY{n}{LIF\PYZus{}neuron}\PY{p}{(}\PY{n}{e\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{alpha}\PY{p}{,}\PY{n}{Jbias}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{)}
+                 \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n}{x\PYZus{}mesh}\PY{p}{)}
+                 \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n}{x\PYZus{}mesh}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{rng1}\PY{p}{)}
+                 \PY{n}{n}\PY{o}{.}\PY{n}{set\PYZus{}spikes}\PY{p}{(}\PY{n}{stimulus}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{)}
+                 \PY{n}{neurons}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+                 \PY{n}{spikes}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}spikes}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         
+             \PY{k}{return} \PY{n}{neurons}\PY{p}{,} \PY{n}{spikes}
+         
+         \PY{k}{def} \PY{n+nf}{generate\PYZus{}signal}\PY{p}{(}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{rms}\PY{p}{,}\PY{n}{limit}\PY{p}{,}\PY{n}{rng}\PY{p}{,}\PY{n}{distribution}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{uniform}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}first generate X(w), with the specified constraints,}
+             \PY{c}{\PYZsh{}then use an inverse fft to get x\PYZus{}t}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{delta\PYZus{}w} \PY{o}{=} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{/}\PY{n}{T} \PY{c}{\PYZsh{}omega stepsize}
+             \PY{n}{w\PYZus{}vals} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{delta\PYZus{}w}\PY{p}{)} \PY{c}{\PYZsh{}make half of X(w), those with negative freq}
+             \PY{n}{w\PYZus{}limit}\PY{o}{=}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{limit} \PY{c}{\PYZsh{}frequency in radians}
+             \PY{n}{bandwidth}\PY{o}{=}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{limit} \PY{c}{\PYZsh{}bandwidth in radians}
+             \PY{n}{x\PYZus{}w\PYZus{}half1}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{n}{x\PYZus{}w\PYZus{}half2}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+         
+             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{w\PYZus{}vals}\PY{p}{)}\PY{p}{)}\PY{p}{:}    \PY{c}{\PYZsh{}loop over frequency values}
+                 \PY{k}{if} \PY{n}{distribution}\PY{o}{==}\PY{l+s}{\PYZsq{}}\PY{l+s}{uniform}\PY{l+s}{\PYZsq{}}\PY{p}{:}
+                     \PY{c}{\PYZsh{}if |w| is within the specified limit, generate a coefficient}
+                     \PY{k}{if} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{w\PYZus{}vals}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{n}{w\PYZus{}limit}\PY{p}{:}    
+                         \PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}real} \PY{o}{=} \PY{n}{rng}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}  \PY{c}{\PYZsh{}mean=0, sigma=1}
+                         \PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}im} \PY{o}{=} \PY{n}{rng}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+                         \PY{n}{x\PYZus{}w\PYZus{}half1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}real} \PY{o}{+} \PY{l+m+mi}{1j}\PY{o}{*}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}im}\PY{p}{)}
+                         \PY{c}{\PYZsh{}make the 2nd half of X(w) with complex conjugates}
+                         \PY{n}{x\PYZus{}w\PYZus{}half2}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}real} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1j}\PY{o}{*}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}im}\PY{p}{)}  
+         
+                 \PY{k}{elif} \PY{n}{distribution}\PY{o}{==}\PY{l+s}{\PYZsq{}}\PY{l+s}{gaussian}\PY{l+s}{\PYZsq{}}\PY{p}{:}
+                     \PY{c}{\PYZsh{}draw sigma from a gaussian distribution}
+                     \PY{n}{sigma}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{np}\PY{o}{.}\PY{n}{square}\PY{p}{(}\PY{n}{w\PYZus{}vals}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{square}\PY{p}{(}\PY{n}{bandwidth}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+                     \PY{k}{if} \PY{n}{sigma} \PY{o}{\PYZgt{}} \PY{n}{np}\PY{o}{.}\PY{n}{finfo}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{o}{.}\PY{n}{eps}\PY{p}{:} \PY{c}{\PYZsh{}distinguishable from zero}
+                         \PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}real} \PY{o}{=} \PY{n}{rng}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{n}{sigma}\PY{p}{)}
+                         \PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}im} \PY{o}{=} \PY{n}{rng}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{scale}\PY{o}{=}\PY{n}{sigma}\PY{p}{)}  
+                         \PY{n}{x\PYZus{}w\PYZus{}half1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}real} \PY{o}{+} \PY{l+m+mi}{1j}\PY{o}{*}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}im}\PY{p}{)}
+                         \PY{n}{x\PYZus{}w\PYZus{}half2}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}real} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1j}\PY{o}{*}\PY{n}{x\PYZus{}w\PYZus{}i\PYZus{}im}\PY{p}{)}  
+         
+             \PY{c}{\PYZsh{}zero pad the positive and negative amplitude lists, so each is len(samples/2)}
+             \PY{n}{x\PYZus{}w\PYZus{}pos}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{hstack}\PY{p}{(}\PY{p}{(}\PY{n}{x\PYZus{}w\PYZus{}half2}\PY{p}{[}\PY{p}{:}\PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}\PY{o}{\PYZhy{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x\PYZus{}w\PYZus{}half2}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+             \PY{n}{x\PYZus{}w\PYZus{}neg}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{hstack}\PY{p}{(}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}\PY{o}{\PYZhy{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x\PYZus{}w\PYZus{}half1}\PY{p}{)}\PY{p}{)}\PY{p}{,}\PY{n}{x\PYZus{}w\PYZus{}half1}\PY{p}{)}\PY{p}{)}
+             \PY{c}{\PYZsh{}assemble the symmetric X(w) according to numpy.fft documentation}
+             \PY{c}{\PYZsh{}amplitudes corresponding to [w\PYZus{}0, w\PYZus{}pos increasing, w\PYZus{}neg increasing]}
+             \PY{n}{x\PYZus{}w}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{hstack}\PY{p}{(}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{o}{+}\PY{l+m+mi}{0j}\PY{p}{]}\PY{p}{,}\PY{n}{x\PYZus{}w\PYZus{}pos}\PY{p}{,}\PY{n}{x\PYZus{}w\PYZus{}neg}\PY{p}{)}\PY{p}{)}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{fft}\PY{o}{.}\PY{n}{ifft}\PY{p}{(}\PY{n}{x\PYZus{}w}\PY{p}{)}
+             \PY{c}{\PYZsh{}normalize time and frequency signals using RMS}
+             \PY{n}{true\PYZus{}rms}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{dt}\PY{o}{/}\PY{n}{T}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{square}\PY{p}{(}\PY{n}{x\PYZus{}t}\PY{p}{)}\PY{p}{)}\PY{p}{)}   
+             \PY{n}{x\PYZus{}t} \PY{o}{=} \PY{n}{x\PYZus{}t}\PY{o}{*}\PY{n}{rms}\PY{o}{/}\PY{n}{true\PYZus{}rms}
+             \PY{c}{\PYZsh{}return real part of signal to avoid warning}
+             \PY{n}{x\PYZus{}t} \PY{o}{=} \PY{n}{x\PYZus{}t}\PY{o}{.}\PY{n}{real}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x\PYZus{}t}\PY{p}{)}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+             \PY{n}{x\PYZus{}w} \PY{o}{=} \PY{n}{x\PYZus{}w}\PY{o}{*}\PY{n}{rms}\PY{o}{/}\PY{n}{true\PYZus{}rms}
+         
+             \PY{k}{return} \PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{x\PYZus{}w}  
+         
+         \PY{k}{def} \PY{n+nf}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}\PY{p}{)}\PY{p}{:}
+         
+             \PY{n}{A\PYZus{}T}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{neurons}\PY{p}{:}
+                 \PY{n}{A\PYZus{}T}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+             \PY{n}{A\PYZus{}T}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{A\PYZus{}T}\PY{p}{)}
+             \PY{n}{A}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{n}{A\PYZus{}T}\PY{p}{)}
+             \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{p}{)} \PY{c}{\PYZsh{}use x\PYZus{}sample, not x\PYZus{}t, to define rates}
+             \PY{n}{upsilon}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{function}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{/}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+             \PY{n}{gamma}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{A}\PY{o}{/}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)} \PY{o}{+} \PY{n}{np}\PY{o}{.}\PY{n}{identity}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{neurons}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{n}{noise}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}
+             \PY{n}{d}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{inv}\PY{p}{(}\PY{n}{gamma}\PY{p}{)}\PY{o}{*}\PY{n}{upsilon}
+             \PY{k}{return} \PY{n}{d}
+         
+         \PY{k}{def} \PY{n+nf}{get\PYZus{}spike\PYZus{}decoders}\PY{p}{(}\PY{n}{spikes}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{function}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}\PY{p}{)}\PY{p}{:}
+         
+             \PY{n}{A\PYZus{}T}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{convolve}\PY{p}{(}\PY{n}{s}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{mode}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{full}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{p}{:}\PY{n+nb}{len}\PY{p}{(}\PY{n}{spikes}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{s} \PY{o+ow}{in} \PY{n}{spikes}\PY{p}{]}\PY{p}{)}
+             \PY{n}{A}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{A\PYZus{}T}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+             \PY{n}{x}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{matrix}\PY{p}{(}\PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{p}{)}
+             \PY{n}{upsilon}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{function}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{/}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+             \PY{n}{gamma}\PY{o}{=}\PY{n}{A\PYZus{}T}\PY{o}{*}\PY{n}{A}\PY{o}{/}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+             \PY{n}{d}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{pinv}\PY{p}{(}\PY{n}{gamma}\PY{p}{)}\PY{o}{*}\PY{n}{upsilon}
+             \PY{k}{return} \PY{n}{d}
+         
+         \PY{k}{def} \PY{n+nf}{get\PYZus{}rate\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}\PY{p}{:}
+         
+             \PY{n}{xhat}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{sample\PYZus{}x}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                 \PY{n}{xhat\PYZus{}i}\PY{o}{=}\PY{l+m+mi}{0}
+                 \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{neurons}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                     \PY{k}{if} \PY{n}{noise} \PY{o}{!=} \PY{l+m+mi}{0}\PY{p}{:}
+                         \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                         \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                         \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                     \PY{k}{else}\PY{p}{:}
+                         \PY{n}{a\PYZus{}ij}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                         \PY{n}{d\PYZus{}i}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+                         \PY{n}{xhat\PYZus{}i}\PY{o}{+}\PY{o}{=}\PY{p}{(}\PY{n}{a\PYZus{}ij}\PY{o}{*}\PY{n}{d\PYZus{}i}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+                 \PY{n}{xhat}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{xhat\PYZus{}i}\PY{p}{)}
+             \PY{n}{xhat}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{xhat}\PY{p}{)}
+             \PY{k}{return} \PY{n}{xhat}
+         
+         \PY{k}{def} \PY{n+nf}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d}\PY{p}{)}\PY{p}{:}
+         
+             \PY{n}{timesteps}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{spikes}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+             \PY{n}{dimension}\PY{o}{=}\PY{n}{d}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{d}\PY{p}{)}
+             \PY{n}{xhat}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{timesteps}\PY{p}{,}\PY{n}{dimension}\PY{p}{)}\PY{p}{)}
+             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{)}\PY{p}{:}
+                 \PY{n}{decoder}\PY{o}{=}\PY{n}{d}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+                 \PY{n}{filtered\PYZus{}spikes}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{convolve}\PY{p}{(}\PY{n}{spikes}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{mode}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{full}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PYZbs{}
+                     \PY{p}{[}\PY{p}{:}\PY{n}{timesteps}\PY{p}{]}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n}{timesteps}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+                 \PY{n}{value}\PY{o}{=}\PY{n}{filtered\PYZus{}spikes}\PY{o}{*}\PY{n}{decoder}
+                 \PY{n}{xhat}\PY{o}{+}\PY{o}{=}\PY{n}{value}
+         
+             \PY{k}{return} \PY{n}{xhat}
+\end{Verbatim}
+
+\section{Decoding from a population}\label{decoding-from-a-population}
+
+As you did in previous assignments, make a population of 20 LIF neurons representing a 1-dimensional value, and compute a decoder for them. For parameters, $\tau_{ref}$=0.002s, $\tau_{RC}$=0.02s, the maximum firing rates are chosen randomly from a uniform distribution between 100 and 200Hz (at the max radius), and the x-intercepts are chosen randomly from a uniform distribution between -2 and 2. Remember that the $\alpha$ and $J^{bias}$ terms are computed based on these x-intercepts and maximum firing rates.
+
+It is generally easiest to compute decoders using the original method from Assignment 1, where we use the rate-mode approximation for the neurons to generate the $A$ matrix, then find $\Gamma=A^T A + \sigma^2 I$. You can use this approach to find decoders, and these decoders should work even when you simulate the neurons in terms of spikes (in question 2 on). The only difference will be that they will need to be scaled by \texttt{dt}, your simulation time step. You can use this same method for computing decoders for this whole assignment.
+
+\subsection{{[}0.5 marks{]} Plot the tuning curves (firing rate of each neuron for different $x$ values between -2 and 2)}
+
+\subsection{{[}0.5 marks{]} Compute the decoders and plot $(x-\hat{x})$. When computing decoders, take into account noise($\sigma$=0.1 times 200Hz). When computing $\hat{x}$, add random gaussian noise with $\sigma$=0.1 times 200Hz to the activity. Report the Root Mean-Squared Error (RMSE).}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{k}{def} \PY{n+nf}{one}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+         	\PY{c}{\PYZsh{}LIF parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{20}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{2}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mf}{1.0}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{stimulus}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{)}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+         
+             \PY{n}{neurons}\PY{p}{,} \PY{n}{spikes} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot tuning curves}
+             \PY{n}{x\PYZus{}sample}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{sample\PYZus{}x}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{neurons}\PY{p}{:}
+                 \PY{n}{y}\PY{o}{=}\PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{p}{)}
+                 \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{y}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{x}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{Firing Rate \PYZdl{}a\PYZdl{} (Hz)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}compute decoders and state estimate}
+             \PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+             \PY{n}{xhat}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}estimate}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{xhat}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZus{}sample\PYZhy{}xhat)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{shadow}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+         
+         \PY{n}{one}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_6_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_6_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\section{Decoding from two spiking neurons}\label{decoding-from-two-spiking-neurons}
+
+Choose a neuron from part 1 that has a firing rate of somewhere between
+20-50Hz for $x$=0. Using that neuron's $\alpha$ and $J^{bias}$ value,
+construct two neurons: both with the same $\alpha$ and $J^{bias}$, but
+one with $e$=+1 and the other with $e$=-1. With the function from the
+last assignment, generate a random input $x(t)$ that is 1 second long,
+with rms=1, dt=0.001, and an upper limit of 5Hz. Feed that signal into
+the two neurons and generate spikes. Decode the spikes back into
+$\hat{x}(t)$ using a post-synaptic current filter $h(t)$ with a time
+constant of $\tau$=0.005.
+
+\subsection{{[}0.5 marks{]} Plot the post-synaptic current
+$h(t)=e^{-t/\tau}/ \int e^{-t/\tau} dt$}
+
+\subsection{{[}0.5 marks{]} Plot the original signal $x(t)$, the spikes,
+and the decoded $\hat{x}(t)$ all on the same
+graph}\label{marks-plot-the-original-signal-xt-the-spikes-and-the-decoded-hatxt-all-on-the-same-graph}
+
+\subsection{{[}0.5 marks{]} Compute the RMSE of the
+decoding}\label{marks-compute-the-rmse-of-the-decoding}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}20}]:} \PY{k}{def} \PY{n+nf}{two}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}LIF parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{20}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{2}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mf}{1.0}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{stimulus}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{)}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+         
+             \PY{c}{\PYZsh{}find alpha and Jbias parameters}
+             \PY{n}{neurons}\PY{p}{,} \PY{n}{spikes} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{p}{)}
+             \PY{n}{x\PYZus{}sample}\PY{o}{=}\PY{n}{neurons}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{sample\PYZus{}x}
+             \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n}{neurons}\PY{p}{:}
+                 \PY{k}{if} \PY{l+m+mi}{20} \PY{o}{\PYZlt{}} \PY{n}{n}\PY{o}{.}\PY{n}{get\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{l+m+mi}{50}\PY{p}{:}
+                     \PY{n}{alpha\PYZus{}chosen}\PY{o}{=}\PY{n}{n}\PY{o}{.}\PY{n}{alpha}
+                     \PY{n}{Jbias\PYZus{}chosen}\PY{o}{=}\PY{n}{n}\PY{o}{.}\PY{n}{Jbias}
+                     \PY{k}{break}
+         
+             \PY{n}{e1}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{e2}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{rms}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{limit}\PY{o}{=}\PY{l+m+mi}{5}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+         
+             \PY{c}{\PYZsh{}create neurons with chosen parameters}
+             \PY{n}{rng1}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)}
+             \PY{n}{n1}\PY{o}{=}\PY{n}{LIF\PYZus{}neuron}\PY{p}{(}\PY{n}{e1}\PY{p}{,}\PY{n}{alpha\PYZus{}chosen}\PY{p}{,}\PY{n}{Jbias\PYZus{}chosen}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{)}
+             \PY{n}{n1}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{)}
+             \PY{n}{n1}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{rng1}\PY{p}{)}
+             \PY{n}{n2}\PY{o}{=}\PY{n}{LIF\PYZus{}neuron}\PY{p}{(}\PY{n}{e2}\PY{p}{,}\PY{n}{alpha\PYZus{}chosen}\PY{p}{,}\PY{n}{Jbias\PYZus{}chosen}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{)}
+             \PY{n}{n2}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{)}
+             \PY{n}{n2}\PY{o}{.}\PY{n}{set\PYZus{}sample\PYZus{}rates\PYZus{}noisy}\PY{p}{(}\PY{n}{x\PYZus{}sample}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{rng1}\PY{p}{)}
+             \PY{n}{neurons}\PY{o}{=}\PY{p}{[}\PY{n}{n1}\PY{p}{,}\PY{n}{n2}\PY{p}{]}
+         
+             \PY{c}{\PYZsh{}generate white noise signal}
+             \PY{n}{rng2}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed}\PY{p}{)} \PY{c}{\PYZsh{}for white noise signal}
+             \PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{x\PYZus{}w} \PY{o}{=} \PY{n}{generate\PYZus{}signal}\PY{p}{(}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{rms}\PY{p}{,}\PY{n}{limit}\PY{p}{,}\PY{n}{rng2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{uniform}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{stimulus} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x\PYZus{}t}\PY{p}{)}
+             \PY{n}{n1}\PY{o}{.}\PY{n}{set\PYZus{}spikes}\PY{p}{(}\PY{n}{stimulus}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{)}
+             \PY{n}{n2}\PY{o}{.}\PY{n}{set\PYZus{}spikes}\PY{p}{(}\PY{n}{stimulus}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{)}
+             \PY{n}{spikes1}\PY{o}{=}\PY{n}{n1}\PY{o}{.}\PY{n}{get\PYZus{}spikes}\PY{p}{(}\PY{p}{)}
+             \PY{n}{spikes2}\PY{o}{=}\PY{n}{n2}\PY{o}{.}\PY{n}{get\PYZus{}spikes}\PY{p}{(}\PY{p}{)}
+             \PY{n}{spikes}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{spikes1}\PY{p}{,}\PY{n}{spikes2}\PY{p}{]}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}  \PY{c}{\PYZsh{}normalize, effectively scaling spikes by dt}
+         
+             \PY{c}{\PYZsh{}calculate decoders using rate prodecure and filtered state estimate}
+             \PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+             \PY{n}{xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, spikes, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x(t)\PYZdl{} (smoothed white noise)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{p}{(}\PY{n}{spikes}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{n}{spikes}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{k}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{spikes}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{xhat}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}x\PYZcb{}(t)\PYZdl{}, \PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s}{tau\PYZdl{} = }\PY{l+s+si}{\PYZpc{}s}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{tau\PYZus{}synapse})
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((x\PYZus{}t\PYZhy{}xhat)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{18}\PY{p}{)} 
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot filter}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{h}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}h(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}h(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mf}{0.02}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{)} 
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{two}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_11_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_11_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\section{Decoding from many neurons}
+
+Repeat question 2, but with more neurons. Instead of picking particular
+neurons, randomly generate them with x-intercepts uniformly distributed
+between -2 and 2 and with maximum firing rates between 100 and 200 Hz.
+Randomly choose encoder values to be either -1 or +1.
+
+\subsection{{[}2 marks{]} Plot Root Mean-Squared Error as the number of
+neurons increases. Try 8 neurons, 16 neurons, 32, 64, 128, up to 256.
+For the RMSE for a particular number of neurons, average over at least 5
+randomly generated groups of neurons. For each group of neurons,
+randomly generate the signal $x(t)$. Use the same parameters as in
+question 2. Note: the RMSE should go down as the number of neurons
+increases}\label{marks-plot-root-mean-squared-error-as-the-number-of-neurons-increases.-try-8-neurons-16-neurons-32-64-128-up-to-256.-for-the-rmse-for-a-particular-number-of-neurons-average-over-at-least-5-randomly-generated-groups-of-neurons.-for-each-group-of-neurons-randomly-generate-the-signal-xt.-use-the-same-parameters-as-in-question-2.-note-the-rmse-should-go-down-as-the-number-of-neurons-increases}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{c}{\PYZsh{}takes a long time to run}
+        
+        \PY{k}{def} \PY{n+nf}{three}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+        
+            \PY{c}{\PYZsh{}parameters}
+            \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+            \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+            \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}
+            \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{2}
+            \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+            \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+            \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+            \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+            \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+            \PY{n}{rms}\PY{o}{=}\PY{l+m+mi}{1}
+            \PY{n}{limit}\PY{o}{=}\PY{l+m+mi}{5}
+            \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+            \PY{n}{avg}\PY{o}{=}\PY{l+m+mi}{10}
+            \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+            \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+        
+            \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+            \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+            \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+            \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}  \PY{c}{\PYZsh{}normalize, effectively scaling spikes by dt}
+        
+            \PY{n}{n\PYZus{}neuron\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{,}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{32}\PY{p}{,}\PY{l+m+mi}{64}\PY{p}{,}\PY{l+m+mi}{128}\PY{p}{,}\PY{l+m+mi}{256}\PY{p}{]}
+            \PY{n}{RMSE\PYZus{}list}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+        
+            \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{n\PYZus{}neuron\PYZus{}list}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{n}{n\PYZus{}neuron\PYZus{}list}\PY{p}{[}\PY{n}{n}\PY{p}{]}
+                \PY{n}{RMSE\PYZus{}n}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+                
+                \PY{k}{for} \PY{n}{a} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{avg}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{n}{n}\PY{o}{*}\PY{n}{avg}\PY{o}{+}\PY{n}{a}
+                    \PY{n}{seed\PYZus{}signal}\PY{o}{=}\PY{n}{n}\PY{o}{*}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{a}
+        
+                    \PY{c}{\PYZsh{}generate white noise signal}
+                    \PY{n}{rng2}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed\PYZus{}signal}\PY{p}{)} \PY{c}{\PYZsh{}for white noise signal}
+                    \PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{x\PYZus{}w} \PY{o}{=} \PY{n}{generate\PYZus{}signal}\PY{p}{(}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{rms}\PY{p}{,}\PY{n}{limit}\PY{p}{,}\PY{n}{rng2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{uniform}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        
+                    \PY{n}{neurons}\PY{p}{,} \PY{n}{spikes} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                            \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+        
+                    \PY{c}{\PYZsh{}calculate decoders using rate prodecure and filtered state estimate}
+                    \PY{n}{d}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons}\PY{p}{,}\PY{n}{noise}\PY{p}{)}
+                    \PY{n}{xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d}\PY{p}{)}
+        
+                    \PY{c}{\PYZsh{}calculate RMSE}
+                    \PY{n}{RMSE\PYZus{}n\PYZus{}a}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{p}{(}\PY{n}{x\PYZus{}t}\PY{o}{\PYZhy{}}\PY{n}{xhat}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+                    \PY{n}{RMSE\PYZus{}n}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{RMSE\PYZus{}n\PYZus{}a}\PY{p}{)}
+        
+                \PY{n}{RMSE\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{RMSE\PYZus{}n}\PY{p}{)}\PY{p}{)}
+        
+            \PY{c}{\PYZsh{}plot RMSE vs n\PYZus{}neurons}
+            \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+            \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+            \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{n\PYZus{}neuron\PYZus{}list}\PY{p}{,}\PY{n}{RMSE\PYZus{}list}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE, \PYZdl{}n\PYZus{}\PYZob{}avg\PYZcb{}=}\PY{l+s+si}{\PYZpc{}s}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{avg})
+            \PY{n}{ax}\PY{o}{.}\PY{n}{loglog}\PY{p}{(}\PY{n}{n\PYZus{}neuron\PYZus{}list}\PY{p}{,}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{n\PYZus{}neuron\PYZus{}list}\PY{p}{)}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}1/}\PY{l+s}{\PYZbs{}}\PY{l+s}{sqrt\PYZob{}n\PYZcb{}\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{neurons}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{)} 
+            \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+            
+        \PY{n}{three}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_14_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\section{Connecting two groups of neurons}\label{connecting-two-groups-of-neurons}
+
+For this question, use two groups of neurons with intercepts between {[}-1, 1{]} to compute $y = 2x+1$. The first group of neurons will represent $x$ and the second group will represent $y$. Start by computing decoders. You will need two decoders: one to decode $f(x)=2x+1$ from the first population, and one to decode $f(y)=y$ (the standard representational decoder) from the second population. Remember that $\Upsilon$ can changes depending on what function you want to decode. Use the same neuron parameters as for previous questions, and use 200 randomly generated neurons in each population.
+
+\subsection{{[}1 mark{]} Show the behaviour of the system with an input of
+$x(t)=t-1$ for 1 second (a linear ramp from -1 to 0). Plot the ideal
+$x(t)$ and $y(t)$ values, along with $\hat{y}(t)$}.
+
+Note that you should use the decoders that work for any input over the range of intercepts: do not re-compute decoders for any particular input (i.e.~set of $x$ values). Input $x(t)$ into the first group of neurons and produce spikes. Decode from those spikes using the decoder for $f(x)=2x+1$. Input that decoded result into the second group of neurons to produce spikes. Use the second decoder ($f(y)=y$) to decode $\hat{y}(t)$.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}21}]:} \PY{k}{def} \PY{n+nf}{four\PYZus{}a}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+         
+             \PY{c}{\PYZsh{}generate linear ramp signal x(t)=t\PYZhy{}1}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{n}{t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{y\PYZus{}t}\PY{o}{=}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{x\PYZus{}t}\PY{o}{+}\PY{l+m+mi}{1}
+         
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}  \PY{c}{\PYZsh{}normalize, effectively scaling spikes by dt}
+         
+             \PY{c}{\PYZsh{}create first ensemble}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{neurons\PYZus{}1}\PY{p}{,} \PY{n}{spikes\PYZus{}1} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}calculate decoders for f(x)=2x+1}
+             \PY{n}{function\PYZus{}1}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{x} \PY{o}{+} \PY{l+m+mi}{1}
+             \PY{n}{d\PYZus{}1}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}1}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}1}\PY{p}{)}
+             \PY{n}{f\PYZus{}xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}1}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}1}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create second ensemble}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{9}
+             \PY{n}{neurons\PYZus{}2}\PY{p}{,} \PY{n}{spikes\PYZus{}2} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{f\PYZus{}xhat}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}calculate decoders for f(y)=y}
+             \PY{n}{function\PYZus{}2}\PY{o}{=}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{n}{y}
+             \PY{n}{d\PYZus{}2}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}2}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}2}\PY{p}{)}
+             \PY{n}{f\PYZus{}yhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}2}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}2}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, transformed signal, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x(t)=t\PYZhy{}1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{y\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}y(t)=2x(t)+1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}yhat}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}y\PYZcb{}(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((y\PYZus{}t\PYZhy{}f\PYZus{}yhat)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{)} 
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{four\PYZus{}a}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_17_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\subsection{{[}0.5 marks{]} Repeat part (a) with an input that is ten
+randomly chosen values between -1 and 0, each one held for 0.1 seconds
+(a randomly varying step
+input)}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{k}{def} \PY{n+nf}{four\PYZus{}b}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+         
+             \PY{c}{\PYZsh{}generate a randomly varying step signal}
+             \PY{n}{seed\PYZus{}signal}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{rng2}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed\PYZus{}signal}\PY{p}{)}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{,}\PY{n}{rng2}\PY{o}{.}\PY{n}{rand}\PY{p}{(}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{insert}\PY{p}{(}\PY{n}{x\PYZus{}t}\PY{p}{,}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x\PYZus{}t}\PY{p}{)}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)} \PY{c}{\PYZsh{}1001 time points}
+             \PY{n}{y\PYZus{}t}\PY{o}{=}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{x\PYZus{}t}\PY{o}{+}\PY{l+m+mi}{1}
+          
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}  \PY{c}{\PYZsh{}normalize, effectively scaling spikes by dt}
+         
+             \PY{c}{\PYZsh{}create first ensemble}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{neurons\PYZus{}1}\PY{p}{,} \PY{n}{spikes\PYZus{}1} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}calculate decoders for f(x)=2x+1}
+             \PY{n}{function\PYZus{}1}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{x} \PY{o}{+} \PY{l+m+mi}{1}
+             \PY{n}{d\PYZus{}1}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}1}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}1}\PY{p}{)}
+             \PY{n}{f\PYZus{}xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}1}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}1}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create second ensemble}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{9}
+             \PY{n}{neurons\PYZus{}2}\PY{p}{,} \PY{n}{spikes\PYZus{}2} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{f\PYZus{}xhat}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}calculate decoders for f(y)=y}
+             \PY{n}{function\PYZus{}2}\PY{o}{=}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{n}{y}
+             \PY{n}{d\PYZus{}2}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}2}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}2}\PY{p}{)}
+             \PY{n}{f\PYZus{}yhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}2}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}2}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, transformed signal, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x(t)=t\PYZhy{}1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{y\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}y(t)=2x(t)+1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}yhat}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}y\PYZcb{}(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((y\PYZus{}t\PYZhy{}f\PYZus{}yhat)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{)} 
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{four\PYZus{}b}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_19_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\subsection{{[}0.5 marks{]} Repeat part (a) with an input that is
+$x(t)=0.2sin(6\pi t)$. Briefly discuss the results for this
+question.}\label{marks-repeat-part-a-with-an-input-that-is-xt0.2sin6pi-t.-briefly-discuss-the-results-for-this-question.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{k}{def} \PY{n+nf}{four\PYZus{}c}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+         
+             \PY{c}{\PYZsh{}generate a sinusoid}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{l+m+mi}{6}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{t}\PY{p}{)}
+             \PY{n}{y\PYZus{}t}\PY{o}{=}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{x\PYZus{}t}\PY{o}{+}\PY{l+m+mi}{1}
+          
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}  \PY{c}{\PYZsh{}normalize, effectively scaling spikes by dt}
+         
+             \PY{c}{\PYZsh{}create first ensemble}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{neurons\PYZus{}1}\PY{p}{,} \PY{n}{spikes\PYZus{}1} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}calculate decoders for f(x)=2x+1}
+             \PY{n}{function\PYZus{}1}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{x} \PY{o}{+} \PY{l+m+mi}{1}
+             \PY{n}{d\PYZus{}1}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}1}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}1}\PY{p}{)}
+             \PY{n}{f\PYZus{}xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}1}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}1}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create second ensemble}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{9}
+             \PY{n}{neurons\PYZus{}2}\PY{p}{,} \PY{n}{spikes\PYZus{}2} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{f\PYZus{}xhat}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}calculate decoders for f(y)=y}
+             \PY{n}{function\PYZus{}2}\PY{o}{=}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{n}{y}
+             \PY{n}{d\PYZus{}2}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}2}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}2}\PY{p}{)}
+             \PY{n}{f\PYZus{}yhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}2}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}2}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, transformed signal, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x(t)=t\PYZhy{}1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{y\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}y(t)=2x(t)+1\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}yhat}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}y\PYZcb{}(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((y\PYZus{}t\PYZhy{}f\PYZus{}yhat)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{lower right}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{)} 
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{four\PYZus{}c}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_21_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+
+The estimate $\hat{y}(t)$ incurs error from the signal for two reasons.
+First, a delay is introduced by the synaptic filter $h(t)$ with
+magnitude proportional to the post-synaptic time constant $\tau=0.005$.
+Second, the decoded signal underestimates the shifted sinusoid. This is
+caused by neuron saturation: the maximum value that can be faithfully
+represented by a neuron is $x_{max}=1$. Beyond this value, the tuning
+curves of the neurons begin to flatten out, leading to diminishing
+returns in activity as $x(t)$ increases. This limits the entries in the
+activities matrix $A$, which in turn limits the decoders $d$ and the
+magnitude of the final estimate $\hat{y}(t)$ to a value near $1$.
+Unshifting the sinusoid with $y=2x(t)$ reduces the RMSE dramatically.
+
+\section{Connecting three groups of neurons}\label{connecting-three-groups-of-neurons}
+
+For this question, use three groups of neurons with intercepts from
+{[}-1, 1{]} to compute $z = 2y+0.5x$. Follow the same steps as question
+4, but take the decoded outputs from the first two groups of neurons
+($f(y)=2y$ and $f(x)=0.5x$), add them together, and feed that into the
+third group of neurons.
+
+\subsection{{[}1 mark{]} Plot $x(t)$, $y(t)$, the ideal $z(t)$, and the
+decoded $\hat{z}(t)$ for an input of $x(t)=cos(3\pi t)$ and
+$y(t)=0.5 sin (2 \pi t)$ (over 1.0
+seconds)}\label{mark-plot-xt-yt-the-ideal-zt-and-the-decoded-hatzt-for-an-input-of-xtcos3pi-t-and-yt0.5-sin-2-pi-t-over-1.0-seconds}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{k}{def} \PY{n+nf}{five\PYZus{}a}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+         
+             \PY{c}{\PYZsh{}generate the sinusoidal signals x(t) and y(t)}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{t}\PY{p}{)}
+             \PY{n}{y\PYZus{}t}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{t}\PY{p}{)}
+             \PY{n}{z\PYZus{}t}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{o}{*}\PY{n}{x\PYZus{}t}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{y\PYZus{}t}
+         
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create first ensemble and calculate transformational decoders}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{neurons\PYZus{}1}\PY{p}{,} \PY{n}{spikes\PYZus{}1} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+             \PY{n}{function\PYZus{}1}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{o}{*}\PY{n}{x}
+             \PY{n}{d\PYZus{}1}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}1}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}1}\PY{p}{)}
+             \PY{n}{f\PYZus{}xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}1}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}1}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create second ensemble and calculate transformational decoders}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{9}
+             \PY{n}{neurons\PYZus{}2}\PY{p}{,} \PY{n}{spikes\PYZus{}2} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{y\PYZus{}t}\PY{p}{)}
+             \PY{n}{function\PYZus{}2}\PY{o}{=}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{y}
+             \PY{n}{d\PYZus{}2}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}2}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}2}\PY{p}{)}
+             \PY{n}{f\PYZus{}yhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}2}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}2}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create third ensemble and calculate transformational decoders}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{9}
+             \PY{n}{neurons\PYZus{}3}\PY{p}{,} \PY{n}{spikes\PYZus{}3} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{f\PYZus{}xhat}\PY{o}{+}\PY{n}{f\PYZus{}yhat}\PY{p}{)}
+             \PY{n}{function\PYZus{}3}\PY{o}{=}\PY{k}{lambda} \PY{n}{z}\PY{p}{:} \PY{n}{z}
+             \PY{n}{d\PYZus{}3}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}3}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}3}\PY{p}{)}
+             \PY{n}{f\PYZus{}zhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}3}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}3}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, transformed signal, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x(t)=0.5cos(3}\PY{l+s}{\PYZbs{}}\PY{l+s}{pi t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{y\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}y(t)=2sin(2}\PY{l+s}{\PYZbs{}}\PY{l+s}{pi t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{z\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}z(t)=0.5x+2y\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}zhat}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}z\PYZcb{}(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((z\PYZus{}t\PYZhy{}f\PYZus{}zhat)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{)} 
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+         
+         \PY{n}{five\PYZus{}a}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_25_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\subsection{{[}0.5 marks{]} Plot $x(t)$, $y(t)$, the ideal $z(t)$, and
+the decoded $\hat{z}(t)$ for a random input over 1 second. For $x(t)$
+use a random signal with a limit of 8 Hz and \texttt{rms}=1. For $y(t)$
+use a random signal with a limit of 5 Hz and
+\texttt{rms}=0.5.}\label{marks-plot-xt-yt-the-ideal-zt-and-the-decoded-hatzt-for-a-random-input-over-1-second.-for-xt-use-a-random-signal-with-a-limit-of-8-hz-and-rms1.-for-yt-use-a-random-signal-with-a-limit-of-5-hz-and-rms0.5.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{k}{def} \PY{n+nf}{five\PYZus{}b}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+             \PY{n}{rms}\PY{o}{=}\PY{l+m+mf}{0.5}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+         
+             \PY{c}{\PYZsh{}generate the white noise signals x(t) and y(t)}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+             \PY{n}{seed\PYZus{}signal}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{rng2}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{RandomState}\PY{p}{(}\PY{n}{seed}\PY{o}{=}\PY{n}{seed\PYZus{}signal}\PY{p}{)}
+             \PY{n}{limit\PYZus{}1}\PY{o}{=}\PY{l+m+mi}{8}
+             \PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{x\PYZus{}w} \PY{o}{=} \PY{n}{generate\PYZus{}signal}\PY{p}{(}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{rms}\PY{p}{,}\PY{n}{limit\PYZus{}1}\PY{p}{,}\PY{n}{rng2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{uniform}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{limit\PYZus{}2}\PY{o}{=}\PY{l+m+mi}{5}
+             \PY{n}{y\PYZus{}t}\PY{p}{,} \PY{n}{y\PYZus{}w} \PY{o}{=} \PY{n}{generate\PYZus{}signal}\PY{p}{(}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{rms}\PY{p}{,}\PY{n}{limit\PYZus{}2}\PY{p}{,}\PY{n}{rng2}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{uniform}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{z\PYZus{}t}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{o}{*}\PY{n}{x\PYZus{}t}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{y\PYZus{}t}
+         
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create first ensemble and calculate transformational decoders}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{neurons\PYZus{}1}\PY{p}{,} \PY{n}{spikes\PYZus{}1} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+             \PY{n}{function\PYZus{}1}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{o}{*}\PY{n}{x}
+             \PY{n}{d\PYZus{}1}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}1}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}1}\PY{p}{)}
+             \PY{n}{f\PYZus{}xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}1}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}1}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create second ensemble and calculate transformational decoders}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{9}
+             \PY{n}{neurons\PYZus{}2}\PY{p}{,} \PY{n}{spikes\PYZus{}2} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{y\PYZus{}t}\PY{p}{)}
+             \PY{n}{function\PYZus{}2}\PY{o}{=}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{y}
+             \PY{n}{d\PYZus{}2}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}2}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}2}\PY{p}{)}
+             \PY{n}{f\PYZus{}yhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}2}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}2}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}create third ensemble and calculate transformational decoders}
+             \PY{n}{seed\PYZus{}neuron}\PY{o}{=}\PY{l+m+mi}{9}
+             \PY{n}{neurons\PYZus{}3}\PY{p}{,} \PY{n}{spikes\PYZus{}3} \PY{o}{=} \PY{n}{ensemble}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}\PY{n}{seed\PYZus{}neuron}\PY{p}{,}
+                     \PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{f\PYZus{}xhat}\PY{o}{+}\PY{n}{f\PYZus{}yhat}\PY{p}{)}
+             \PY{n}{function\PYZus{}3}\PY{o}{=}\PY{k}{lambda} \PY{n}{z}\PY{p}{:} \PY{n}{z}
+             \PY{n}{d\PYZus{}3}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{neurons\PYZus{}3}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{function\PYZus{}3}\PY{p}{)}
+             \PY{n}{f\PYZus{}zhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes\PYZus{}3}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d\PYZus{}3}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, transformed signal, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{x\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}x(t)\PYZdl{} (white noise, lim=}\PY{l+s+si}{\PYZpc{}s}\PY{l+s}{)}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{limit\PYZus{}1})
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{y\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}y(t)\PYZdl{} (white noise, lim=}\PY{l+s+si}{\PYZpc{}s}\PY{l+s}{)}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{limit\PYZus{}2})
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{z\PYZus{}t}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}z(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}zhat}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}z\PYZcb{}(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((z\PYZus{}t\PYZhy{}f\PYZus{}zhat)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{18}\PY{p}{)}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{five\PYZus{}b}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_27_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Again, poor estimation arises from saturation of neurons past $-1$ or
+$1$, but overall shape is preserved.
+
+\section{Computing with vectors}\label{computing-with-vectors}
+
+Do the same thing as questions 4 and 5, but with 2-dimensional vectors instead of scalars. Everything else is the same. For your encoders $e$, randomly generate them over the unit circle. The function to compute is $w = x-3y+2z-2q$. This requires five group of neurons: $x$, $y$, $z$, $q$, and $w$. Each of them represents a 2-dimensional value. The outputs from $x$, $y$, $z$, and $q$ all feed into $w$.
+
+\subsection{{[}1 mark{]} Plot the decoded output $\hat{w}(t)$ and the
+ideal $w$ for $x=[0.5,1], y=[0.1,0.3], z=[0.2,0.1], q = [0.4,-0.2]$.
+(Note that these are all constants so they don't change over time, but
+still plot it for 1.0 seconds on one or more 2D
+graphs)}\label{mark-plot-the-decoded-output-hatwt-and-the-ideal-w-for-x0.51-y0.10.3-z0.20.1-q-0.4-0.2.-note-that-these-are-all-constants-so-they-dont-change-over-time-but-still-plot-it-for-1.0-seconds-on-one-or-more-2d-graphs}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}15}]:} \PY{k}{def} \PY{n+nf}{six\PYZus{}a}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{dimension}\PY{o}{=}\PY{l+m+mi}{2}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+             \PY{n}{rms}\PY{o}{=}\PY{l+m+mf}{0.5}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+             \PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+         
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}stimuli}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{p}{[}\PY{l+m+mf}{0.5}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+             \PY{n}{y\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{p}{[}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{l+m+mf}{0.3}\PY{p}{]}\PY{p}{)}
+             \PY{n}{z\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{p}{[}\PY{l+m+mf}{0.2}\PY{p}{,}\PY{l+m+mf}{0.1}\PY{p}{]}\PY{p}{)}
+             \PY{n}{q\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{p}{[}\PY{l+m+mf}{0.4}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.2}\PY{p}{]}\PY{p}{)}
+             \PY{n}{w\PYZus{}t}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{y\PYZus{}t}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{z\PYZus{}t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{q\PYZus{}t}
+         
+             \PY{c}{\PYZsh{}transforms}
+             \PY{n}{f1}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}
+             \PY{n}{f2}\PY{o}{=}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{n}{y}
+             \PY{n}{f3}\PY{o}{=}\PY{k}{lambda} \PY{n}{z}\PY{p}{:} \PY{n}{z}
+             \PY{n}{f4}\PY{o}{=}\PY{k}{lambda} \PY{n}{q}\PY{p}{:} \PY{n}{q}
+             \PY{n}{f5}\PY{o}{=}\PY{k}{lambda} \PY{n}{w}\PY{p}{:} \PY{n}{w}
+         
+             \PY{c}{\PYZsh{}ensembles}
+             \PY{n}{n1}\PY{p}{,}\PY{n}{spikes1}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+             \PY{n}{n2}\PY{p}{,}\PY{n}{spikes2}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{y\PYZus{}t}\PY{p}{)}
+             \PY{n}{n3}\PY{p}{,}\PY{n}{spikes3}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{z\PYZus{}t}\PY{p}{)}
+             \PY{n}{n4}\PY{p}{,}\PY{n}{spikes4}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{q\PYZus{}t}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}decode}
+             \PY{n}{d1}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n1}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f1}\PY{p}{)}
+             \PY{n}{d2}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n2}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f2}\PY{p}{)}
+             \PY{n}{d3}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n3}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f3}\PY{p}{)}
+             \PY{n}{d4}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n4}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f4}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}estimate}
+             \PY{n}{f\PYZus{}xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes1}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d1}\PY{p}{)}   
+             \PY{n}{f\PYZus{}yhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes2}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d2}\PY{p}{)}
+             \PY{n}{f\PYZus{}zhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes3}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d3}\PY{p}{)}
+             \PY{n}{f\PYZus{}qhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes4}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d4}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}final transformation and estimate}
+             \PY{n}{feedforward}\PY{o}{=}\PY{n}{f\PYZus{}xhat}\PY{o}{\PYZhy{}}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{f\PYZus{}yhat}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{f\PYZus{}zhat}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{f\PYZus{}qhat}
+             \PY{n}{n5}\PY{p}{,}\PY{n}{spikes5}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{feedforward}\PY{p}{)}
+             \PY{n}{d5}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n5}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f5}\PY{p}{)}
+             \PY{n}{f\PYZus{}what}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes5}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d5}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, transformed signal, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{121}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{w\PYZus{}t}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}w\PYZus{}0(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{c}{\PYZsh{}=x(t)\PYZhy{}3*y(t)+2*z(t)\PYZhy{}2*q(t)\PYZdl{}\PYZsq{})}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}what}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}w\PYZcb{}\PYZus{}0(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE\PYZus{}0=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((w\PYZus{}t[:,0]\PYZhy{}f\PYZus{}what[:,0])**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{122}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{w\PYZus{}t}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}w\PYZus{}1(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{c}{\PYZsh{}=x(t)\PYZhy{}3*y(t)+2*z(t)\PYZhy{}2*q(t)\PYZdl{}\PYZsq{})}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}what}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}w\PYZcb{}\PYZus{}1(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE\PYZus{}1=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((w\PYZus{}t[:,1]\PYZhy{}f\PYZus{}what[:,1])**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{six\PYZus{}a}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_31_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\subsection{{[}0.5 marks{]} Produce the same plot for
+$x=[0.5,1], y=[sin(4\pi t),0.3], z=[0.2,0.1], q = [sin(4\pi t),-0.2]$.}\label{marks-produce-the-same-plot-for-x0.51-ysin4pi-t0.3-z0.20.1-q-sin4pi-t-0.2.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{k}{def} \PY{n+nf}{six\PYZus{}b}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+         
+             \PY{c}{\PYZsh{}parameters}
+             \PY{n}{n\PYZus{}neurons}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{dimension}\PY{o}{=}\PY{l+m+mi}{2}
+             \PY{n}{a\PYZus{}min}\PY{o}{=}\PY{l+m+mi}{100}
+             \PY{n}{a\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{200}
+             \PY{n}{x\PYZus{}min}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+             \PY{n}{x\PYZus{}max}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dx}\PY{o}{=}\PY{l+m+mf}{0.05}
+             \PY{n}{tau\PYZus{}ref}\PY{o}{=}\PY{l+m+mf}{0.002}
+             \PY{n}{tau\PYZus{}rc}\PY{o}{=}\PY{l+m+mf}{0.02}
+             \PY{n}{T}\PY{o}{=}\PY{l+m+mi}{1}
+             \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.001}
+             \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{0}
+             \PY{n}{rms}\PY{o}{=}\PY{l+m+mf}{0.5}
+             \PY{n}{noise}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{a\PYZus{}max}
+             \PY{n}{seed}\PY{o}{=}\PY{l+m+mi}{3}
+             \PY{n}{t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{T}\PY{o}{/}\PY{n}{dt}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{n}{dt}
+         
+             \PY{c}{\PYZsh{}set post\PYZhy{}synaptic current temporal filter}
+             \PY{n}{tau\PYZus{}synapse}\PY{o}{=}\PY{l+m+mf}{0.005}          
+             \PY{n}{h}\PY{o}{=}\PY{n}{t}\PY{o}{*}\PY{o}{*}\PY{n}{n}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{o}{/}\PY{n}{tau\PYZus{}synapse}\PY{p}{)}
+             \PY{n}{h}\PY{o}{=}\PY{n}{h}\PY{o}{/}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{dt}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}stimuli}
+             \PY{n}{x\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{p}{[}\PY{l+m+mf}{0.5}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+             \PY{n}{y\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{l+m+mi}{4}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{l+m+mf}{0.3}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{l+m+mi}{0}\PY{o}{*}\PY{n}{t}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+             \PY{n}{z\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{full}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{n}{dimension}\PY{p}{)}\PY{p}{,}\PY{p}{[}\PY{l+m+mf}{0.2}\PY{p}{,}\PY{l+m+mf}{0.1}\PY{p}{]}\PY{p}{)}
+             \PY{n}{q\PYZus{}t}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{l+m+mi}{4}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{t}\PY{p}{)}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.2}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{l+m+mi}{0}\PY{o}{*}\PY{n}{t}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+             \PY{n}{w\PYZus{}t}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{y\PYZus{}t}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{z\PYZus{}t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{q\PYZus{}t}
+         
+             \PY{c}{\PYZsh{}transforms}
+             \PY{n}{f1}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}
+             \PY{n}{f2}\PY{o}{=}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{n}{y}
+             \PY{n}{f3}\PY{o}{=}\PY{k}{lambda} \PY{n}{z}\PY{p}{:} \PY{n}{z}
+             \PY{n}{f4}\PY{o}{=}\PY{k}{lambda} \PY{n}{q}\PY{p}{:} \PY{n}{q}
+             \PY{n}{f5}\PY{o}{=}\PY{k}{lambda} \PY{n}{w}\PY{p}{:} \PY{n}{w}
+         
+             \PY{c}{\PYZsh{}ensembles}
+             \PY{n}{n1}\PY{p}{,}\PY{n}{spikes1}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{x\PYZus{}t}\PY{p}{)}
+             \PY{n}{n2}\PY{p}{,}\PY{n}{spikes2}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{y\PYZus{}t}\PY{p}{)}
+             \PY{n}{n3}\PY{p}{,}\PY{n}{spikes3}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{z\PYZus{}t}\PY{p}{)}
+             \PY{n}{n4}\PY{p}{,}\PY{n}{spikes4}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{q\PYZus{}t}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}decode}
+             \PY{n}{d1}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n1}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f1}\PY{p}{)}
+             \PY{n}{d2}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n2}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f2}\PY{p}{)}
+             \PY{n}{d3}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n3}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f3}\PY{p}{)}
+             \PY{n}{d4}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n4}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f4}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}estimate}
+             \PY{n}{f\PYZus{}xhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes1}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d1}\PY{p}{)}   
+             \PY{n}{f\PYZus{}yhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes2}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d2}\PY{p}{)}
+             \PY{n}{f\PYZus{}zhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes3}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d3}\PY{p}{)}
+             \PY{n}{f\PYZus{}qhat}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes4}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d4}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}final transformation and estimate}
+             \PY{n}{feedforward}\PY{o}{=}\PY{n}{f\PYZus{}xhat}\PY{o}{\PYZhy{}}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{f\PYZus{}yhat}\PY{o}{+}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{f\PYZus{}zhat}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{f\PYZus{}qhat}
+             \PY{n}{n5}\PY{p}{,}\PY{n}{spikes5}\PY{o}{=}\PY{n}{ensemble\PYZus{}2D}\PY{p}{(}\PY{n}{n\PYZus{}neurons}\PY{p}{,}\PY{n}{x\PYZus{}min}\PY{p}{,}\PY{n}{x\PYZus{}max}\PY{p}{,}\PY{n}{dx}\PY{p}{,}\PY{n}{a\PYZus{}min}\PY{p}{,}\PY{n}{a\PYZus{}max}\PY{p}{,}
+                         \PY{n}{seed}\PY{p}{,}\PY{n}{tau\PYZus{}ref}\PY{p}{,}\PY{n}{tau\PYZus{}rc}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{T}\PY{p}{,}\PY{n}{dt}\PY{p}{,}\PY{n}{stimulus}\PY{o}{=}\PY{n}{feedforward}\PY{p}{)}
+             \PY{n}{d5}\PY{o}{=}\PY{n}{get\PYZus{}rate\PYZus{}decoders}\PY{p}{(}\PY{n}{n5}\PY{p}{,}\PY{n}{noise}\PY{p}{,}\PY{n}{f5}\PY{p}{)}
+             \PY{n}{f\PYZus{}what}\PY{o}{=}\PY{n}{get\PYZus{}spike\PYZus{}estimate}\PY{p}{(}\PY{n}{spikes5}\PY{p}{,}\PY{n}{h}\PY{p}{,}\PY{n}{d5}\PY{p}{)}
+         
+             \PY{c}{\PYZsh{}plot signal, transformed signal, and estimate}
+             \PY{n}{fig}\PY{o}{=}\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{=}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}subplot}\PY{p}{(}\PY{l+m+mi}{111}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{w\PYZus{}t}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}w\PYZus{}0(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{w\PYZus{}t}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}w\PYZus{}1(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}what}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}w\PYZcb{}\PYZus{}0(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{f\PYZus{}what}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{hat\PYZob{}w\PYZcb{}\PYZus{}1(t)\PYZdl{}}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{RMSE=}\PY{l+s+si}{\PYZpc{}f}\PY{l+s}{\PYZsq{}} \PY{o}{\PYZpc{}}\PY{k}{np}.sqrt(np.average((w\PYZus{}t\PYZhy{}f\PYZus{}what)**2)))
+             \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{time (s)}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{legend}\PY{o}{=}\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{best}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+             
+         \PY{n}{six\PYZus{}b}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{SYDE_556-750_Assignment_3_files/SYDE_556-750_Assignment_3_33_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\subsection{{[}0.5 marks{]} Describe your results and discuss why and how they stray from the expected answer.}
+
+The first dimension of $\hat{w}(t)$ significantly underestimates the
+actual signal $w(t)$. This is caused by neuron saturation: the maximum
+value that can be faithfully represented by a neuron is $x_{max}=1$.
+Beyond this value, the tuning curves of the neurons begin to flatten
+out, leading to diminishing returns in activity as $x(t)$ increases.
+This limits the entries in the activities matrix $A$, which in turn
+limits the decoders $d$ and the magnitude of the final estimate
+$\hat{w}(t)$. I confirmed this by scaling $w(t)$ and the stimulus fed
+into the ensemble that calculates $\hat{w}(t)$: dividing by $10$ allows
+$\hat{w}(t)$ to closely match the first dimension of $w(t)$, while
+multiplying by $10$ still leaves $\hat{w}(t)$ varying from $-2$ to $2$.
+The exact value at which the ensemble saturates is a function of the
+distribution of the neurons' x-intercepts, maximum firing rates,
+$\alpha$s, and $J^{bias}$s.
+
+The second dimension of $\hat{w}(t)$ does not accurately represent the
+line; it deviates when the value represented in the first dimension
+passes beyond the optimum value $x_{max}=1$. In other words, when the
+neurons oversaturate due to high values in the first dimension, the
+estimate in the second dimension gets systematically worse. In this
+case, oversaturation causes underestimation of the second dimension, but
+this varies with the seed. The reason that the estimate is consistently
+below (or above) the signal value can be explained as follows. Consider
+the tuning curve for each neuron, extended beyond $x_{max}$ to some
+value $x_{signal}$. Neurons with large $\alpha$ will have a
+proportionally higher firing rates at $x_{signal}$ than those with low
+$\alpha$. The decoders have already been calculated with the assumption
+that any $A$ matrix corresponds to $x$ within the normal range. When
+decoding $\hat{w}(t)$, the high activity neurons will contribute more
+than other neurons, and construct a signal that favors the dimensions in
+which their decoders point, leading to a systematic over- or
+underestimation of that dimension the true signal.
+
+
+\end{document}
