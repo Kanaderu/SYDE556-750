@@ -15,7 +15,7 @@ import pandas as pd
 '''Parameters'''
 #simulation parameters
 filename='FearConditioningMullerCombinedV2'
-n_trials=10
+n_trials=2
 pairings_train=10
 tones_test=2
 dt=0.001 #timestep

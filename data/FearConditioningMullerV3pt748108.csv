@@ -1,0 +1,2 @@
+	N	condition_BCM_rate	condition_PES_rate	dim	drug	dt	dt_sample	extinction_rate	filename	gaba_min	gaba_muscimol	n2t	n_trials	nt	pairings_train	st	t_test	t_train	tau	tau_GABA	tau_Glut	tau_LA_recurrent	tau_drug	tau_learn	tau_stim	thresh_error	thresh_inter	tones_test	tt	wt
+0	100	5e-10	0.0005	1	saline-saline	0.001	0.01	5e-07	FearConditioningMullerV3pt7	0.2	1.25	0.0166666666667	10	0.116666666667	5	0.0333333333333	1.1666	5.833	0.01	0.005	0.01	0.005	0.1	0.01	0.01	0.1	0.4	1	0.166666666667	1.0
