@@ -16,14 +16,14 @@ import os
 '''Parameters'''
 #simulation parameters
 filename='FearConditioningCombinedV4pt4'
-experiment='muller-tone' #muller-tone, muller-context, viviani
+experiment='viviani' #muller-tone, muller-context, viviani
 if experiment == 'viviani':
-	drugs=['none','oxytocin']
+	drugs=['saline-saline','oxytocin-saline','saline-oxytocin','oxytocin-oxytocin']
 else:
 	drugs=['saline-saline','muscimol-saline','saline-muscimol','muscimol-muscimol']
-n_trials=2
-pairings_train=5 #how many CS-US pairs to train on
-tones_test=1
+n_trials=10
+pairings_train=10 #how many CS-US pairs to train on
+tones_test=10
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
@@ -43,11 +43,13 @@ tau_drug=0.1 #time constant for application of drugs
 tau_recurrent=0.005 #same as GABAergic cells
 LA_to_BA=0.5
 ITCd_to_ITCv=-0.25
+ITCd_to_CeL_OFF=-1.0
 ITCv_to_CEM_DAG=-1.0
 CeL_ON_to_CeM_DAG=1.0
+CeL_ON_to_CeL_OFF=-1.0
 CeL_OFF_to_CeM_DAG=-1.0
 BA_fear_to_CeM_DAG=3.0
-LA_inter_feedback=-0.5 #controlls recurrent inhibition in LA; negative values for inhibition
+LA_inter_recurrent=-0.5 #controlls recurrent inhibition in LA; negative values for inhibition
 BA_fear_recurrent=0.1 #controls recurrent excitation in BA_fear
 BA_extinct_recurrent=0.1 #controls recurrent excitation in BA_extinct
 CCK_feedback=-0.1 #controls mutual inhibition b/w BA_fear and BA_extinct
@@ -61,7 +63,7 @@ n2t=1.0/60.0 #nothing time
 wt=60.0/60.0 #wait/delay time
 t_train=int(pairings_train*(wt+tt)/dt)*dt
 t_test=t_train*tones_test/pairings_train #multiply by X/pairings for X tone presentations
-t_extinct=t_train
+t_extinct=t_test
 
 params={
 	'filename':'FearConditioningCombinedV3',
@@ -87,6 +89,14 @@ params={
 	'tau_drug':tau_drug,
 	'tau_recurrent':tau_recurrent,
 	'LA_to_BA':LA_to_BA,
+	'ITCd_to_ITCv':ITCd_to_ITCv,
+	'ITCd_to_CeL_OFF':ITCd_to_CeL_OFF,
+	'ITCv_to_CEM_DAG':ITCv_to_CEM_DAG,
+	'CeL_ON_to_CeM_DAG':CeL_ON_to_CeM_DAG,
+	'CeL_ON_to_CeL_OFF':CeL_ON_to_CeL_OFF,
+	'CeL_OFF_to_CeM_DAG':CeL_OFF_to_CeM_DAG,
+	'LA_inter_recurrent':LA_inter_recurrent,
+	'BA_fear_to_CeM_DAG':BA_fear_to_CeM_DAG,
     'BA_fear_recurrent':BA_fear_recurrent,
     'BA_extinct_recurrent':BA_extinct_recurrent,
     'CCK_feedback':CCK_feedback,
@@ -103,8 +113,8 @@ params={
 }
 
 'Helper functions and transformations on ensemble connections ########################'''
-
-def parisien_transform(conn, inh_synapse, inh_proportion=0.25): #https://github.com/nengo/nengo/issues/921
+#https://github.com/nengo/nengo/issues/921 - Thanks Terry!
+def parisien_transform(conn, inh_synapse, inh_proportion=0.25): 
     # only works for ens->ens connections
     assert isinstance(conn.pre_obj, nengo.Ensemble)
     assert isinstance(conn.post_obj, nengo.Ensemble)    
@@ -164,7 +174,7 @@ def make_US_CS_arrays(): #1s sim time = 1min (60s) real time
 	for i in range(pairings_train):
 		CS_array[i*(wt+tt)/dt : (i*(wt+tt)+tt)/dt]=1 # tone
 		US_array[i*(wt+tt)/dt : (i*(wt+tt)+nt)/dt]=0 # nothing
-		US_array[(i*(wt+tt)+nt)/dt : (i*(wt+tt)+nt+st)/dt]=1.5 # shock
+		US_array[(i*(wt+tt)+nt)/dt : (i*(wt+tt)+nt+st)/dt]=2 # shock
 		US_array[(i*(wt+tt)+nt+st)/dt : (i*(wt+tt)+nt+st+n2t)/dt]=0 # nothing
 		CS_array[(i*(wt+tt)+tt)/dt : (i+1)*(wt+tt)/dt]=0 # delay
 		US_array[(i*(wt+tt)+tt)/dt : (i+1)*(wt+tt)/dt]=0 # delay
@@ -205,8 +215,14 @@ def gaba_function(t): #activate GABA receptors in LA => inhibition of LA => no l
     return gaba_min
 
 def oxy_function(t): #oxytocin activates GABAergic interneurons in CeL_Off
-    if drug=='oxytocin' and t_train<=t<t_train+t_test: 
-    	return oxy 
+    if drug=='saline-saline': 
+    	return 0
+    elif drug=='oxytocin-saline' and t<t_train:
+    	return oxy
+    elif drug=='saline-oxytocin' and t_train<=t<t_train+t_test:
+    	return oxy
+    elif drug=='oxytocin-oxytocin':
+    	return oxy
     return 0
    
 def LA_error_cond(x):
@@ -257,12 +273,12 @@ with model:
 	#as well as control activity of LA, reducing fear response.
 	#send CS representation to LA_inter, to compute feedback
 	#Do this using Terry's Parisien Transform function
-	LA_recurrent=nengo.Connection(LA,LA,synapse=tau_recurrent,transform=LA_inter_feedback)
+	LA_recurrent=nengo.Connection(LA,LA,synapse=tau_recurrent,transform=LA_inter_recurrent)
 	LA_inter=parisien_transform(LA_recurrent, inh_synapse=LA_recurrent.synapse)
 
 	#Intercalated Cells
-	ITCd=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1)) 
-	ITCv=nengo.Ensemble(N,dim,encoders=Choice([[1]]), intercepts=Uniform(0, 1))
+	ITCd=nengo.Ensemble(N,dim) 
+	ITCv=nengo.Ensemble(N,dim)
 
     #Central Lateral and Central Medial Amygdala subpopulations
 	CeL_ON=nengo.Ensemble(N,dim) #ON cells in the lateral central amygdala
@@ -297,7 +313,7 @@ with model:
 	nengo.Connection(stim_gaba,LA_inter,synapse=tau_drug) #stimulate the gabaergic interneurons directly
 	nengo.Connection(stim_gaba,CCK,synapse=tau_drug) #activate BA gabaergic interneurons
 	nengo.Connection(stim_gaba,PV,synapse=tau_drug) 
-	nengo.Connection(stim_oxy,CeL_OFF,synapse=tau_stim) #stimulate the gabaergic interneurons (P trans?)
+	nengo.Connection(stim_oxy,CeL_OFF,synapse=tau_drug) #stimulate the gabaergic interneurons (P trans?)
 	        
 	#Lateral Amygdala connections
 	nengo.Connection(U,LA[dim:2*dim],synapse=tau_stim)
@@ -312,8 +328,6 @@ with model:
 	nengo.Connection(BA_extinct,BA_extinct,synapse=tau_recurrent,transform=BA_extinct_recurrent)
 	nengo.Connection(BA_fear,error_context,synapse=tau,function=BA_error_context)
 	nengo.Connection(BA_fear,error_extinct,synapse=tau,function=BA_error_extinct)
-# 	nengo.Connection(U,error_context,synapse=tau_stim)
-# 	nengo.Connection(U,error_extinct,synapse=tau_stim,transform=-1)
 	
 	#Intercalated Cells connections
 	nengo.Connection(LA[:dim],CeL_ON,synapse=tau)
@@ -323,9 +337,9 @@ with model:
 
 	#Central Lateral and Central Medial Amygdala connections
 	nengo.Connection(BA_fear[:dim],CeM_DAG,synapse=tau,transform=BA_fear_to_CeM_DAG)
-	nengo.Connection(ITCd,CeL_OFF,transform=-1,synapse=tau)	
+	nengo.Connection(ITCd,CeL_OFF,transform=ITCd_to_CeL_OFF,synapse=tau)	
 	nengo.Connection(ITCv,CeM_DAG,transform=ITCv_to_CEM_DAG,synapse=tau)
-	nengo.Connection(CeL_ON,CeL_OFF,transform=-1,synapse=tau)
+	nengo.Connection(CeL_ON,CeL_OFF,transform=CeL_ON_to_CeL_OFF,synapse=tau)
 	nengo.Connection(CeL_ON,CeM_DAG,synapse=tau,transform=CeL_ON_to_CeM_DAG)
 	nengo.Connection(CeL_OFF,CeM_DAG,transform=CeL_OFF_to_CeM_DAG)
 
@@ -342,6 +356,7 @@ with model:
 	
 	
 	#PROBES ########################################################################
+
 	C_probe=nengo.Probe(C,synapse=0.01,sample_every=dt_sample)
 	U_probe=nengo.Probe(U,synapse=0.01,sample_every=dt_sample)
 	context_probe=nengo.Probe(Context,synapse=0.01,sample_every=dt_sample)
@@ -353,8 +368,10 @@ with model:
 	BA_extinct_probe=nengo.Probe(BA_extinct[:dim],synapse=0.01,sample_every=dt_sample)
 	motor_probe=nengo.Probe(Motor,synapse=0.01,sample_every=dt_sample)
 
+
 '''simulation ###############################################'''
 
+#ereate Pandas dataframe
 columns=('time','drug','c','u','context','error_cond','error_context','error_extinct',\
 	'la','ba_fear','ba_extinct','freeze','trial','phase')
 trials=np.arange(n_trials)
@@ -384,7 +401,7 @@ for drug in drugs:
 			baext=sim.data[BA_extinct_probe][t][0]
 			frz=(sim.data[motor_probe][t][0]-max_motor)/(min_motor-max_motor)
 			rt=t*dt_sample*60
-			#append to dataframe
+			#append probe data to dataframe
 			dataframe.loc[i]=[rt,drug,c,u,cntx,econd,ecntx,eext,la,bafear,baext,frz,n,phase]
 			i+=1
 
