@@ -16,7 +16,7 @@ import os
 '''Parameters'''
 #simulation parameters
 filename='FearConditioningCombinedV4pt5'
-experiment='viviani' #validate-tone, validate-context, muller-tone, muller-context, viviani
+experiment='muller-context' #validate-tone, validate-context, muller-tone, muller-context, viviani
 if experiment == 'viviani':
 	drugs=['saline-saline','oxytocin-saline','saline-oxytocin','oxytocin-oxytocin']
 elif experiment == 'muller-tone' or experiment == 'muller-context':
@@ -25,7 +25,7 @@ else:
 	drugs=['none']
 n_trials=10
 pairings_train=10 #how many CS-US pairs to train on
-tones_test=5
+tones_test=1
 dt=0.001 #timestep
 dt_sample=0.01 #probe sample_every
 condition_PES_rate = 5e-4 #conditioning learning rate to CS
